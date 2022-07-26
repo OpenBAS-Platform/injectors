@@ -7,8 +7,11 @@ import io.openex.execution.Injector;
 import io.openex.execution.ExecutableInject;
 import io.openex.database.model.Execution;
 import io.openex.injects.lade.service.LadeService;
+import io.openex.model.Expectation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 import static io.openex.database.model.ExecutionTrace.traceError;
 import static io.openex.database.model.ExecutionTrace.traceSuccess;
@@ -24,7 +27,7 @@ public class LadeExecutor extends Injector {
     }
 
     @Override
-    public void process(Execution execution, ExecutableInject injection, Contract contract) {
+    public List<Expectation> process(Execution execution, ExecutableInject injection, Contract contract) {
         Inject inject = injection.getInject();
         String bundleIdentifier = contract.getContext().get("bundle_identifier");
         ObjectNode content = inject.getContent();
@@ -35,5 +38,6 @@ public class LadeExecutor extends Injector {
         } catch (Exception e) {
             execution.addTrace(traceError("lade", e.getMessage(), e));
         }
+        return List.of();
     }
 }

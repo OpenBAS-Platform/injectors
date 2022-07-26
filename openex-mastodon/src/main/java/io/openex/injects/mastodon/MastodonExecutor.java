@@ -10,6 +10,7 @@ import io.openex.execution.ExecutableInject;
 import io.openex.database.model.Execution;
 import io.openex.injects.mastodon.model.MastodonContent;
 import io.openex.injects.mastodon.service.MastodonService;
+import io.openex.model.Expectation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ public class MastodonExecutor extends Injector {
     }
 
     @Override
-    public void process(Execution execution, ExecutableInject injection, Contract contract) throws Exception {
+    public List<Expectation> process(Execution execution, ExecutableInject injection, Contract contract) throws Exception {
         Inject inject = injection.getInject();
         MastodonContent content = contentConvert(injection, MastodonContent.class);
         String token = content.getToken();
@@ -44,5 +45,6 @@ public class MastodonExecutor extends Injector {
         } catch (Exception e) {
             execution.addTrace(traceError("mastodon", e.getMessage(), e));
         }
+        return List.of();
     }
 }

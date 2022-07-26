@@ -9,6 +9,7 @@ import io.openex.database.model.Execution;
 import io.openex.execution.ExecutionContext;
 import io.openex.injects.ovh_sms.model.OvhSmsContent;
 import io.openex.injects.ovh_sms.service.OvhSmsService;
+import io.openex.model.Expectation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -29,7 +30,7 @@ public class OvhSmsExecutor extends Injector {
     }
 
     @Override
-    public void process(Execution execution, ExecutableInject injection, Contract contract) throws Exception {
+    public List<Expectation> process(Execution execution, ExecutableInject injection, Contract contract) throws Exception {
         Inject inject = injection.getInject();
         OvhSmsContent content = contentConvert(injection, OvhSmsContent.class);
         String smsMessage = content.buildMessage(inject.getFooter(), inject.getHeader());
@@ -54,5 +55,6 @@ public class OvhSmsExecutor extends Injector {
                 }
             }
         });
+        return List.of();
     }
 }

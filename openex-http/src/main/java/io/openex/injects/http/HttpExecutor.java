@@ -7,8 +7,11 @@ import io.openex.execution.Injector;
 import io.openex.injects.http.model.HttpGetModel;
 import io.openex.injects.http.model.HttpPostModel;
 import io.openex.injects.http.service.HttpService;
+import io.openex.model.Expectation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 import static io.openex.database.model.ExecutionTrace.traceError;
 import static io.openex.database.model.ExecutionTrace.traceSuccess;
@@ -34,7 +37,7 @@ public class HttpExecutor extends Injector {
     }
 
     @Override
-    public void process(Execution execution, ExecutableInject injection, Contract contract) {
+    public List<Expectation> process(Execution execution, ExecutableInject injection, Contract contract) {
         try {
             String callResult = processExecution(injection, contract);
             String message = "Api request sent (" + callResult + ")";
@@ -42,5 +45,6 @@ public class HttpExecutor extends Injector {
         } catch (Exception e) {
             execution.addTrace(traceError("api", e.getMessage(), e));
         }
+        return List.of();
     }
 }
