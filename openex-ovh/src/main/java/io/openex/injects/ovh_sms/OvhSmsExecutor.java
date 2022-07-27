@@ -44,7 +44,7 @@ public class OvhSmsExecutor extends Injector {
             String email = user.getEmail();
             if (!StringUtils.hasLength(phone)) {
                 String message = "Sms fail for " + email + ": no phone number";
-                execution.addTrace(traceSuccess(user.getId(), message));
+                execution.addTrace(traceError(user.getId(), message));
             } else {
                 try {
                     String callResult = smsService.sendSms(context, phone, smsMessage);
