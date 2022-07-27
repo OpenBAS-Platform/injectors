@@ -1,28 +1,46 @@
 package io.openex.injects.http.service;
 
+import com.fasterxml.jackson.core.JacksonException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.openex.database.model.DataAttachment;
+import io.openex.database.model.Execution;
+import io.openex.injects.http.model.HttpFormPostModel;
 import io.openex.injects.http.model.HttpGetModel;
-import io.openex.injects.http.model.HttpPostModel;
+import io.openex.injects.http.model.HttpRawPostModel;
+import io.openex.model.PairModel;
 import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpStatus;
 import org.apache.hc.core5.http.ParseException;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
+
+import static io.openex.database.model.ExecutionTrace.traceError;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Component
 public class HttpService {
-
     private static final Logger LOGGER = Logger.getLogger(HttpService.class.getName());
     private final CloseableHttpClient httpclient = HttpClients.createDefault();
+
+    @Resource
+    protected ObjectMapper mapper;
 
     private String executeHttp(ClassicHttpRequest request) throws IOException, ParseException {
         CloseableHttpResponse response = httpclient.execute(request);
@@ -35,11 +53,46 @@ public class HttpService {
         }
     }
 
-    public String executeRestPost(HttpPostModel post) throws IOException, ParseException {
-        HttpPost httpPost = new HttpPost(post.getUri());
+    private boolean isJsonText(String json) {
+        try {
+            mapper.readTree(json);
+        } catch (JacksonException e) {
+            return false;
+        }
+        return true;
+    }
+
+    public String executeForm(HttpContractType type, Execution execution, HttpFormPostModel post, List<DataAttachment> attachments) throws IOException, ParseException {
+        HttpUriRequestBase httpPost = type.equals(HttpContractType.POST) ?
+                new HttpPost(post.getUri()) : new HttpPut(post.getUri());
         post.getHeaders().forEach(apiHeader -> httpPost.setHeader(apiHeader.getKey(), apiHeader.getValue()));
-        httpPost.setEntity(new StringEntity(post.getBody()));
-        LOGGER.info("Sending post request to " + post.getUri());
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setCharset(UTF_8);
+        post.getParts().forEach(pair -> {
+            ContentType contentType = isJsonText(pair.getValue()) ? ContentType.APPLICATION_JSON : ContentType.TEXT_PLAIN;
+            builder.addTextBody(pair.getKey(), pair.getValue(), ContentType.create(contentType.getMimeType(), UTF_8));
+        });
+        attachments.forEach(file -> {
+            Optional<PairModel> ref = post.getParts().stream().filter(m -> m.getValue().equals(file.name())).findFirst();
+            if (ref.isPresent()) {
+                builder.addBinaryBody(ref.get().getKey(), file.data(), ContentType.parse(file.contentType()), file.name());
+            } else {
+                String message = "Error finding attachment for " + file.name() + " when Sending form post";
+                execution.addTrace(traceError("http", message));
+            }
+        });
+        httpPost.setEntity(builder.build());
+        LOGGER.info("Sending form " + type.name() + " request to " + post.getUri());
+        return executeHttp(httpPost);
+    }
+
+    public String executeRaw(HttpContractType type, HttpRawPostModel post) throws IOException, ParseException {
+        HttpUriRequestBase httpPost = type.equals(HttpContractType.POST) ?
+                new HttpPost(post.getUri()) : new HttpPut(post.getUri());
+        post.getHeaders().forEach(apiHeader -> httpPost.setHeader(apiHeader.getKey(), apiHeader.getValue()));
+        ContentType contentType = isJsonText(post.getBody()) ? ContentType.APPLICATION_JSON : ContentType.TEXT_PLAIN;
+        httpPost.setEntity(new StringEntity(post.getBody(), ContentType.create(contentType.getMimeType(), UTF_8)));
+        LOGGER.info("Sending raw " + type.name() + " request to " + post.getUri());
         return executeHttp(httpPost);
     }
 

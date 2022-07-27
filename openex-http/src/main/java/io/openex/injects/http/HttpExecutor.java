@@ -1,11 +1,15 @@
 package io.openex.injects.http;
 
 import io.openex.contract.Contract;
+import io.openex.database.model.DataAttachment;
+import io.openex.database.model.Document;
 import io.openex.database.model.Execution;
+import io.openex.database.model.InjectDocument;
 import io.openex.execution.ExecutableInject;
 import io.openex.execution.Injector;
+import io.openex.injects.http.model.HttpFormPostModel;
 import io.openex.injects.http.model.HttpGetModel;
-import io.openex.injects.http.model.HttpPostModel;
+import io.openex.injects.http.model.HttpRawPostModel;
 import io.openex.injects.http.service.HttpService;
 import io.openex.model.Expectation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +19,9 @@ import java.util.List;
 
 import static io.openex.database.model.ExecutionTrace.traceError;
 import static io.openex.database.model.ExecutionTrace.traceSuccess;
-import static io.openex.injects.http.HttpContract.HTTP_GET_CONTRACT;
-import static io.openex.injects.http.HttpContract.HTTP_POST_CONTRACT;
+import static io.openex.injects.http.HttpContract.*;
+import static io.openex.injects.http.service.HttpContractType.POST;
+import static io.openex.injects.http.service.HttpContractType.PUT;
 
 @Component(HttpContract.TYPE)
 public class HttpExecutor extends Injector {
@@ -28,10 +33,21 @@ public class HttpExecutor extends Injector {
         this.apiService = apiService;
     }
 
-    private String processExecution(ExecutableInject injection, Contract contract) throws Exception {
+    private String processExecution(Execution execution, ExecutableInject injection, Contract contract) throws Exception {
+        List<Document> documents = injection.getInject().getDocuments().stream().filter(InjectDocument::isAttached)
+                .map(InjectDocument::getDocument).toList();
+        List<DataAttachment> attachments = resolveAttachments(execution, documents);
         return switch (contract.getId()) {
-            case HTTP_POST_CONTRACT -> apiService.executeRestPost(contentConvert(injection, HttpPostModel.class));
-            case HTTP_GET_CONTRACT -> apiService.executeRestGet(contentConvert(injection, HttpGetModel.class));
+            case HTTP_RAW_POST_CONTRACT ->
+                    apiService.executeRaw(POST, contentConvert(injection, HttpRawPostModel.class));
+            case HTTP_RAW_PUT_CONTRACT ->
+                    apiService.executeRaw(PUT, contentConvert(injection, HttpRawPostModel.class));
+            case HTTP_FORM_POST_CONTRACT ->
+                    apiService.executeForm(POST, execution, contentConvert(injection, HttpFormPostModel.class), attachments);
+            case HTTP_FORM_PUT_CONTRACT ->
+                    apiService.executeForm(PUT, execution, contentConvert(injection, HttpFormPostModel.class), attachments);
+            case HTTP_GET_CONTRACT ->
+                    apiService.executeRestGet(contentConvert(injection, HttpGetModel.class));
             default -> throw new UnsupportedOperationException("Unknown contract " + contract.getId());
         };
     }
@@ -39,7 +55,7 @@ public class HttpExecutor extends Injector {
     @Override
     public List<Expectation> process(Execution execution, ExecutableInject injection, Contract contract) {
         try {
-            String callResult = processExecution(injection, contract);
+            String callResult = processExecution(execution, injection, contract);
             String message = "Api request sent (" + callResult + ")";
             execution.addTrace(traceSuccess("api", message));
         } catch (Exception e) {

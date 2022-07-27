@@ -7,7 +7,7 @@ import io.openex.model.PairModel;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class HttpPostModel {
+public class HttpRawPostModel {
     @JsonProperty("uri")
     private String uri;
 
@@ -17,11 +17,11 @@ public class HttpPostModel {
     @JsonProperty("headers")
     private List<PairModel> headers;
 
-    public HttpPostModel() {
+    public HttpRawPostModel() {
         // Default constructor
     }
 
-    public HttpPostModel(String uri, String body, List<PairModel> headers) {
+    public HttpRawPostModel(String uri, String body, List<PairModel> headers) {
         this.uri = uri;
         this.body = body;
         this.headers = headers;
