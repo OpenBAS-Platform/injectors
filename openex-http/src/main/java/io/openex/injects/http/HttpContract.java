@@ -72,7 +72,7 @@ public class HttpContract extends Contractor {
         ContractAttachment attachmentContract = attachmentField("attachments", "Attachments", Multiple);
         List<ContractElement> formPostInstance = contractBuilder()
                 .mandatory(textField("uri", "URL"))
-                .optional(tupleField("headers", "Headers", attachmentContract))
+                .optional(tupleField("headers", "Headers"))
                 .mandatory(tupleField("parts", "Form request data", attachmentContract))
                 .optional(attachmentContract)
                 .build();
@@ -83,7 +83,7 @@ public class HttpContract extends Contractor {
         // Get contract
         List<ContractElement> getInstance = contractBuilder()
                 .mandatory(textField("uri", "URL"))
-                .optional(tupleField("headers", "Headers", attachmentContract)).build();
+                .optional(tupleField("headers", "Headers")).build();
         Contract getContract = executableContract(contractConfig, HTTP_GET_CONTRACT,
                 Map.of(en, "HTTP Request - GET", fr, "Requête HTTP - GET"), getInstance);
         return List.of(rawPostContract, formPostContract, rawPutContract, formPutContract, getContract);
