@@ -3,6 +3,7 @@ package io.openex.injects.http;
 import io.openex.contract.Contract;
 import io.openex.contract.ContractConfig;
 import io.openex.contract.Contractor;
+import io.openex.contract.fields.ContractAttachment;
 import io.openex.contract.fields.ContractElement;
 import io.openex.helper.SupportedLanguage;
 import io.openex.injects.http.config.HttpConfig;
@@ -64,24 +65,25 @@ public class HttpContract extends Contractor {
                 .mandatory(textareaField("body", "Raw request data"))
                 .build();
         Contract rawPostContract = executableContract(contractConfig, HTTP_RAW_POST_CONTRACT,
-                Map.of(en, "HTTP Request - POST RAW", fr, "Requête HTTP - POST RAW"), rawPostInstance);
+                Map.of(en, "HTTP Request - POST (raw body)", fr, "Requête HTTP - POST (body brut)"), rawPostInstance);
         Contract rawPutContract = executableContract(contractConfig, HTTP_RAW_PUT_CONTRACT,
-                Map.of(en, "HTTP Request - PUT RAW", fr, "Requête HTTP - PUT RAW"), rawPostInstance);
+                Map.of(en, "HTTP Request - PUT (raw body)", fr, "Requête HTTP - PUT (body brut)"), rawPostInstance);
         // Post contract form
+        ContractAttachment attachmentContract = attachmentField("attachments", "Attachments", Multiple);
         List<ContractElement> formPostInstance = contractBuilder()
                 .mandatory(textField("uri", "URL"))
-                .optional(tupleField("headers", "Headers"))
-                .mandatory(tupleField("parts", "Form request data"))
-                .optional(attachmentField("attachments", "Attachments", Multiple))
+                .optional(tupleField("headers", "Headers", attachmentContract))
+                .mandatory(tupleField("parts", "Form request data", attachmentContract))
+                .optional(attachmentContract)
                 .build();
         Contract formPostContract = executableContract(contractConfig, HTTP_FORM_POST_CONTRACT,
-                Map.of(en, "HTTP Request - POST FORM", fr, "Requête HTTP - POST FORM"), formPostInstance);
+                Map.of(en, "HTTP Request - POST (key/value)", fr, "Requête HTTP - POST (clé/valeur)"), formPostInstance);
         Contract formPutContract = executableContract(contractConfig, HTTP_FORM_PUT_CONTRACT,
-                Map.of(en, "HTTP Request - PUT FORM", fr, "Requête HTTP - PUT FORM"), formPostInstance);
+                Map.of(en, "HTTP Request - PUT (key/value)", fr, "Requête HTTP - PUT (clé/valeur)"), formPostInstance);
         // Get contract
         List<ContractElement> getInstance = contractBuilder()
                 .mandatory(textField("uri", "URL"))
-                .optional(tupleField("headers", "Headers")).build();
+                .optional(tupleField("headers", "Headers", attachmentContract)).build();
         Contract getContract = executableContract(contractConfig, HTTP_GET_CONTRACT,
                 Map.of(en, "HTTP Request - GET", fr, "Requête HTTP - GET"), getInstance);
         return List.of(rawPostContract, formPostContract, rawPutContract, formPutContract, getContract);
