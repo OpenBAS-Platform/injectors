@@ -7,7 +7,6 @@ import io.openex.database.model.Execution;
 import io.openex.injects.http.model.HttpFormPostModel;
 import io.openex.injects.http.model.HttpGetModel;
 import io.openex.injects.http.model.HttpRawPostModel;
-import io.openex.model.PairModel;
 import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -31,6 +30,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+import static io.openex.contract.fields.ContractTuple.FILE_PREFIX;
 import static io.openex.database.model.ExecutionTrace.traceError;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -69,16 +69,20 @@ public class HttpService {
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.setCharset(UTF_8);
         post.getParts().forEach(pair -> {
-            ContentType contentType = isJsonText(pair.getValue()) ? ContentType.APPLICATION_JSON : ContentType.TEXT_PLAIN;
-            builder.addTextBody(pair.getKey(), pair.getValue(), ContentType.create(contentType.getMimeType(), UTF_8));
-        });
-        attachments.forEach(file -> {
-            Optional<PairModel> ref = post.getParts().stream().filter(m -> m.getValue().equals(file.name())).findFirst();
-            if (ref.isPresent()) {
-                builder.addBinaryBody(ref.get().getKey(), file.data(), ContentType.parse(file.contentType()), file.name());
+            String val = pair.getValue();
+            if (val.startsWith(FILE_PREFIX)) {  // If related to attachment
+                String fileId = val.substring(val.indexOf(FILE_PREFIX) + FILE_PREFIX.length());
+                Optional<DataAttachment> attachmentOptional = attachments.stream().filter(a -> a.id().equals(fileId)).findFirst();
+                if (attachmentOptional.isPresent()) {
+                    DataAttachment file = attachmentOptional.get();
+                    builder.addBinaryBody(pair.getKey(), file.data(), ContentType.parse(file.contentType()), file.name());
+                } else {
+                    String message = "Error finding attachment for " + fileId + " when Sending form post";
+                    execution.addTrace(traceError("http", message));
+                }
             } else {
-                String message = "Error finding attachment for " + file.name() + " when Sending form post";
-                execution.addTrace(traceError("http", message));
+                ContentType contentType = isJsonText(val) ? ContentType.APPLICATION_JSON : ContentType.TEXT_PLAIN;
+                builder.addTextBody(pair.getKey(), val, ContentType.create(contentType.getMimeType(), UTF_8));
             }
         });
         httpPost.setEntity(builder.build());
