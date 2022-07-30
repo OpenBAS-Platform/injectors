@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -85,6 +86,10 @@ public class HttpService {
                 builder.addTextBody(pair.getKey(), val, ContentType.create(contentType.getMimeType(), UTF_8));
             }
         });
+        if (post.isBasicAuth()) {
+            String encodedAuth = Base64.getEncoder().encodeToString((post.getBasicUser() + ":" + post.getBasicPassword()).getBytes());
+            httpPost.setHeader("Authorization", "Basic " + encodedAuth);
+        }
         httpPost.setEntity(builder.build());
         LOGGER.info("Sending form " + type.name() + " request to " + post.getUri());
         return executeHttp(httpPost);
@@ -94,6 +99,10 @@ public class HttpService {
         HttpUriRequestBase httpPost = type.equals(HttpContractType.POST) ?
                 new HttpPost(post.getUri()) : new HttpPut(post.getUri());
         post.getHeaders().forEach(apiHeader -> httpPost.setHeader(apiHeader.getKey(), apiHeader.getValue()));
+        if (post.isBasicAuth()) {
+            String encodedAuth = Base64.getEncoder().encodeToString((post.getBasicUser() + ":" + post.getBasicPassword()).getBytes());
+            httpPost.setHeader("Authorization", "Basic " + encodedAuth);
+        }
         ContentType contentType = isJsonText(post.getBody()) ? ContentType.APPLICATION_JSON : ContentType.TEXT_PLAIN;
         httpPost.setEntity(new StringEntity(post.getBody(), ContentType.create(contentType.getMimeType(), UTF_8)));
         LOGGER.info("Sending raw " + type.name() + " request to " + post.getUri());
@@ -103,6 +112,10 @@ public class HttpService {
     public String executeRestGet(HttpGetModel get) throws IOException, ParseException {
         HttpGet httpGet = new HttpGet(get.getUri());
         get.getHeaders().forEach(apiHeader -> httpGet.setHeader(apiHeader.getKey(), apiHeader.getValue()));
+        if (get.isBasicAuth()) {
+            String encodedAuth = Base64.getEncoder().encodeToString((get.getBasicUser() + ":" + get.getBasicPassword()).getBytes());
+            httpGet.setHeader("Authorization", "Basic " + encodedAuth);
+        }
         LOGGER.info("Sending get request to " + get.getUri());
         return executeHttp(httpGet);
     }

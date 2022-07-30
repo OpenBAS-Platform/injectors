@@ -1,31 +1,23 @@
 package io.openex.injects.http.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.openex.model.PairModel;
 
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpFormPostModel {
-    @JsonProperty("uri")
     private String uri;
 
-    @JsonProperty("parts")
     private List<PairModel> parts;
 
-    @JsonProperty("headers")
+    private boolean basicAuth;
+
+    private String basicUser;
+
+    private String basicPassword;
+
     private List<PairModel> headers;
-
-    public HttpFormPostModel() {
-        // Default constructor
-    }
-
-    public HttpFormPostModel(String uri, List<PairModel> parts, List<PairModel> headers) {
-        this.uri = uri;
-        this.parts = parts;
-        this.headers = headers;
-    }
 
     public String getUri() {
         return uri;
@@ -49,5 +41,29 @@ public class HttpFormPostModel {
 
     public void setParts(List<PairModel> parts) {
         this.parts = parts;
+    }
+
+    public boolean isBasicAuth() {
+        return basicAuth;
+    }
+
+    public void setBasicAuth(boolean basicAuth) {
+        this.basicAuth = basicAuth;
+    }
+
+    public String getBasicUser() {
+        return basicUser;
+    }
+
+    public void setBasicUser(String basicUser) {
+        this.basicUser = basicUser;
+    }
+
+    public String getBasicPassword() {
+        return basicPassword;
+    }
+
+    public void setBasicPassword(String basicPassword) {
+        this.basicPassword = basicPassword;
     }
 }
