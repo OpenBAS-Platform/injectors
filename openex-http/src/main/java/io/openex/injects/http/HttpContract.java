@@ -62,7 +62,7 @@ public class HttpContract extends Contractor {
     public List<Contract> contracts() {
         ContractConfig contractConfig = getConfig();
         // Basic auth contract
-        ContractCheckbox basicAuthField = checkboxField("basicAuth", "Use basic auth", false);
+        ContractCheckbox basicAuthField = checkboxField("basicAuth", "Use basic authentication", false);
         ContractText usernameField = textField("basicUser", "Username", "", List.of(basicAuthField));
         ContractText passwordField = textField("basicPassword", "Password", "", List.of(basicAuthField));
         List<ContractElement> authFields = List.of(basicAuthField, usernameField, passwordField);
