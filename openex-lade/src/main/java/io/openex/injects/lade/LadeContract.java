@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static io.openex.helper.SupportedLanguage.en;
 
@@ -17,6 +19,8 @@ import static io.openex.helper.SupportedLanguage.en;
 public class LadeContract extends Contractor {
 
     public static final String TYPE = "openex_lade";
+
+    private static final Logger LOGGER = Logger.getLogger(LadeContract.class.getName());
     private LadeConfig config;
     private LadeService ladeService;
 
@@ -46,8 +50,13 @@ public class LadeContract extends Contractor {
     }
 
     @Override
-    public List<Contract> contracts() throws Exception {
+    public List<Contract> contracts() {
         ContractConfig contractConfig = getConfig();
-        return ladeService.buildContracts(contractConfig);
+        try {
+            return ladeService.buildContracts(contractConfig);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "LADE failing generating the contracts", e);
+            return List.of();
+        }
     }
 }
