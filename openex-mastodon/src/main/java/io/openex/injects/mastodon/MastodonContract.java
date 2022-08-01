@@ -45,7 +45,7 @@ public class MastodonContract extends Contractor {
 
     @Override
     public ContractConfig getConfig() {
-        return new ContractConfig(TYPE, Map.of(en, "Mastodon"), "#e91e63", "/img/mastodon.png", isExpose());
+        return new ContractConfig(TYPE, Map.of(en, "Mastodon"), "#ad1457", "/img/mastodon.png", isExpose());
     }
 
     @Override
