@@ -47,7 +47,10 @@ public class LadeContract extends Contractor {
 
     @Override
     public List<Contract> contracts() throws Exception {
-        ContractConfig contractConfig = getConfig();
-        return ladeService.buildContracts(contractConfig);
+        if (config.getEnable()) {
+            ContractConfig contractConfig = getConfig();
+            return ladeService.buildContracts(contractConfig);
+        }
+        return List.of();
     }
 }
