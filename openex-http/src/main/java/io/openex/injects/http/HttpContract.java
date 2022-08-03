@@ -3,13 +3,15 @@ package io.openex.injects.http;
 import io.openex.contract.Contract;
 import io.openex.contract.ContractConfig;
 import io.openex.contract.Contractor;
-import io.openex.contract.fields.*;
+import io.openex.contract.fields.ContractAttachment;
+import io.openex.contract.fields.ContractCheckbox;
+import io.openex.contract.fields.ContractElement;
+import io.openex.contract.fields.ContractText;
 import io.openex.helper.SupportedLanguage;
 import io.openex.injects.http.config.HttpConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +20,6 @@ import static io.openex.contract.ContractCardinality.Multiple;
 import static io.openex.contract.ContractDef.contractBuilder;
 import static io.openex.contract.fields.ContractAttachment.attachmentField;
 import static io.openex.contract.fields.ContractCheckbox.checkboxField;
-import static io.openex.contract.fields.ContractNumber.numberField;
 import static io.openex.contract.fields.ContractText.textField;
 import static io.openex.contract.fields.ContractTextArea.textareaField;
 import static io.openex.contract.fields.ContractTuple.tupleField;
@@ -60,16 +61,6 @@ public class HttpContract extends Contractor {
     @Override
     public List<Contract> contracts() {
         ContractConfig contractConfig = getConfig();
-        HashMap<String, String> choices = new HashMap<>();
-        choices.put("none", "-");
-        choices.put("manual", "The animation team can validate the audience reaction");
-        // choices.put("document", "Each audience should upload a document");
-        // choices.put("text", "Each audience should submit a text response");
-        ContractSelect expectationSelect = ContractSelect
-                .selectFieldWithDefault("expectationType", "Expectation", choices, "none");
-        expectationSelect.setExpectation(true);
-        ContractNumber expectationScore = numberField("expectationScore", "Expectation score", "0", List.of(expectationSelect), List.of("document", "text", "manual"));
-        expectationScore.setExpectation(true);
         // Basic auth contract
         ContractCheckbox basicAuthField = checkboxField("basicAuth", "Use basic authentication", false);
         basicAuthField.setMandatory(false);
@@ -84,8 +75,6 @@ public class HttpContract extends Contractor {
                 .addFields(authFields)
                 .optional(tupleField("headers", "Headers"))
                 .mandatory(textareaField("body", "Raw request data"))
-                .mandatory(expectationSelect)
-                .optional(expectationScore)
                 .build();
         Contract rawPostContract = executableContract(contractConfig, HTTP_RAW_POST_CONTRACT,
                 Map.of(en, "HTTP Request - POST (raw body)", fr, "Requête HTTP - POST (body brut)"), rawPostInstance);
@@ -99,8 +88,6 @@ public class HttpContract extends Contractor {
                 .optional(tupleField("headers", "Headers"))
                 .mandatory(tupleField("parts", "Form request data", attachmentContract))
                 .optional(attachmentContract)
-                .mandatory(expectationSelect)
-                .optional(expectationScore)
                 .build();
         Contract formPostContract = executableContract(contractConfig, HTTP_FORM_POST_CONTRACT,
                 Map.of(en, "HTTP Request - POST (key/value)", fr, "Requête HTTP - POST (clé/valeur)"), formPostInstance);
@@ -110,10 +97,7 @@ public class HttpContract extends Contractor {
         List<ContractElement> getInstance = contractBuilder()
                 .mandatory(textField("uri", "URL"))
                 .addFields(authFields)
-                .optional(tupleField("headers", "Headers"))
-                .mandatory(expectationSelect)
-                .optional(expectationScore)
-                .build();
+                .optional(tupleField("headers", "Headers")).build();
         Contract getContract = executableContract(contractConfig, HTTP_GET_CONTRACT,
                 Map.of(en, "HTTP Request - GET", fr, "Requête HTTP - GET"), getInstance);
         return List.of(rawPostContract, formPostContract, rawPutContract, formPutContract, getContract);

@@ -10,6 +10,7 @@ import io.openex.execution.ExecutionContext;
 import io.openex.injects.ovh_sms.model.OvhSmsContent;
 import io.openex.injects.ovh_sms.service.OvhSmsService;
 import io.openex.model.Expectation;
+import io.openex.model.expectation.ManualExpectation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -55,6 +56,9 @@ public class OvhSmsExecutor extends Injector {
                 }
             }
         });
-        return List.of();
+        return switch (content.getExpectationType()) {
+            case "manual" -> List.of(new ManualExpectation(content.getExpectationScore()));
+            default -> List.of();
+        };
     }
 }

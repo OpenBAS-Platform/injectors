@@ -8,7 +8,6 @@ import io.openex.contract.Contract;
 import io.openex.contract.ContractConfig;
 import io.openex.contract.ContractDef;
 import io.openex.contract.fields.ContractSelect;
-import io.openex.contract.fields.ContractNumber;
 import io.openex.injects.lade.config.LadeConfig;
 import io.openex.injects.lade.model.LadeWorkzone;
 import org.apache.hc.client5.http.classic.HttpClient;
@@ -31,7 +30,6 @@ import static io.openex.contract.fields.ContractCheckbox.checkboxField;
 import static io.openex.contract.fields.ContractDependencySelect.dependencySelectField;
 import static io.openex.contract.fields.ContractSelect.selectFieldWithDefault;
 import static io.openex.contract.fields.ContractText.textField;
-import static io.openex.contract.fields.ContractNumber.numberField;
 import static io.openex.helper.StreamHelper.asStream;
 import static io.openex.helper.SupportedLanguage.en;
 import static java.text.MessageFormat.format;
@@ -168,18 +166,6 @@ public class LadeService {
                         builder.optional(textField(key, name, defaultNode != null ? defaultNode.asText() : ""));
                     }
                 });
-                HashMap<String, String> choices = new HashMap<>();
-                choices.put("none", "-");
-                choices.put("manual", "The animation team can validate the audience reaction");
-                // choices.put("document", "Each audience should upload a document");
-                // choices.put("text", "Each audience should submit a text response");
-                ContractSelect expectationSelect = ContractSelect
-                        .selectFieldWithDefault("expectationType", "Expectation", choices, "none");
-                expectationSelect.setExpectation(true);
-                ContractNumber expectationScore = numberField("expectationScore", "Expectation score", "0", List.of(expectationSelect), List.of("document", "text", "manual"));
-                expectationScore.setExpectation(true);
-                builder.mandatory(expectationSelect);
-                builder.optional(expectationScore);
                 Contract contractInstance = executableContract(contractConfig,
                         identifier, Map.of(en, contractName), builder.build());
                 contractInstance.addContext("bundle_identifier", bundleIdentifier);
