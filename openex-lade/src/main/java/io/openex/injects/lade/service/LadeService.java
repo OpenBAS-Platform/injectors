@@ -8,6 +8,7 @@ import io.openex.contract.Contract;
 import io.openex.contract.ContractConfig;
 import io.openex.contract.ContractDef;
 import io.openex.contract.fields.ContractSelect;
+import io.openex.contract.fields.ContractNumber;
 import io.openex.injects.lade.config.LadeConfig;
 import io.openex.injects.lade.model.LadeWorkzone;
 import org.apache.hc.client5.http.classic.HttpClient;
