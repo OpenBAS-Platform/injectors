@@ -62,7 +62,7 @@ public class HttpContract extends Contractor {
         ContractConfig contractConfig = getConfig();
         HashMap<String, String> choices = new HashMap<>();
         choices.put("none", "-");
-        choices.put("manual", "The animation team can validate the player reaction");
+        choices.put("manual", "The animation team can validate the audience reaction");
         // choices.put("document", "Each audience should upload a document");
         // choices.put("text", "Each audience should submit a text response");
         ContractSelect expectationSelect = ContractSelect
@@ -84,6 +84,8 @@ public class HttpContract extends Contractor {
                 .addFields(authFields)
                 .optional(tupleField("headers", "Headers"))
                 .mandatory(textareaField("body", "Raw request data"))
+                .mandatory(expectationSelect)
+                .optional(expectationScore)
                 .build();
         Contract rawPostContract = executableContract(contractConfig, HTTP_RAW_POST_CONTRACT,
                 Map.of(en, "HTTP Request - POST (raw body)", fr, "Requête HTTP - POST (body brut)"), rawPostInstance);
@@ -108,7 +110,10 @@ public class HttpContract extends Contractor {
         List<ContractElement> getInstance = contractBuilder()
                 .mandatory(textField("uri", "URL"))
                 .addFields(authFields)
-                .optional(tupleField("headers", "Headers")).build();
+                .optional(tupleField("headers", "Headers"))
+                .mandatory(expectationSelect)
+                .optional(expectationScore)
+                .build();
         Contract getContract = executableContract(contractConfig, HTTP_GET_CONTRACT,
                 Map.of(en, "HTTP Request - GET", fr, "Requête HTTP - GET"), getInstance);
         return List.of(rawPostContract, formPostContract, rawPutContract, formPutContract, getContract);
