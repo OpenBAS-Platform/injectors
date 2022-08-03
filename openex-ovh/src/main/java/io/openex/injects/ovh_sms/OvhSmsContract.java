@@ -51,9 +51,22 @@ public class OvhSmsContract extends Contractor {
     @Override
     public List<Contract> contracts() {
         ContractConfig contractConfig = getConfig();
+        HashMap<String, String> choices = new HashMap<>();
+        choices.put("none", "-");
+        choices.put("manual", "The animation team can validate the player reaction");
+        // choices.put("document", "Each audience should upload a document");
+        // choices.put("text", "Each audience should submit a text response");
+        ContractSelect expectationSelect = ContractSelect
+                .selectFieldWithDefault("expectationType", "Expectation", choices, "none");
+        expectationSelect.setExpectation(true);
+        ContractNumber expectationScore = numberField("expectationScore", "Expectation score", "0", List.of(expectationSelect), List.of("document", "text", "manual"));
+        expectationScore.setExpectation(true);
         List<ContractElement> instance = contractBuilder()
                 .mandatory(audienceField("audiences", "Audiences", Multiple))
-                .mandatory(textareaField("message", "Message")).build();
+                .mandatory(textareaField("message", "Message"))
+                .mandatory(expectationSelect)
+                .optional(expectationScore)
+                .build();
         return List.of(executableContract(contractConfig, OVH_DEFAULT,
                 Map.of(en, "Send a SMS", fr, "Envoyer un SMS"), instance));
     }

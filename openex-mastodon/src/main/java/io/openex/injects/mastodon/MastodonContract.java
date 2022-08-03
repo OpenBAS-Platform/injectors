@@ -51,10 +51,23 @@ public class MastodonContract extends Contractor {
     @Override
     public List<Contract> contracts() {
         ContractConfig contractConfig = getConfig();
+        HashMap<String, String> choices = new HashMap<>();
+        choices.put("none", "-");
+        choices.put("manual", "The animation team can validate the player reaction");
+        // choices.put("document", "Each audience should upload a document");
+        // choices.put("text", "Each audience should submit a text response");
+        ContractSelect expectationSelect = ContractSelect
+                .selectFieldWithDefault("expectationType", "Expectation", choices, "none");
+        expectationSelect.setExpectation(true);
+        ContractNumber expectationScore = numberField("expectationScore", "Expectation score", "0", List.of(expectationSelect), List.of("document", "text", "manual"));
+        expectationScore.setExpectation(true);
         List<ContractElement> instance = contractBuilder()
                 .mandatory(textField("token", "Token"))
                 .mandatory(textareaField("status", "Status"))
-                .optional(attachmentField("attachments", "Attachments", Multiple)).build();
+                .optional(attachmentField("attachments", "Attachments", Multiple))
+                .mandatory(expectationSelect)
+                .optional(expectationScore)
+                .build();
         return List.of(executableContract(contractConfig, MASTODON_DEFAULT, Map.of(en, "Mastodon"), instance));
     }
 }

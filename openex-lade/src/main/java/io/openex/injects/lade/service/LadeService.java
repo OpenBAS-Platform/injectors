@@ -166,6 +166,18 @@ public class LadeService {
                         builder.optional(textField(key, name, defaultNode != null ? defaultNode.asText() : ""));
                     }
                 });
+                HashMap<String, String> choices = new HashMap<>();
+                choices.put("none", "-");
+                choices.put("manual", "The animation team can validate the player reaction");
+                // choices.put("document", "Each audience should upload a document");
+                // choices.put("text", "Each audience should submit a text response");
+                ContractSelect expectationSelect = ContractSelect
+                        .selectFieldWithDefault("expectationType", "Expectation", choices, "none");
+                expectationSelect.setExpectation(true);
+                ContractNumber expectationScore = numberField("expectationScore", "Expectation score", "0", List.of(expectationSelect), List.of("document", "text", "manual"));
+                expectationScore.setExpectation(true);
+                builder.mandatory(expectationSelect);
+                builder.optional(expectationScore);
                 Contract contractInstance = executableContract(contractConfig,
                         identifier, Map.of(en, contractName), builder.build());
                 contractInstance.addContext("bundle_identifier", bundleIdentifier);
