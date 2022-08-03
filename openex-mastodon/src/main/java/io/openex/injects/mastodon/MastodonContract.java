@@ -19,6 +19,7 @@ import static io.openex.contract.ContractCardinality.Multiple;
 import static io.openex.contract.ContractDef.contractBuilder;
 import static io.openex.contract.fields.ContractAttachment.attachmentField;
 import static io.openex.contract.fields.ContractText.textField;
+import static io.openex.contract.fields.ContractNumber.numberField;
 import static io.openex.contract.fields.ContractTextArea.textareaField;
 import static io.openex.helper.SupportedLanguage.en;
 

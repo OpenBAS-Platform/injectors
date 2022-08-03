@@ -31,6 +31,7 @@ import static io.openex.contract.fields.ContractCheckbox.checkboxField;
 import static io.openex.contract.fields.ContractDependencySelect.dependencySelectField;
 import static io.openex.contract.fields.ContractSelect.selectFieldWithDefault;
 import static io.openex.contract.fields.ContractText.textField;
+import static io.openex.contract.fields.ContractNumber.numberField;
 import static io.openex.helper.StreamHelper.asStream;
 import static io.openex.helper.SupportedLanguage.en;
 import static java.text.MessageFormat.format;

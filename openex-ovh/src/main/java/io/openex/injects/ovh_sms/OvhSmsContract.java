@@ -17,6 +17,7 @@ import java.util.Map;
 import static io.openex.contract.Contract.executableContract;
 import static io.openex.contract.ContractCardinality.Multiple;
 import static io.openex.contract.ContractDef.contractBuilder;
+import static io.openex.contract.fields.ContractNumber.numberField;
 import static io.openex.contract.fields.ContractAudience.audienceField;
 import static io.openex.contract.fields.ContractTextArea.textareaField;
 import static io.openex.helper.SupportedLanguage.en;
