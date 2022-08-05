@@ -1,8 +1,8 @@
-# OpenEX injectors
+# OpenEx injectors
 
-The following repository is used to store the OpenEX injectors for the platform integration with other tools and applications.
+The following repository is used to store the OpenEx injectors for the platform integration with other tools and applications.
 
-## OpenEX usage
+## OpenEx usage
 
 Injectors must be started along with the platform api, using "lib" directory
 - openex-api.jar
@@ -14,7 +14,7 @@ Injectors must be started along with the platform api, using "lib" directory
 
 ## Contributing
 
-If you want to help use improve or develop new injector, please check out the **[development documentation for new injectors](https://www.notion.so/luatix/Injector-Development-5752d0dbe56d4e86937a7eda0b4610d9)**. If you want to make your connector available to the community, **please create a Pull Request on this repository**, then we will integrate it to the CI and in the [OpenEX ecosystem](https://www.notion.so/luatix/OpenEx-Ecosystem-30d8eb73d7d04611843e758ddef8941b).
+If you want to help use improve or develop new injector, please check out the **[development documentation for new injectors](https://luatix.notion.site/Injector-Development-5752d0dbe56d4e86937a7eda0b4610d9)**. If you want to make your connector available to the community, **please create a Pull Request on this repository**, then we will integrate it to the CI and in the [OpenEx ecosystem](https://luatix.notion.site/OpenEx-Ecosystem-30d8eb73d7d04611843e758ddef8941b).
 
 ## License
 
@@ -22,4 +22,4 @@ If you want to help use improve or develop new injector, please check out the **
 
 ## About
 
-OpenEX is a product powered by the collaboration of the [French national cybersecurity agency (ANSSI)](https://ssi.gouv.fr), the [CERT-EU](https://cert.europa.eu) and the [Luatix](https://www.luatix.org) non-profit organization.
+OpenEx is a product powered by the collaboration of the [French national cybersecurity agency (ANSSI)](https://ssi.gouv.fr), the [CERT-EU](https://cert.europa.eu) and the [Luatix](https://www.luatix.org) non-profit organization.
