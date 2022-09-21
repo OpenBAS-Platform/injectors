@@ -64,6 +64,19 @@ public class LadeService {
             return mapper.readTree(body);
         });
         return auth.get("access_token").asText();
+        // Implements to prevent blocking
+        // 30 minutes access_token in cache maximum.
+        // Session can be killed, so can catch 401, regenerate token in this case.
+        // Bonus: renew token before access token expiration.
+        // Timeout must be configurable, 30 minutes by default, renew 25% before timeout
+
+        // 01. Recovery
+        // /api/workflows/id -> Get status only
+        // /api/workflows/id/events -> Get workflow events
+
+        // 02. Runtime
+        // Creation action -> ID A
+        // Monitor ID A -> /api/events (SSE) only live.
     }
 
     private HttpGet buildGet(String token, String uri) {
