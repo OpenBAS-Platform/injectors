@@ -53,17 +53,12 @@ public class LadeListener {
                     int executionTime = (int) (workflowStatus.getStopTime().toEpochMilli()
                             - injectStatus.getReporting().getStartTime().toEpochMilli());
                     injectStatus.setExecutionTime(executionTime);
-                    injectStatusRepository.save(injectStatus);
                 }
+                injectStatus.getReporting().setTraces(workflowStatus.getTraces());
+                injectStatusRepository.save(injectStatus);
             } catch (Exception e) {
                 e.printStackTrace();
-                // TODO
             }
-            // injectStatus.set
-            // injectStatus.setExecutionTime(execution.getExecutionTime());
-            // injectStatus.setName(execution.getStatus().name());
-            // injectStatus.setReporting(execution);
-            // injectStatusRepository.save(injectStatus);
         });
     }
 }

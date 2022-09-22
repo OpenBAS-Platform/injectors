@@ -8,6 +8,7 @@ import io.openex.contract.Contract;
 import io.openex.contract.ContractConfig;
 import io.openex.contract.ContractDef;
 import io.openex.contract.fields.ContractSelect;
+import io.openex.database.model.ExecutionTrace;
 import io.openex.injects.lade.config.LadeConfig;
 import io.openex.injects.lade.model.LadeAuth;
 import io.openex.injects.lade.model.LadeWorkflow;
@@ -99,7 +100,7 @@ public class LadeService {
         actionsGet.setHeader("lade-authorization", "Bearer " + ladeAuthentication());
         return httpclient.execute(actionsGet, getResponse -> {
             String body = EntityUtils.toString(getResponse.getEntity());
-            ObjectNode resultNode = mapper.readValue(body, ObjectNode.class);
+            JsonNode resultNode = mapper.readTree(body);
             // Session can be killed, so can catch 401, invalidate token and retry
             if (getResponse.getCode() == 401 && !retry) {
                 ladeAuth.clear();
@@ -116,7 +117,7 @@ public class LadeService {
     }
 
     private JsonNode executePost(String uri, ObjectNode postContent, boolean retry) throws IOException {
-        HttpPost runPost = new HttpPost(uri);
+        HttpPost runPost = new HttpPost(config.getUrl() + uri);
         runPost.setHeader("lade-authorization", "Bearer " + ladeAuthentication());
         runPost.setHeader("Accept", "application/json");
         runPost.setHeader("Content-type", "application/json");
@@ -228,7 +229,7 @@ public class LadeService {
 
     public String executeAction(String bundleIdentifier, String actionIdentifier, ObjectNode content) throws Exception {
         String workzone = content.get("workzone").asText();
-        String uri = format("{0}/api/workzones/{1}/bundles/{2}/actions/{3}/run", config.getUrl(), workzone, bundleIdentifier, actionIdentifier);
+        String uri = format("/api/workzones/{0}/bundles/{1}/actions/{2}/run", workzone, bundleIdentifier, actionIdentifier);
         // Generate object to action post
         ObjectNode postContent = mapper.createObjectNode();
         postContent.set("source", mapper.convertValue(content.get("source").asText(), JsonNode.class));
@@ -245,6 +246,7 @@ public class LadeService {
         try {
             JsonNode workflowStatus = executeGet("/api/workflows/" + workflowId, false);
             String status = workflowStatus.get("status").asText(); // running | failed
+            String workzone = workflowStatus.get("workzone_identifier").asText();
             boolean isFail = status.equals("failed");
             ladeWorkflow.setFail(isFail);
             boolean isDone = isFail || status.equals("done");
@@ -253,8 +255,21 @@ public class LadeService {
                 String completeTime = workflowStatus.get("complete_time").asText();
                 ladeWorkflow.setStopTime(Instant.parse(completeTime));
             }
-            // TODO Get event logs
-            // JsonNode workflowEvents = executeGet("/api/workflows/" + workflowId + "/events", false);
+            String uri = format("/api/workzones/{0}/workflows/{1}/events", workzone, workflowId);
+            JsonNode workflowEvents = executeGet(uri, false);
+            workflowEvents.forEach(workflowEvent -> {
+                String eventLevel = workflowEvent.get("level").asText();
+                String message = workflowEvent.get("message").asText();
+                if (message.length() > 0) {
+                    ExecutionTrace trace;
+                    if (eventLevel.equals("error")) {
+                        trace = ExecutionTrace.traceError("lade", message);
+                    } else {
+                        trace = ExecutionTrace.traceSuccess("lade", message);
+                    }
+                    ladeWorkflow.addTrace(trace);
+                }
+            });
             return ladeWorkflow;
         } catch (IOException e) {
             throw new RuntimeException(e);

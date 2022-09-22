@@ -1,14 +1,28 @@
 package io.openex.injects.lade.model;
 
+import io.openex.database.model.ExecutionTrace;
+
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LadeWorkflow {
+
+    private final List<ExecutionTrace> traces = new ArrayList<>();
 
     private boolean done = false;
 
     private boolean fail = false;
 
     private Instant stopTime;
+
+    public void addTrace(ExecutionTrace trace) {
+        this.traces.add(trace);
+    }
+
+    public List<ExecutionTrace> getTraces() {
+        return traces;
+    }
 
     public Instant getStopTime() {
         return stopTime;
