@@ -30,11 +30,17 @@ public class LadeExecutor extends Injector {
     public List<Expectation> process(Execution execution, ExecutableInject injection, Contract contract) {
         Inject inject = injection.getInject();
         String bundleIdentifier = contract.getContext().get("bundle_identifier");
+        String ladeType = contract.getContext().get("lade_type");
         ObjectNode content = inject.getContent();
         try {
-            String actionWorkflowId = ladeService.executeAction(bundleIdentifier, inject.getContract(), content);
+            String actionWorkflowId;
+            switch (ladeType) {
+                case "action" -> actionWorkflowId = ladeService.executeAction(bundleIdentifier, inject.getContract(), content);
+                case "scenario" -> actionWorkflowId = ladeService.executeScenario(bundleIdentifier, inject.getContract(), content);
+                default -> throw new UnsupportedOperationException(ladeType + " not supported");
+            }
             execution.setAsyncId(actionWorkflowId);
-            String message = "Lade action sent with workflow (" + actionWorkflowId + ")";
+            String message = "Lade " + ladeType + " sent with workflow (" + actionWorkflowId + ")";
             execution.addTrace(traceInfo("lade", message));
         } catch (Exception e) {
             execution.addTrace(traceError("lade", e.getMessage(), e));

@@ -184,6 +184,7 @@ public class LadeService {
         Map<String, Map<String, String>> workzoneHostsIps = new HashMap<>();
         workzoneContract.forEach((k, value) -> workzoneHostsIps.put(k, value.getHostsByIp()));
         List<Contract> contracts = new ArrayList<>();
+        // region actions
         JsonNode actions = executeGet("/api/actions", false);
         Iterator<JsonNode> actionElements = actions.get("data").elements();
         actionElements.forEachRemaining(jsonNode -> {
@@ -220,10 +221,28 @@ public class LadeService {
                 });
                 Contract contractInstance = executableContract(contractConfig,
                         identifier, Map.of(en, contractName), builder.build());
+                contractInstance.addContext("lade_type", "action");
                 contractInstance.addContext("bundle_identifier", bundleIdentifier);
                 contracts.add(contractInstance);
             }
         });
+        // endregion
+        // region scenarios
+        JsonNode scenarios = executeGet("/api/scenarios", false);
+        Iterator<JsonNode> scenarioElements = scenarios.get("data").elements();
+        scenarioElements.forEachRemaining(jsonNode -> {
+            ContractDef builder = contractBuilder();
+            builder.mandatory(workContract);
+            String contractName = jsonNode.get("name").asText();
+            String identifier = jsonNode.get("identifier").asText();
+            String bundleIdentifier = jsonNode.get("bundle_identifier").asText();
+            Contract contractInstance = executableContract(contractConfig,
+                    identifier, Map.of(en, contractName), builder.build());
+            contractInstance.addContext("lade_type", "scenario");
+            contractInstance.addContext("bundle_identifier", bundleIdentifier);
+            contracts.add(contractInstance);
+        });
+        // endregion
         return contracts;
     }
 
@@ -237,6 +256,15 @@ public class LadeService {
         content.remove("workzone");
         content.remove("source");
         postContent.set("parameters", content);
+        JsonNode postData = executePost(uri, postContent, false);
+        return postData.get("workflow_id").asText();
+    }
+
+    public String executeScenario(String bundleIdentifier, String scenarioIdentifier, ObjectNode content) throws Exception {
+        String workzone = content.get("workzone").asText();
+        String uri = format("/api/workzones/{0}/bundles/{1}/scenarios/{2}/run", workzone, bundleIdentifier, scenarioIdentifier);
+        // Generate object to action post
+        ObjectNode postContent = mapper.createObjectNode();
         JsonNode postData = executePost(uri, postContent, false);
         return postData.get("workflow_id").asText();
     }
@@ -260,7 +288,7 @@ public class LadeService {
             workflowEvents.forEach(workflowEvent -> {
                 String eventLevel = workflowEvent.get("level").asText();
                 String message = workflowEvent.get("message").asText();
-                if (message.length() > 0) {
+                if (message.length() > 0 && !message.equals("null")) {
                     ExecutionTrace trace;
                     if (eventLevel.equals("error")) {
                         trace = ExecutionTrace.traceError("lade", message);
