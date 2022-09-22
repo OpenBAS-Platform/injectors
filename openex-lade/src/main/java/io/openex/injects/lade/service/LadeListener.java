@@ -10,10 +10,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class LadeListener {
 
+    private static final Logger LOGGER = Logger.getLogger(LadeListener.class.getName());
     private LadeService ladeService;
 
     private InjectStatusRepository injectStatusRepository;
@@ -27,15 +30,6 @@ public class LadeListener {
     public void setLadeService(LadeService ladeService) {
         this.ladeService = ladeService;
     }
-
-    // Session can be killed, so can catch 401, regenerate token in this case.
-    // 01. Recovery
-    // /api/workflows/id -> Get status only
-    // /api/workflows/id/events -> Get workflow events
-
-    // 02. Runtime
-    // Creation action -> ID A
-    // Monitor ID A -> /api/events (SSE) only live.
 
     @Scheduled(fixedDelay = 15000, initialDelay = 0)
     public void listenWorkflows() {
@@ -57,7 +51,7 @@ public class LadeListener {
                 injectStatus.getReporting().setTraces(workflowStatus.getTraces());
                 injectStatusRepository.save(injectStatus);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         });
     }
