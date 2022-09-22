@@ -16,6 +16,9 @@ public class LadeConfig {
     private String url;
 
     @NotNull
+    private Integer session;
+
+    @NotNull
     private String username;
 
     @NotNull
@@ -51,5 +54,13 @@ public class LadeConfig {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Integer getSession() {
+        return session;
+    }
+
+    public void setSession(Integer session) {
+        this.session = session;
     }
 }
