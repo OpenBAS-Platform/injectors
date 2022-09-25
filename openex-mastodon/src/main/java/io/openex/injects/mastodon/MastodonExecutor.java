@@ -37,7 +37,7 @@ public class MastodonExecutor extends Injector {
         String status = content.buildStatus(inject.getFooter(), inject.getHeader());
         List<Document> documents = inject.getDocuments().stream()
                 .filter(InjectDocument::isAttached).map(InjectDocument::getDocument).toList();
-        List<DataAttachment> attachments = resolveAttachments(execution, documents);
+        List<DataAttachment> attachments = resolveAttachments(execution, injection, documents);
         try {
             String callResult = mastodonService.sendStatus(execution, token, status, attachments);
             String message = "Mastodon status sent (" + callResult + ")";

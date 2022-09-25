@@ -36,7 +36,7 @@ public class HttpExecutor extends Injector {
     private String processExecution(Execution execution, ExecutableInject injection, Contract contract) throws Exception {
         List<Document> documents = injection.getInject().getDocuments().stream().filter(InjectDocument::isAttached)
                 .map(InjectDocument::getDocument).toList();
-        List<DataAttachment> attachments = resolveAttachments(execution, documents);
+        List<DataAttachment> attachments = resolveAttachments(execution, injection, documents);
         return switch (contract.getId()) {
             case HTTP_RAW_POST_CONTRACT ->
                     apiService.executeRaw(POST, contentConvert(injection, HttpRawPostModel.class));
