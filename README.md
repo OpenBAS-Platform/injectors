@@ -14,7 +14,7 @@ Injectors must be started along with the platform api, using "lib" directory
 
 ## Contributing
 
-If you want to help use improve or develop new injector, please check out the **[development documentation for new injectors](https://luatix.notion.site/Injector-Development-5752d0dbe56d4e86937a7eda0b4610d9)**. If you want to make your connector available to the community, **please create a Pull Request on this repository**, then we will integrate it to the CI and in the [OpenEx ecosystem](https://luatix.notion.site/OpenEx-Ecosystem-30d8eb73d7d04611843e758ddef8941b).
+If you want to help use improve or develop new injector, please check out the **[development documentation for new injectors](https://filigran.notion.site/Injector-Development-5752d0dbe56d4e86937a7eda0b4610d9)**. If you want to make your connector available to the community, **please create a Pull Request on this repository**, then we will integrate it to the CI and in the [OpenEx ecosystem](https://filigran.notion.site/OpenEx-Ecosystem-30d8eb73d7d04611843e758ddef8941b).
 
 ## License
 
