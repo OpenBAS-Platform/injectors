@@ -1,7 +1,9 @@
 package io.openex.injects.lade.service;
 
 import io.openex.database.model.ExecutionStatus;
+import io.openex.database.model.Inject;
 import io.openex.database.model.InjectStatus;
+import io.openex.database.repository.InjectRepository;
 import io.openex.database.repository.InjectStatusRepository;
 import io.openex.injects.lade.LadeContract;
 import io.openex.injects.lade.model.LadeWorkflow;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,9 +24,16 @@ public class LadeListener {
 
     private InjectStatusRepository injectStatusRepository;
 
+    private InjectRepository injectRepository;
+
     @Autowired
     public void setInjectStatusRepository(InjectStatusRepository injectStatusRepository) {
         this.injectStatusRepository = injectStatusRepository;
+    }
+
+    @Autowired
+    public void setInjectRepository(InjectRepository injectRepository) {
+        this.injectRepository = injectRepository;
     }
 
     @Autowired
@@ -50,6 +60,10 @@ public class LadeListener {
                 }
                 injectStatus.getReporting().setTraces(workflowStatus.getTraces());
                 injectStatusRepository.save(injectStatus);
+                // Update related inject
+                Inject relatedInject = injectStatus.getInject();
+                relatedInject.setUpdatedAt(Instant.now());
+                injectRepository.save(relatedInject);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }

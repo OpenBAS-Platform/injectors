@@ -251,7 +251,10 @@ public class LadeService {
         String uri = format("/api/workzones/{0}/bundles/{1}/actions/{2}/run", workzone, bundleIdentifier, actionIdentifier);
         // Generate object to action post
         ObjectNode postContent = mapper.createObjectNode();
-        postContent.set("source", mapper.convertValue(content.get("source").asText(), JsonNode.class));
+        JsonNode source = content.get("source");
+        if (source != null) {
+            postContent.set("source", mapper.convertValue(source.asText(), JsonNode.class));
+        }
         // Remove flatten entries
         content.remove("workzone");
         content.remove("source");
@@ -277,7 +280,7 @@ public class LadeService {
             String workzone = workflowStatus.get("workzone_identifier").asText();
             boolean isFail = status.equals("failed");
             ladeWorkflow.setFail(isFail);
-            boolean isDone = isFail || status.equals("done");
+            boolean isDone = isFail || status.equals("done") || status.equals("succeeded");
             ladeWorkflow.setDone(isDone);
             if (isDone) {
                 String completeTime = workflowStatus.get("complete_time").asText();
