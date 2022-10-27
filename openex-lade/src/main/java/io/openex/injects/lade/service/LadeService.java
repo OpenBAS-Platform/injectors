@@ -235,9 +235,10 @@ public class LadeService {
             builder.mandatory(workContract);
             String contractName = jsonNode.get("name").asText();
             String identifier = jsonNode.get("identifier").asText();
+            String qualifier = jsonNode.get("qualifier") != null ? "( "+ jsonNode.get("qualifier").asText() + ")" : "";
             String bundleIdentifier = jsonNode.get("bundle_identifier").asText();
             Contract contractInstance = executableContract(contractConfig,
-                    identifier, Map.of(en, contractName), builder.build());
+                    identifier, Map.of(en, contractName + qualifier), builder.build());
             contractInstance.addContext("lade_type", "scenario");
             contractInstance.addContext("bundle_identifier", bundleIdentifier);
             contracts.add(contractInstance);
@@ -278,7 +279,7 @@ public class LadeService {
             JsonNode workflowStatus = executeGet("/api/workflows/" + workflowId, false);
             String status = workflowStatus.get("status").asText(); // running | failed
             String workzone = workflowStatus.get("workzone_identifier").asText();
-            boolean isFail = status.equals("failed");
+            boolean isFail = status.equals("failed") || status.equals("cancelled");
             ladeWorkflow.setFail(isFail);
             boolean isDone = isFail || status.equals("done") || status.equals("succeeded");
             ladeWorkflow.setDone(isDone);
