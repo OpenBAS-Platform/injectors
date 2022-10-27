@@ -249,6 +249,9 @@ public class LadeService {
 
     public String executeAction(String bundleIdentifier, String actionIdentifier, ObjectNode content) throws Exception {
         String workzone = content.get("workzone").asText();
+        ObjectNode parameters = content.deepCopy();
+        parameters.remove("workzone");
+        parameters.remove("source");
         String uri = format("/api/workzones/{0}/bundles/{1}/actions/{2}/run", workzone, bundleIdentifier, actionIdentifier);
         // Generate object to action post
         ObjectNode postContent = mapper.createObjectNode();
@@ -256,10 +259,7 @@ public class LadeService {
         if (source != null) {
             postContent.set("source", mapper.convertValue(source.asText(), JsonNode.class));
         }
-        // Remove flatten entries
-        content.remove("workzone");
-        content.remove("source");
-        postContent.set("parameters", content);
+        postContent.set("parameters", parameters);
         JsonNode postData = executePost(uri, postContent, false);
         return postData.get("workflow_id").asText();
     }
