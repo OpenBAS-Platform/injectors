@@ -93,5 +93,6 @@
         <module>openex-mastodon</module>
         <module>openex-ovh</module>
         <module>openex-http</module>
+        <module>openex-ssh</module>
     </modules>
 </project>
