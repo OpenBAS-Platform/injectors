@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.openex.helper.SupportedLanguage.en;
+import static java.util.Optional.ofNullable;
 
 @Component
 public class LadeContract extends Contractor {
@@ -47,7 +48,7 @@ public class LadeContract extends Contractor {
 
     @Override
     public List<Contract> contracts() throws Exception {
-        if (config.getEnable()) {
+        if (ofNullable(config.getEnable()).orElse(false)) {
             ContractConfig contractConfig = getConfig();
             return ladeService.buildContracts(contractConfig);
         }
