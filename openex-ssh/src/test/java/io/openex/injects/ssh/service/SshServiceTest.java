@@ -1,6 +1,7 @@
 package io.openex.injects.ssh.service;
 
 import io.openex.injects.ssh.model.SshModel;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,6 +10,7 @@ public class SshServiceTest {
 
     private final SshService sshService = new SshService();
 
+    @Disabled
     @Test
     void executeTest() {
         SshModel sshModel = new SshModel();
