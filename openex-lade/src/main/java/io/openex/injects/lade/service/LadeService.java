@@ -141,34 +141,37 @@ public class LadeService {
 
     private Map<String, LadeWorkzone> getWorkzones() throws Exception {
         JsonNode workzones = executeGet("/api/workzones", false);
+        Optional<JsonNode> workzoneDatas = Optional.ofNullable(workzones).map(jsonNode -> jsonNode.get("data"));
         Map<String, LadeWorkzone> zones = new HashMap<>();
-        workzones.forEach(jsonNode -> {
-            String name = jsonNode.get("name").asText();
-            String identifier = jsonNode.get("identifier").asText();
-            // FETCH HOSTS
-            LadeWorkzone ladeWorkzone = new LadeWorkzone(identifier, name);
-            try {
-                // Fetch hosts
-                JsonNode nodeHosts = executeGet("/api/workzones/" + identifier + "/hosts", false);
-                Map<String, String> hostsByName = new HashMap<>();
-                Map<String, String> hostsByIp = new HashMap<>();
-                nodeHosts.forEach(nodeHost -> {
-                    // String hostIdentifier = nodeHost.get("identifier").asText();
-                    String hostname = nodeHost.get("hostname").asText();
-                    String os = nodeHost.get("os").asText();
-                    hostsByName.put(hostname, hostname + " (" + os + ")");
-                    nodeHost.get("nics").forEach(nic -> {
-                        String ip = nic.get("ip").asText();
-                        hostsByIp.put(ip, hostname + " (" + os + ")" + " - " + ip);
+        workzoneDatas.ifPresent((datas) -> {
+             datas.forEach(jsonNode -> {
+                String name = jsonNode.get("name").asText();
+                String identifier = jsonNode.get("identifier").asText();
+                // FETCH HOSTS
+                LadeWorkzone ladeWorkzone = new LadeWorkzone(identifier, name);
+                try {
+                    // Fetch hosts
+                    JsonNode nodeHosts = executeGet("/api/workzones/" + identifier + "/hosts", false);
+                    Map<String, String> hostsByName = new HashMap<>();
+                    Map<String, String> hostsByIp = new HashMap<>();
+                    nodeHosts.forEach(nodeHost -> {
+                        // String hostIdentifier = nodeHost.get("identifier").asText();
+                        String hostname = nodeHost.get("hostname").asText();
+                        String os = nodeHost.get("os").asText();
+                        hostsByName.put(hostname, hostname + " (" + os + ")");
+                        nodeHost.get("nics").forEach(nic -> {
+                            String ip = nic.get("ip").asText();
+                            hostsByIp.put(ip, hostname + " (" + os + ")" + " - " + ip);
+                        });
                     });
-                });
-                ladeWorkzone.setHostsByName(hostsByName);
-                ladeWorkzone.setHostsByIp(hostsByIp);
-                // Add new built workzone
-                zones.put(ladeWorkzone.getId(), ladeWorkzone);
-            } catch (Exception e) {
-                LOGGER.log(Level.SEVERE, e.getMessage(), e);
-            }
+                    ladeWorkzone.setHostsByName(hostsByName);
+                    ladeWorkzone.setHostsByIp(hostsByIp);
+                    // Add new built workzone
+                    zones.put(ladeWorkzone.getId(), ladeWorkzone);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
+            });
         });
         return zones;
     }
