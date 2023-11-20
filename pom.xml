@@ -10,6 +10,10 @@
     <name>OpenEx injectors</name>
     <description>OpenEx injectors</description>
 
+    <properties>
+        <lombok.version>1.18.30</lombok.version>
+    </properties>
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -39,6 +43,12 @@
             <groupId>io.openex</groupId>
             <artifactId>openex-framework</artifactId>
             <version>3.3.2-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

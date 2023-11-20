@@ -1,66 +1,33 @@
 package io.openex.injects.ovh_sms.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Component
 @ConfigurationProperties(prefix = "ovh.sms")
+@Getter
+@Setter
 public class OvhSmsConfig {
 
-    @NotNull
-    private Boolean enable;
+  @NotBlank
+  private Boolean enable;
 
-    @NotNull
-    private String ak;
+  @NotBlank
+  private String ak;
 
-    @NotNull
-    private String as;
+  @NotBlank
+  private String as;
 
-    @NotNull
-    private String ck;
+  @NotBlank
+  private String ck;
 
-    @NotNull
-    private String service;
+  @NotBlank
+  private String service;
 
-    public Boolean getEnable() {
-        return enable;
-    }
-
-    public void setEnable(Boolean enable) {
-        this.enable = enable;
-    }
-
-    public String getAk() {
-        return ak;
-    }
-
-    public void setAk(String ak) {
-        this.ak = ak;
-    }
-
-    public String getAs() {
-        return as;
-    }
-
-    public void setAs(String as) {
-        this.as = as;
-    }
-
-    public String getCk() {
-        return ck;
-    }
-
-    public void setCk(String ck) {
-        this.ck = ck;
-    }
-
-    public String getService() {
-        return service;
-    }
-
-    public void setService(String service) {
-        this.service = service;
-    }
+  @NotBlank
+  private String sender;
 }
