@@ -12,6 +12,7 @@
 
     <properties>
         <lombok.version>1.18.30</lombok.version>
+        <httpclient5.version>5.2.1</httpclient5.version>
     </properties>
 
     <distributionManagement>
@@ -50,6 +51,11 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>${httpclient5.version}</version>
         </dependency>
     </dependencies>
 
