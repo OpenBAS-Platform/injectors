@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.openex</groupId>
     <artifactId>openex-injectors</artifactId>
-    <version>3.4.0-SNAPSHOT</version>
+    <version>3.4.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OpenEx injectors</name>
@@ -42,7 +42,7 @@
         <dependency>
             <groupId>io.openex</groupId>
             <artifactId>openex-framework</artifactId>
-            <version>3.4.0-SNAPSHOT</version>
+            <version>3.4.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
