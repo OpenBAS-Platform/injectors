@@ -24,7 +24,7 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
@@ -40,7 +40,7 @@ public class HttpService {
     private static final Logger LOGGER = Logger.getLogger(HttpService.class.getName());
     private final CloseableHttpClient httpclient = HttpClients.createDefault();
 
-    @Resource
+    @Autowired
     protected ObjectMapper mapper;
 
     private String executeHttp(ClassicHttpRequest request) throws IOException, ParseException {

@@ -17,7 +17,7 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +25,10 @@ import java.util.List;
 @Component
 public class MastodonService {
 
-    @Resource
+    @Autowired
     private MastodonConfig config;
 
-    @Resource
+    @Autowired
     private ObjectMapper mapper;
 
     @Autowired

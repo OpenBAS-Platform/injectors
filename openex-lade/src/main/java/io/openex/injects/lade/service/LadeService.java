@@ -22,7 +22,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
@@ -45,10 +45,10 @@ public class LadeService {
     private static final Logger LOGGER = Logger.getLogger(LadeService.class.getName());
     private final HttpClient httpclient = HttpClients.createDefault();
 
-    @Resource
+    @Autowired
     private LadeConfig config;
 
-    @Resource
+    @Autowired
     private ObjectMapper mapper;
 
     @Autowired
