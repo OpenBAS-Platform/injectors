@@ -11,10 +11,12 @@ import io.openex.injects.ovh_sms.model.OvhSmsContent;
 import io.openex.injects.ovh_sms.service.OvhSmsService;
 import io.openex.model.Expectation;
 import io.openex.model.expectation.ManualExpectation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -22,17 +24,16 @@ import static io.openex.database.model.ExecutionTrace.traceError;
 import static io.openex.database.model.ExecutionTrace.traceSuccess;
 
 @Component(OvhSmsContract.TYPE)
+@RequiredArgsConstructor
 public class OvhSmsExecutor extends Injector {
 
-  private OvhSmsService smsService;
-
-  @Autowired
-  public void setSmsService(OvhSmsService smsService) {
-    this.smsService = smsService;
-  }
+  private final OvhSmsService smsService;
 
   @Override
-  public List<Expectation> process(Execution execution, ExecutableInject injection, Contract contract)
+  public List<Expectation> process(
+      @NotNull final Execution execution,
+      @NotNull final ExecutableInject injection,
+      @NotNull final Contract contract)
       throws Exception {
     Inject inject = injection.getInject();
     OvhSmsContent content = contentConvert(injection, OvhSmsContent.class);
