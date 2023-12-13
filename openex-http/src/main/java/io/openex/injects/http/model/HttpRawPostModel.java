@@ -2,69 +2,24 @@ package io.openex.injects.http.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.openex.model.PairModel;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HttpRawPostModel {
 
-    private String uri;
+  private String uri;
 
-    private String body;
+  private String body;
 
-    private boolean basicAuth;
+  private boolean basicAuth;
 
-    private String basicUser;
+  private String basicUser;
 
-    private String basicPassword;
+  private String basicPassword;
 
-    private List<PairModel> headers;
+  private List<PairModel> headers;
 
-    public String getUri() {
-        return uri;
-    }
-
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
-
-    public List<PairModel> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(List<PairModel> headers) {
-        this.headers = headers;
-    }
-
-    public String getBody() {
-        return body;
-    }
-
-    public void setBody(String body) {
-        this.body = body;
-    }
-
-    public boolean isBasicAuth() {
-        return basicAuth;
-    }
-
-    public void setBasicAuth(boolean basicAuth) {
-        this.basicAuth = basicAuth;
-    }
-
-    public String getBasicUser() {
-        return basicUser;
-    }
-
-    public void setBasicUser(String basicUser) {
-        this.basicUser = basicUser;
-    }
-
-    public String getBasicPassword() {
-        return basicPassword;
-    }
-
-    public void setBasicPassword(String basicPassword) {
-        this.basicPassword = basicPassword;
-    }
 }
