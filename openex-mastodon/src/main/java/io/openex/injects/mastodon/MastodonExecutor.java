@@ -11,26 +11,27 @@ import io.openex.database.model.Execution;
 import io.openex.injects.mastodon.model.MastodonContent;
 import io.openex.injects.mastodon.service.MastodonService;
 import io.openex.model.Expectation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 import static io.openex.database.model.ExecutionTrace.traceError;
 import static io.openex.database.model.ExecutionTrace.traceSuccess;
 
 @Component(MastodonContract.TYPE)
+@RequiredArgsConstructor
 public class MastodonExecutor extends Injector {
 
-    private MastodonService mastodonService;
-
-    @Autowired
-    public void setMastodonService(MastodonService mastodonService) {
-        this.mastodonService = mastodonService;
-    }
+    private final MastodonService mastodonService;
 
     @Override
-    public List<Expectation> process(Execution execution, ExecutableInject injection, Contract contract) throws Exception {
+    public List<Expectation> process(
+        @NotNull final Execution execution,
+        @NotNull final ExecutableInject injection,
+        @NotNull final Contract contract) throws Exception {
         Inject inject = injection.getInject();
         MastodonContent content = contentConvert(injection, MastodonContent.class);
         String token = content.getToken();

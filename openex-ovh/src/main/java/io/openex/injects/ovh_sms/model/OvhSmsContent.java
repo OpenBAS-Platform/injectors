@@ -2,21 +2,25 @@ package io.openex.injects.ovh_sms.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.openex.model.inject.form.Expectation;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+@Setter
+@Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OvhSmsContent {
 
     @JsonProperty("message")
     private String message;
 
-    @JsonProperty("expectationType")
-    private String expectationType;
-
-    @JsonProperty("expectationScore")
-    private Integer expectationScore;
+    @JsonProperty("expectations")
+    private List<Expectation> expectations = new ArrayList<>();
 
     public String buildMessage(String footer, String header) {
         StringBuilder data = new StringBuilder();
@@ -28,30 +32,6 @@ public class OvhSmsContent {
             data.append("\r\n").append(footer);
         }
         return data.toString();
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public String getExpectationType() {
-        return expectationType;
-    }
-
-    public void setExpectationType(String expectationType) {
-        this.expectationType = expectationType;
-    }
-
-    public Integer getExpectationScore() {
-        return expectationScore;
-    }
-
-    public void setExpectationScore(Integer expectationScore) {
-        this.expectationScore = expectationScore;
     }
 
     @Override

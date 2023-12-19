@@ -4,7 +4,7 @@ import io.openex.contract.Contract;
 import io.openex.contract.ContractConfig;
 import io.openex.contract.Contractor;
 import io.openex.contract.fields.ContractElement;
-import io.openex.contract.fields.ContractManualExpectation;
+import io.openex.contract.fields.ContractExpectations;
 import io.openex.injects.ovh_sms.config.OvhSmsConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import static io.openex.contract.Contract.executableContract;
 import static io.openex.contract.ContractCardinality.Multiple;
 import static io.openex.contract.ContractDef.contractBuilder;
 import static io.openex.contract.fields.ContractAudience.audienceField;
-import static io.openex.contract.fields.ContractManualExpectation.manualExpectationField;
+import static io.openex.contract.fields.ContractExpectations.expectationsField;
 import static io.openex.contract.fields.ContractTextArea.textareaField;
 import static io.openex.helper.SupportedLanguage.en;
 import static io.openex.helper.SupportedLanguage.fr;
@@ -53,13 +53,13 @@ public class OvhSmsContract extends Contractor {
   @Override
   public List<Contract> contracts() {
     ContractConfig contractConfig = getConfig();
-    ContractManualExpectation manualExpectationField = manualExpectationField(
+    ContractExpectations expectationsField = expectationsField(
         "expectations", "Expectations"
     );
     List<ContractElement> instance = contractBuilder()
         .mandatory(audienceField("audiences", "Audiences", Multiple))
         .mandatory(textareaField("message", "Message"))
-        .optional(manualExpectationField)
+        .optional(expectationsField)
         .build();
     return List.of(executableContract(contractConfig, OVH_DEFAULT,
         Map.of(en, "Send a SMS", fr, "Envoyer un SMS"), instance));
