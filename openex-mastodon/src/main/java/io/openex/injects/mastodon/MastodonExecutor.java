@@ -1,21 +1,16 @@
 package io.openex.injects.mastodon;
 
 import io.openex.contract.Contract;
-import io.openex.database.model.DataAttachment;
-import io.openex.database.model.Document;
-import io.openex.database.model.Inject;
-import io.openex.database.model.InjectDocument;
-import io.openex.execution.Injector;
+import io.openex.database.model.*;
 import io.openex.execution.ExecutableInject;
-import io.openex.database.model.Execution;
+import io.openex.execution.Injector;
 import io.openex.injects.mastodon.model.MastodonContent;
 import io.openex.injects.mastodon.service.MastodonService;
 import io.openex.model.Expectation;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 import static io.openex.database.model.ExecutionTrace.traceError;
