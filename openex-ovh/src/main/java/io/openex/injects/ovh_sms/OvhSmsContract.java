@@ -15,7 +15,7 @@ import java.util.Map;
 import static io.openex.contract.Contract.executableContract;
 import static io.openex.contract.ContractCardinality.Multiple;
 import static io.openex.contract.ContractDef.contractBuilder;
-import static io.openex.contract.fields.ContractAudience.audienceField;
+import static io.openex.contract.fields.ContractTeam.teamField;
 import static io.openex.contract.fields.ContractExpectations.expectationsField;
 import static io.openex.contract.fields.ContractTextArea.textareaField;
 import static io.openex.helper.SupportedLanguage.en;
@@ -57,7 +57,7 @@ public class OvhSmsContract extends Contractor {
         "expectations", "Expectations"
     );
     List<ContractElement> instance = contractBuilder()
-        .mandatory(audienceField("audiences", "Audiences", Multiple))
+        .mandatory(teamField("teams", "Teams", Multiple))
         .mandatory(textareaField("message", "Message"))
         .optional(expectationsField)
         .build();
