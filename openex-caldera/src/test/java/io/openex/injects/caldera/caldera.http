@@ -1,0 +1,60 @@
+# CALDERA
+
+###
+@baseUrl = http://localhost:8888
+@API_KEY = {{api-key}}
+@PAW = cewyki
+# group: api / v2 / health
+# @name Health endpoints returns the status of CALDERA
+# Returns the status of CALDERA and additional details including versions of system components
+HEAD {{baseUrl}}/api/v2/health
+KEY: {{API_KEY}}
+Accept: application/json
+
+###
+# group: plugin
+# @name access
+POST {{baseUrl}}/plugin/access/exploit
+KEY: {{API_KEY}}
+Content-Type: text/plain
+
+{
+    "paw": "{{PAW}}",
+    "ability_id": "c1cd6388-3ced-48c7-a511-0434c6ba8f48",
+    "obfuscator": "plain-text",
+    "facts":[{"trait":"openbas","value":"123"}]
+}
+
+###
+# group: api / v2 / agents / {paw}
+# @name Retrieve Agent by paw
+# Retrieve information about a specific agent using its ID (paw). Use the paw field in the URL to specify matching criteria for the agent to obtain information about.
+HEAD {{baseUrl}}/api/v2/agents/{{PAW}}
+KEY: {{API_KEY}}
+Accept: application/json
+
+<> ./Returns JSON response with specified Agent.200.json
+// {{baseUrl}}/api/v2/agents/:paw?include=<string>&exclude=<string>
+
+###
+# group: api / v2 / agents / {paw}
+# @name Retrieve Agent by paw
+# Retrieve information about a specific agent using its ID (paw). Use the paw field in the URL to specify matching criteria for the agent to obtain information about.
+GET {{baseUrl}}/api/v2/agents/{{PAW}}
+KEY: {{API_KEY}}
+Accept: application/json
+
+<> ./Returns JSON response with specified Agent.200.json
+// {{baseUrl}}/api/v2/agents/:paw?include=<string>&exclude=<string>
+
+###
+# group: plugin
+# @name access
+POST {{baseUrl}}/api/rest
+KEY: {{API_KEY}}
+Content-Type: text/plain
+
+{
+    "index": "result",
+    "link_id": "8c711ecd-82ce-4bb9-b2f3-d7ea2fedb8d0"
+}
