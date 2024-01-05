@@ -93,6 +93,5 @@
         <module>openex-mastodon</module>
         <module>openex-ovh</module>
         <module>openex-http</module>
-        <module>openex-caldera</module>
     </modules>
 </project>
