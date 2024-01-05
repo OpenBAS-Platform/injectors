@@ -295,7 +295,7 @@ public class LadeService {
             workflowEvents.forEach(workflowEvent -> {
                 String eventLevel = workflowEvent.get("level").asText();
                 String message = workflowEvent.get("message").asText();
-                if (message.length() > 0 && !message.equals("null")) {
+                if (!message.isEmpty() && !message.equals("null")) {
                     ExecutionTrace trace;
                     if (eventLevel.equals("error")) {
                         trace = ExecutionTrace.traceError("lade", message);
