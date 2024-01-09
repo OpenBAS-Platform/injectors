@@ -40,7 +40,7 @@ public class LadeExecutor extends Injector {
             actionWorkflowId = ladeService.executeScenario(bundleIdentifier, inject.getContract(), content);
         default -> throw new UnsupportedOperationException(ladeType + " not supported");
       }
-      execution.setAsyncId(actionWorkflowId);
+      execution.setAsyncIds(new String[]{actionWorkflowId});
       String message = "Lade " + ladeType + " sent with workflow (" + actionWorkflowId + ")";
       execution.addTrace(traceInfo("lade", message));
     } catch (Exception e) {

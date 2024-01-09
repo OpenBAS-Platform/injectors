@@ -15,6 +15,7 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.util.StringUtils.hasText;
 
@@ -49,6 +50,7 @@ public class InjectorCalderaService {
         .filter((l) -> l.getAbility().getAbility_id().equals(abilityId))
         .max(Comparator.comparing(l -> Instant.parse(l.getDecide())))
         .orElseThrow(() -> new RuntimeException("Caldera fail to execute ability " + abilityId));
+    assert paw.equals(agentLink.getPaw());
     return agentLink.getId();
   }
 
@@ -56,14 +58,15 @@ public class InjectorCalderaService {
     ResultStatus resultStatus = new ResultStatus();
     Result result = this.client.results(linkId);
     // No result or not finish -> in progress #see caldera code
-    if (result == null || result.getLink().getFinish() == null) {
+    if (Optional.ofNullable(result).map(Result::getLink).map(Link::getFinish).isEmpty()) {
       resultStatus.setComplete(false);
     } else {
       resultStatus.setComplete(true);
       Link resultLink = result.getLink();
+      resultStatus.setPaw(resultLink.getPaw());
       resultStatus.setFinish(Instant.parse(resultLink.getFinish()));
       // Status == 0 -> success || Status > 0 -> failed #see caldera code
-      resultStatus.setFail(resultLink.getStatus() == 0);
+      resultStatus.setFail(resultLink.getStatus() > 0);
 
       // Result output can be : #see caldera code
       //    - empty if ability execution return nothing
