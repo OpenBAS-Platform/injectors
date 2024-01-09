@@ -20,6 +20,7 @@ import java.util.List;
 import static io.openex.database.model.ExecutionTrace.traceError;
 import static io.openex.database.model.ExecutionTrace.traceInfo;
 import static io.openex.helper.SupportedLanguage.en;
+import static io.openex.injects.caldera.CalderaContract.CALDERA_SOURCE;
 import static org.springframework.util.StringUtils.hasText;
 
 @Component(CalderaContract.TYPE)
@@ -44,8 +45,9 @@ public class CalderaExecutor extends Injector {
 
     if (content.get("assetgroup") != null && hasText(content.get("assetgroup").asText())) {
       String assetGroupId = content.get("assetgroup").asText();
-      List<Asset> assets = this.assetGroupService.assetsFromAssetGroup(assetGroupId); // TODO: Filter on Caldera asset ?
-      endpoints.addAll(assets.stream().map(Asset::getExternalId).toList());
+      List<Asset> assets = this.assetGroupService.assetsFromAssetGroup(assetGroupId);
+      // Filter on Caldera source
+      endpoints.addAll(assets.stream().map((a) -> a.getSources().get(CALDERA_SOURCE)).toList());
     }
 
     List<String> asyncIds = new ArrayList<>();

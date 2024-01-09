@@ -33,6 +33,7 @@ import static io.openex.helper.SupportedLanguage.fr;
 public class CalderaContract extends Contractor {
 
   public static final String TYPE = "openex_caldera";
+  public static final String CALDERA_SOURCE = "Caldera";
 
   private final InjectorCalderaConfig config;
   private final InjectorCalderaService injectorCalderaService;
@@ -70,13 +71,13 @@ public class CalderaContract extends Contractor {
   private Map<String, String> endpointChoices() {
     List<Endpoint> endpoints = this.assetEndpointService.endpoints();
     return endpoints.stream()
-        .collect(Collectors.toMap(Endpoint::getExternalId, e -> e.getName() + " - " + e.getHostname()));
+        .collect(Collectors.toMap(e -> e.getSources().get(CALDERA_SOURCE), e -> e.getName() + " - " + e.getHostname()));
   }
 
   private Map<String, String> assetGroupChoices() {
     List<AssetGroup> assetGroups = this.assetGroupService.assetGroups();
     return assetGroups.stream()
-        .collect(Collectors.toMap(AssetGroup::getId, AssetGroup::getName));
+        .collect(Collectors.toMap(AssetGroup::getId, AssetGroup::getName)); // TODO: Display without checking source
   }
 
   private List<Contract> abilityContracts(@NotNull final ContractConfig contractConfig) {
