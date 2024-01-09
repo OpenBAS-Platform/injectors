@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static io.openex.contract.Contract.executableContract;
 import static io.openex.contract.ContractCardinality.Multiple;
@@ -35,7 +36,7 @@ public class MastodonContract extends Contractor {
 
     @Override
     public boolean isExpose() {
-        return config.getEnable();
+        return Optional.ofNullable(config.getEnable()).orElse(false);
     }
 
     @Override

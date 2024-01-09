@@ -11,12 +11,11 @@ import io.openex.injects.ovh_sms.model.OvhSmsContent;
 import io.openex.injects.ovh_sms.service.OvhSmsService;
 import io.openex.model.Expectation;
 import io.openex.model.expectation.ManualExpectation;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.stream.Stream;
 
