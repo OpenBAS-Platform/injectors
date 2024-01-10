@@ -7,6 +7,7 @@ import io.openex.injects.caldera.config.InjectorCalderaConfig;
 import io.openex.injects.caldera.client.model.Ability;
 import io.openex.injects.caldera.client.model.Agent;
 import io.openex.injects.caldera.client.model.Result;
+import io.openex.injects.caldera.model.Obfuscator;
 import lombok.RequiredArgsConstructor;
 import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -67,6 +68,20 @@ public class InjectorCalderaClient {
     }
   }
 
+  // -- OBFUSCATORS --
+
+  private final static String OBFUSCATOR_URI = "/obfuscators";
+
+  public List<Obfuscator> obfuscators() {
+    try {
+      String jsonResponse = this.get(this.config.getRestApiV2Url() + OBFUSCATOR_URI);
+      return this.objectMapper.readValue(jsonResponse, new TypeReference<>() {
+      });
+    } catch (ClientProtocolException | JsonProcessingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
   // -- RESULTS --
 
   private final static String RESULT_INDEX = "result";
@@ -82,8 +97,6 @@ public class InjectorCalderaClient {
     } catch (ClientProtocolException | JsonProcessingException e) {
       throw new RuntimeException(e);
     }
-
-
   }
 
   // -- PLUGIN ACCESS --
@@ -91,13 +104,14 @@ public class InjectorCalderaClient {
   private final static String EXPLOIT_URI = "/exploit";
 
   public void exploit(
+      @NotBlank final String obfuscator,
       @NotBlank final String paw,
       @NotBlank final String abilityId) {
     try {
       Map<String, String> body = new HashMap<>();
+      body.put("obfuscator", obfuscator);
       body.put("paw", paw);
       body.put("ability_id", abilityId);
-      body.put("obfuscator", "plain-text");
       String result = this.post(
           this.config.getPluginAccessApiUrl() + EXPLOIT_URI,
           body

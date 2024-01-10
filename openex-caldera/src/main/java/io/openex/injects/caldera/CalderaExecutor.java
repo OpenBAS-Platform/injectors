@@ -37,6 +37,7 @@ public class CalderaExecutor extends Injector {
       @NotNull final Contract contract) {
     Inject inject = injection.getInject();
     ObjectNode content = inject.getContent();
+    String obfuscator = content.get("obfuscator").asText();
     List<String> endpoints = new java.util.ArrayList<>();
 
     if (content.get("endpoint") != null && hasText(content.get("endpoint").asText())) {
@@ -53,7 +54,7 @@ public class CalderaExecutor extends Injector {
     List<String> asyncIds = new ArrayList<>();
     for (String endpoint : endpoints) {
       try {
-        this.calderaService.exploit(endpoint, contract.getId());
+        this.calderaService.exploit(obfuscator, endpoint, contract.getId());
         String linkId = this.calderaService.linkId(endpoint, contract.getId());
         asyncIds.add(linkId);
         String message = "Caldera execute ability " + contract.getLabel().get(en) + " on endpoint " + endpoint;

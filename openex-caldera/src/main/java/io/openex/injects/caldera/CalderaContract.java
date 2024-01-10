@@ -10,6 +10,7 @@ import io.openex.database.model.Endpoint;
 import io.openex.helper.SupportedLanguage;
 import io.openex.injects.caldera.client.model.Ability;
 import io.openex.injects.caldera.config.InjectorCalderaConfig;
+import io.openex.injects.caldera.model.Obfuscator;
 import io.openex.injects.caldera.service.InjectorCalderaService;
 import io.openex.service.AssetEndpointService;
 import io.openex.service.AssetGroupService;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 import static io.openex.contract.Contract.executableContract;
 import static io.openex.contract.ContractDef.contractBuilder;
 import static io.openex.contract.fields.ContractSelect.selectField;
+import static io.openex.contract.fields.ContractSelect.selectFieldWithDefault;
 import static io.openex.helper.SupportedLanguage.en;
 import static io.openex.helper.SupportedLanguage.fr;
 
@@ -68,8 +70,13 @@ public class CalderaContract extends Contractor {
 
   // -- PRIVATE --
 
+  private Map<String, String> obfuscatorChoices() {
+    List<Obfuscator> obfuscators = this.injectorCalderaService.obfuscators();
+    return obfuscators.stream().collect(Collectors.toMap(Obfuscator::getName, Obfuscator::getName));
+  }
+
   private Map<String, String> endpointChoices() {
-    List<Endpoint> endpoints = this.assetEndpointService.endpoints();
+    List<Endpoint> endpoints = this.assetEndpointService.endpoints(); // TODO: limitation ?
     return endpoints.stream()
         .collect(Collectors.toMap(e -> e.getSources().get(CALDERA_SOURCE), e -> e.getName() + " - " + e.getHostname()));
   }
@@ -82,6 +89,13 @@ public class CalderaContract extends Contractor {
 
   private List<Contract> abilityContracts(@NotNull final ContractConfig contractConfig) {
     // Fields
+    Map<String, String> obfuscatorChoices = obfuscatorChoices();
+    ContractSelect obfuscatorField = selectFieldWithDefault(
+        "obfuscator",
+        "Obfuscators",
+        obfuscatorChoices,
+        obfuscatorChoices.keySet().stream().findFirst().orElseThrow()
+    );
     Map<String, String> endpointChoices = endpointChoices();
     ContractSelect endpointField = selectField(
         "endpoint",
@@ -99,6 +113,7 @@ public class CalderaContract extends Contractor {
     // Build contracts
     return abilities.stream().map((ability -> {
       ContractDef builder = contractBuilder();
+      builder.mandatory(obfuscatorField);
       builder.optional(endpointField); // TODO: one of us should be mandatory
       builder.optional(assetGroupField);
       return executableContract(

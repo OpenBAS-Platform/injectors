@@ -5,6 +5,7 @@ import io.openex.injects.caldera.client.model.Ability;
 import io.openex.injects.caldera.client.model.Agent;
 import io.openex.injects.caldera.client.model.Link;
 import io.openex.injects.caldera.client.model.Result;
+import io.openex.injects.caldera.model.Obfuscator;
 import io.openex.injects.caldera.model.ResultStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,9 +34,14 @@ public class InjectorCalderaService {
   }
 
   public void exploit(
+      @NotBlank final String obfuscator,
       @NotBlank final String paw,
       @NotBlank final String abilityId) {
-    this.client.exploit(paw, abilityId);
+    this.client.exploit(obfuscator, paw, abilityId);
+  }
+
+  public List<Obfuscator> obfuscators() {
+    return this.client.obfuscators();
   }
 
   // -- LINK --
