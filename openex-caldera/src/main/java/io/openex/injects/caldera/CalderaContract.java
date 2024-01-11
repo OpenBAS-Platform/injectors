@@ -14,18 +14,18 @@ import io.openex.injects.caldera.model.Obfuscator;
 import io.openex.injects.caldera.service.InjectorCalderaService;
 import io.openex.service.AssetEndpointService;
 import io.openex.service.AssetGroupService;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.openex.contract.Contract.executableContract;
 import static io.openex.contract.ContractDef.contractBuilder;
-import static io.openex.contract.fields.ContractSelect.selectField;
 import static io.openex.contract.fields.ContractSelect.selectFieldWithDefault;
 import static io.openex.helper.SupportedLanguage.en;
 import static io.openex.helper.SupportedLanguage.fr;
@@ -97,16 +97,22 @@ public class CalderaContract extends Contractor {
         obfuscatorChoices.keySet().stream().findFirst().orElseThrow()
     );
     Map<String, String> endpointChoices = endpointChoices();
-    ContractSelect endpointField = selectField(
+    Map<String, String> endpointChoicesWithDefault = new HashMap<>() {{put("", "No value");}}; // First place
+    endpointChoicesWithDefault.putAll(endpointChoices);
+    ContractSelect endpointField = selectFieldWithDefault(
         "endpoint",
         "Endpoints",
-        endpointChoices
+        endpointChoicesWithDefault,
+        ""
     );
     Map<String, String> assetGroupChoices = assetGroupChoices();
-    ContractSelect assetGroupField = selectField(
+    Map<String, String> assetGroupChoicesWithDefault = new HashMap<>() {{put("", "No value");}}; // First place
+    assetGroupChoicesWithDefault.putAll(assetGroupChoices);
+    ContractSelect assetGroupField = selectFieldWithDefault(
         "assetgroup",
         "Asset groups",
-        assetGroupChoices
+        assetGroupChoicesWithDefault,
+        ""
     );
 
     List<Ability> abilities = this.injectorCalderaService.abilities();
@@ -114,8 +120,7 @@ public class CalderaContract extends Contractor {
     return abilities.stream().map((ability -> {
       ContractDef builder = contractBuilder();
       builder.mandatory(obfuscatorField);
-      builder.optional(endpointField); // TODO: one of us should be mandatory
-      builder.optional(assetGroupField);
+      builder.mandatoryGroup(endpointField, assetGroupField);
       return executableContract(
           contractConfig,
           ability.getAbility_id(),
