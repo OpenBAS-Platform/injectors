@@ -55,7 +55,7 @@ public class InjectorCalderaService {
         .stream()
         .filter((l) -> l.getAbility().getAbility_id().equals(abilityId))
         .max(Comparator.comparing(l -> Instant.parse(l.getDecide())))
-        .orElseThrow(() -> new RuntimeException("Caldera fail to execute ability " + abilityId));
+        .orElseThrow(() -> new RuntimeException("Caldera fail to execute ability " + abilityId + " on paw " + paw));
     assert paw.equals(agentLink.getPaw());
     return agentLink.getId();
   }

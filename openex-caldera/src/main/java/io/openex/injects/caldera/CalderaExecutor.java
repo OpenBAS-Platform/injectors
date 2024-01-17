@@ -38,17 +38,17 @@ public class CalderaExecutor extends Injector {
     Inject inject = injection.getInject();
     ObjectNode content = inject.getContent();
     String obfuscator = content.get("obfuscator").asText();
-    List<String> endpoints = new java.util.ArrayList<>();
+    List<String> paws = new java.util.ArrayList<>();
 
     if (content.get("endpoint") != null && hasText(content.get("endpoint").asText())) {
-      endpoints.add(content.get("endpoint").asText());
+      paws.add(content.get("endpoint").asText()); // Paw
     }
 
     if (content.get("assetgroup") != null && hasText(content.get("assetgroup").asText())) {
-      String assetGroupId = content.get("assetgroup").asText();
+      String assetGroupId = content.get("assetgroup").asText(); // Asset Group Id
       List<Asset> assets = this.assetGroupService.assetsFromAssetGroup(assetGroupId);
       // Filter on Caldera source
-      endpoints.addAll(
+      paws.addAll(
           assets.stream()
               .filter((a) -> a.getSources().get(CALDERA_SOURCE) != null)
               .map((a) -> a.getSources().get(CALDERA_SOURCE))
@@ -57,12 +57,12 @@ public class CalderaExecutor extends Injector {
     }
 
     List<String> asyncIds = new ArrayList<>();
-    for (String endpoint : endpoints) {
+    for (String paw : paws) {
       try {
-        this.calderaService.exploit(obfuscator, endpoint, contract.getId());
-        String linkId = this.calderaService.linkId(endpoint, contract.getId());
+        this.calderaService.exploit(obfuscator, paw, contract.getId());
+        String linkId = this.calderaService.linkId(paw, contract.getId());
         asyncIds.add(linkId);
-        String message = "Caldera execute ability " + contract.getLabel().get(en) + " on endpoint " + endpoint;
+        String message = "Caldera execute ability " + contract.getLabel().get(en) + " on paw " + paw;
         execution.addTrace(traceInfo("caldera", message));
       } catch (Exception e) {
         execution.addTrace(traceError("caldera", e.getMessage(), e));

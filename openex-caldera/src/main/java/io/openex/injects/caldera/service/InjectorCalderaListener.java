@@ -18,8 +18,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
-import static io.openex.database.model.ExecutionTrace.traceError;
-import static io.openex.database.model.ExecutionTrace.traceInfo;
+import static io.openex.database.model.ExecutionTrace.*;
 
 @Service
 @Slf4j
@@ -45,11 +44,11 @@ public class InjectorCalderaListener {
           if (resultStatus.isComplete()) {
             if (resultStatus.isFail()) {
               injectStatus.getReporting().addTrace(
-                  traceError(asyncId, "Result on endpoint " + resultStatus.getPaw() + " \n" + resultStatus.getContent())
+                  traceError(asyncId, "Result on paw " + resultStatus.getPaw() + " \n" + resultStatus.getContent())
               );
             } else {
               injectStatus.getReporting().addTrace(
-                  traceInfo(asyncId, "Result on endpoint " + resultStatus.getPaw() + " \n" + resultStatus.getContent())
+                  traceSuccess(asyncId, "Result on paw " + resultStatus.getPaw() + " \n" + resultStatus.getContent())
               );
             }
 
