@@ -76,15 +76,16 @@ public class CalderaContract extends Contractor {
   }
 
   private Map<String, String> endpointChoices() {
-    List<Endpoint> endpoints = this.assetEndpointService.endpoints(); // TODO: limitation ?
+    List<Endpoint> endpoints = this.assetEndpointService.endpoints();
     return endpoints.stream()
+        .filter(e -> e.getSources().get(CALDERA_SOURCE) != null)
         .collect(Collectors.toMap(e -> e.getSources().get(CALDERA_SOURCE), e -> e.getName() + " - " + e.getHostname()));
   }
 
   private Map<String, String> assetGroupChoices() {
     List<AssetGroup> assetGroups = this.assetGroupService.assetGroups();
     return assetGroups.stream()
-        .collect(Collectors.toMap(AssetGroup::getId, AssetGroup::getName)); // TODO: Display without checking source
+        .collect(Collectors.toMap(AssetGroup::getId, AssetGroup::getName));
   }
 
   private List<Contract> abilityContracts(@NotNull final ContractConfig contractConfig) {

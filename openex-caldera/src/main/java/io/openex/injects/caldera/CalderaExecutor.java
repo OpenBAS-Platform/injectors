@@ -48,7 +48,12 @@ public class CalderaExecutor extends Injector {
       String assetGroupId = content.get("assetgroup").asText();
       List<Asset> assets = this.assetGroupService.assetsFromAssetGroup(assetGroupId);
       // Filter on Caldera source
-      endpoints.addAll(assets.stream().map((a) -> a.getSources().get(CALDERA_SOURCE)).toList());
+      endpoints.addAll(
+          assets.stream()
+              .filter((a) -> a.getSources().get(CALDERA_SOURCE) != null)
+              .map((a) -> a.getSources().get(CALDERA_SOURCE))
+              .toList()
+      );
     }
 
     List<String> asyncIds = new ArrayList<>();
