@@ -40,14 +40,7 @@ These new injects can be used by targeting an asset or a group of assets from th
 
 The following async workflow will be carried out on the caldera injects :
 
-| OpenEx                     | Caldera                     | Asset                                 |
-|----------------------------|-----------------------------|---------------------------------------|
-| 1. start inject execution  |                             |                                       |
-|                            | 2. start ability            |                                       |
-|                            |                             | 3. execute ability                    |
-|                            |                             | 4. return ability's result to Caldera |
-|                            | 5. receive ability's result |                                       |
-| 6. finish inject execution |                             |                                       |
+![inject-caldera.png](inject-caldera.png)
 
 ### Sources
 
