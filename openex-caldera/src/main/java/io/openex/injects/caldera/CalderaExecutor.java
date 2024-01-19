@@ -56,6 +56,10 @@ public class CalderaExecutor extends Injector {
       );
     }
 
+    if (paws.isEmpty()) {
+      throw new UnsupportedOperationException("Caldera inject needs at least one asset");
+    }
+
     List<String> asyncIds = new ArrayList<>();
     for (String paw : paws) {
       try {

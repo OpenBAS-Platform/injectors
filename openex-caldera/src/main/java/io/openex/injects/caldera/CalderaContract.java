@@ -5,6 +5,7 @@ import io.openex.contract.ContractConfig;
 import io.openex.contract.ContractDef;
 import io.openex.contract.Contractor;
 import io.openex.contract.fields.ContractSelect;
+import io.openex.database.model.Asset;
 import io.openex.database.model.AssetGroup;
 import io.openex.database.model.Endpoint;
 import io.openex.helper.SupportedLanguage;
@@ -79,7 +80,7 @@ public class CalderaContract extends Contractor {
     List<Endpoint> endpoints = this.assetEndpointService.endpoints();
     return endpoints.stream()
         .filter(e -> e.getSources().get(CALDERA_SOURCE) != null)
-        .collect(Collectors.toMap(e -> e.getSources().get(CALDERA_SOURCE), e -> e.getName() + " - " + e.getHostname()));
+        .collect(Collectors.toMap(e -> e.getSources().get(CALDERA_SOURCE), Asset::getName));
   }
 
   private Map<String, String> assetGroupChoices() {
