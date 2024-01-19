@@ -5,7 +5,6 @@ import io.openex.contract.ContractConfig;
 import io.openex.contract.ContractDef;
 import io.openex.contract.Contractor;
 import io.openex.contract.fields.ContractSelect;
-import io.openex.database.model.Asset;
 import io.openex.database.model.AssetGroup;
 import io.openex.database.model.Endpoint;
 import io.openex.helper.SupportedLanguage;
@@ -19,10 +18,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static io.openex.contract.Contract.executableContract;
@@ -36,7 +32,6 @@ import static io.openex.helper.SupportedLanguage.fr;
 public class CalderaContract extends Contractor {
 
   public static final String TYPE = "openex_caldera";
-  public static final String CALDERA_SOURCE = "Caldera";
 
   private final InjectorCalderaConfig config;
   private final InjectorCalderaService injectorCalderaService;
@@ -79,8 +74,17 @@ public class CalderaContract extends Contractor {
   private Map<String, String> endpointChoices() {
     List<Endpoint> endpoints = this.assetEndpointService.endpoints();
     return endpoints.stream()
-        .filter(e -> e.getSources().get(CALDERA_SOURCE) != null)
-        .collect(Collectors.toMap(e -> e.getSources().get(CALDERA_SOURCE), Asset::getName));
+        .flatMap((e) -> {
+          List<Choice> choices = new ArrayList<>();
+          final List<String> collectorIds = this.config.getCollectorIds();
+          e.getSources().keySet().forEach((key) -> {
+            if (collectorIds.contains(key)) {
+              choices.add(new Choice(e.getSources().get(key), e.getName()));
+            }
+          });
+          return choices.stream();
+        })
+        .collect(Collectors.toMap(Choice::key, Choice::value));
   }
 
   private Map<String, String> assetGroupChoices() {
@@ -131,4 +135,8 @@ public class CalderaContract extends Contractor {
       );
     })).collect(Collectors.toList());
   }
+
+  // -- RECORD --
+
+  public record Choice (String key, String value){ }
 }
