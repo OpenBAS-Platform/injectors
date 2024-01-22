@@ -1,0 +1,51 @@
+# CALDERA
+
+###
+@baseUrl = http://localhost:8888
+@API_KEY = {{api-key}}
+@PAW = qsfshu
+# group: api / v2 / health
+# @name Health endpoints returns the status of CALDERA
+# Returns the status of CALDERA and additional details including versions of system components
+HEAD {{baseUrl}}/api/v2/health
+KEY: {{API_KEY}}
+Accept: application/json
+
+###
+# group: api / v2 / ablities
+# @name Retrieve abilities
+GET {{baseUrl}}/api/v2/abilities
+KEY: {{API_KEY}}
+Accept: application/json
+
+###
+# group: plugin / access / exploit
+# @name Exploit an endpoint with an ability
+POST {{baseUrl}}/plugin/access/exploit
+KEY: {{API_KEY}}
+Content-Type: text/plain
+
+{
+    "paw": "{{PAW}}",
+    "ability_id": "c1cd6388-3ced-48c7-a511-0434c6ba8f48",
+    "obfuscator": "plain-text"
+}
+
+###
+# group: api / v2 / agents / {paw}
+# @name Retrieve Agent by paw
+GET {{baseUrl}}/api/v2/agents/{{PAW}}?include=links
+KEY: {{API_KEY}}
+Accept: application/json
+
+###
+# group: api / v1 / result / {link_id}
+# @name Retrieve results for specific link
+POST {{baseUrl}}/api/rest
+KEY: {{API_KEY}}
+Content-Type: text/plain
+
+{
+    "index": "result",
+    "link_id": "d7e66ae4-6e4b-48b7-9c5b-b1e23256c329"
+}

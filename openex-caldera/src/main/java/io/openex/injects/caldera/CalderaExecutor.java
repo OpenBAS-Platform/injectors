@@ -1,0 +1,88 @@
+package io.openex.injects.caldera;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.openex.contract.Contract;
+import io.openex.database.model.Asset;
+import io.openex.database.model.Execution;
+import io.openex.database.model.Inject;
+import io.openex.execution.ExecutableInject;
+import io.openex.execution.Injector;
+import io.openex.injects.caldera.config.InjectorCalderaConfig;
+import io.openex.injects.caldera.service.InjectorCalderaService;
+import io.openex.model.Expectation;
+import io.openex.service.AssetGroupService;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static io.openex.database.model.ExecutionTrace.traceError;
+import static io.openex.database.model.ExecutionTrace.traceInfo;
+import static io.openex.helper.SupportedLanguage.en;
+import static org.springframework.util.StringUtils.hasText;
+
+@Component(CalderaContract.TYPE)
+@RequiredArgsConstructor
+public class CalderaExecutor extends Injector {
+
+  private final InjectorCalderaConfig config;
+  private final InjectorCalderaService calderaService;
+  private final AssetGroupService assetGroupService;
+
+  @Override
+  public List<Expectation> process(
+      @NotNull final Execution execution,
+      @NotNull final ExecutableInject injection,
+      @NotNull final Contract contract) {
+    Inject inject = injection.getInject();
+    ObjectNode content = inject.getContent();
+    String obfuscator = content.get("obfuscator").asText();
+    List<String> paws = new java.util.ArrayList<>();
+
+    if (content.get("endpoint") != null && hasText(content.get("endpoint").asText())) {
+      paws.add(content.get("endpoint").asText()); // Paw
+    }
+
+    if (content.get("assetgroup") != null && hasText(content.get("assetgroup").asText())) {
+      String assetGroupId = content.get("assetgroup").asText(); // Asset Group Id
+      List<Asset> assets = this.assetGroupService.assetsFromAssetGroup(assetGroupId);
+      // Filter on Caldera source
+      paws.addAll(
+          assets.stream()
+              .flatMap((e) -> {
+                List<String> ids = new ArrayList<>();
+                final List<String> collectorIds = this.config.getCollectorIds();
+                e.getSources().keySet().forEach((key) -> {
+                  if (collectorIds.contains(key)) {
+                    ids.add(e.getSources().get(key));
+                  }
+                });
+                return ids.stream();
+              })
+              .toList()
+      );
+    }
+
+    if (paws.isEmpty()) {
+      throw new UnsupportedOperationException("Caldera inject needs at least one asset");
+    }
+
+    List<String> asyncIds = new ArrayList<>();
+    for (String paw : paws) {
+      try {
+        this.calderaService.exploit(obfuscator, paw, contract.getId());
+        String linkId = this.calderaService.linkId(paw, contract.getId());
+        asyncIds.add(linkId);
+        String message = "Caldera execute ability " + contract.getLabel().get(en) + " on paw " + paw;
+        execution.addTrace(traceInfo("caldera", message));
+      } catch (Exception e) {
+        execution.addTrace(traceError("caldera", e.getMessage(), e));
+      }
+      execution.setAsyncIds(asyncIds.toArray(new String[0]));
+    }
+    return List.of();
+  }
+
+}
