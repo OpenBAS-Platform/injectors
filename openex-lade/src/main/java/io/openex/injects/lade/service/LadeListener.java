@@ -8,16 +8,17 @@ import io.openex.database.repository.InjectStatusRepository;
 import io.openex.injects.lade.LadeContract;
 import io.openex.injects.lade.model.LadeWorkflow;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 @Service
-@Slf4j
+@Log
 @RequiredArgsConstructor
 public class LadeListener {
 
@@ -51,7 +52,7 @@ public class LadeListener {
         relatedInject.setUpdatedAt(Instant.now());
         this.injectRepository.save(relatedInject);
       } catch (Exception e) {
-        log.error(e.getMessage(), e);
+        log.log(Level.SEVERE, e.getMessage(), e);
       }
     });
   }

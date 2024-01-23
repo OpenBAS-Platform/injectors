@@ -4,6 +4,7 @@ import io.openex.contract.Contract;
 import io.openex.contract.ContractConfig;
 import io.openex.contract.ContractDef;
 import io.openex.contract.Contractor;
+import io.openex.contract.fields.ContractExpectations;
 import io.openex.contract.fields.ContractSelect;
 import io.openex.database.model.AssetGroup;
 import io.openex.database.model.Endpoint;
@@ -12,18 +13,24 @@ import io.openex.injects.caldera.client.model.Ability;
 import io.openex.injects.caldera.config.InjectorCalderaConfig;
 import io.openex.injects.caldera.model.Obfuscator;
 import io.openex.injects.caldera.service.InjectorCalderaService;
+import io.openex.model.inject.form.Expectation;
 import io.openex.service.AssetEndpointService;
 import io.openex.service.AssetGroupService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static io.openex.contract.Contract.executableContract;
 import static io.openex.contract.ContractDef.contractBuilder;
+import static io.openex.contract.fields.ContractExpectations.expectationsField;
 import static io.openex.contract.fields.ContractSelect.selectFieldWithDefault;
+import static io.openex.database.model.InjectExpectation.EXPECTATION_TYPE.TECHNICAL;
 import static io.openex.helper.SupportedLanguage.en;
 import static io.openex.helper.SupportedLanguage.fr;
 
@@ -58,7 +65,7 @@ public class CalderaContract extends Contractor {
   public List<Contract> contracts() {
     if (this.config.isEnable()) {
       ContractConfig contractConfig = getConfig();
-      // Add contract bases on abilities
+      // Add contract based on abilities
       return new ArrayList<>(abilityContracts(contractConfig));
     }
     return List.of();
@@ -66,60 +73,73 @@ public class CalderaContract extends Contractor {
 
   // -- PRIVATE --
 
-  private Map<String, String> obfuscatorChoices() {
+  private ContractSelect obfuscatorField() {
     List<Obfuscator> obfuscators = this.injectorCalderaService.obfuscators();
-    return obfuscators.stream().collect(Collectors.toMap(Obfuscator::getName, Obfuscator::getName));
-  }
-
-  private Map<String, String> endpointChoices() {
-    List<Endpoint> endpoints = this.assetEndpointService.endpoints();
-    return endpoints.stream()
-        .flatMap((e) -> {
-          List<Choice> choices = new ArrayList<>();
-          final List<String> collectorIds = this.config.getCollectorIds();
-          e.getSources().keySet().forEach((key) -> {
-            if (collectorIds.contains(key)) {
-              choices.add(new Choice(e.getSources().get(key), e.getName()));
-            }
-          });
-          return choices.stream();
-        })
-        .collect(Collectors.toMap(Choice::key, Choice::value));
-  }
-
-  private Map<String, String> assetGroupChoices() {
-    List<AssetGroup> assetGroups = this.assetGroupService.assetGroups();
-    return assetGroups.stream()
-        .collect(Collectors.toMap(AssetGroup::getId, AssetGroup::getName));
-  }
-
-  private List<Contract> abilityContracts(@NotNull final ContractConfig contractConfig) {
-    // Fields
-    Map<String, String> obfuscatorChoices = obfuscatorChoices();
-    ContractSelect obfuscatorField = selectFieldWithDefault(
+    Map<String, String> obfuscatorChoices = obfuscators.stream()
+        .collect(Collectors.toMap(Obfuscator::getName, Obfuscator::getName));
+    return selectFieldWithDefault(
         "obfuscator",
         "Obfuscators",
         obfuscatorChoices,
         obfuscatorChoices.keySet().stream().findFirst().orElseThrow()
     );
-    Map<String, String> endpointChoices = endpointChoices();
-    Map<String, String> endpointChoicesWithDefault = new HashMap<>() {{put("", "No value");}}; // First place
+  }
+
+  private ContractSelect endpointField() {
+    List<Endpoint> endpoints = this.assetEndpointService.endpoints();
+    Map<String, String> endpointChoices = new HashMap<>();
+
+    endpoints.forEach((e) -> e.getSources().keySet().forEach((key) -> {
+      if (this.config.getCollectorIds().contains(key)) {
+        endpointChoices.put(e.getId(), e.getName());
+      }
+    }));
+
+    Map<String, String> endpointChoicesWithDefault = new HashMap<>() {{
+      put("", "No value");
+    }}; // First place
     endpointChoicesWithDefault.putAll(endpointChoices);
-    ContractSelect endpointField = selectFieldWithDefault(
+    return selectFieldWithDefault(
         "endpoint",
         "Endpoints",
         endpointChoicesWithDefault,
         ""
     );
-    Map<String, String> assetGroupChoices = assetGroupChoices();
-    Map<String, String> assetGroupChoicesWithDefault = new HashMap<>() {{put("", "No value");}}; // First place
+  }
+
+  private ContractSelect assetGroupField() {
+    List<AssetGroup> assetGroups = this.assetGroupService.assetGroups();
+    Map<String, String> assetGroupChoices = assetGroups.stream()
+        .collect(Collectors.toMap(AssetGroup::getId, AssetGroup::getName));
+    Map<String, String> assetGroupChoicesWithDefault = new HashMap<>() {{
+      put("", "No value");
+    }}; // First place
     assetGroupChoicesWithDefault.putAll(assetGroupChoices);
-    ContractSelect assetGroupField = selectFieldWithDefault(
+    return selectFieldWithDefault(
         "assetgroup",
         "Asset groups",
         assetGroupChoicesWithDefault,
         ""
     );
+  }
+
+  private ContractExpectations expectations() {
+    Expectation expectation = new Expectation();
+    expectation.setType(TECHNICAL);
+    expectation.setName("Expect technical inject to failed");
+    expectation.setScore(0);
+    return expectationsField(
+        "expectations", "Expectations", List.of(expectation)
+    );
+  }
+
+  private List<Contract> abilityContracts(@NotNull final ContractConfig contractConfig) {
+    // Fields
+    ContractSelect obfuscatorField = obfuscatorField();
+    ContractSelect endpointField = endpointField();
+    ContractSelect assetGroupField = assetGroupField();
+    // Expectations
+    ContractExpectations expectationsField = expectations();
 
     List<Ability> abilities = this.injectorCalderaService.abilities();
     // Build contracts
@@ -127,16 +147,13 @@ public class CalderaContract extends Contractor {
       ContractDef builder = contractBuilder();
       builder.mandatory(obfuscatorField);
       builder.mandatoryGroup(endpointField, assetGroupField);
+      builder.optional(expectationsField);
       return executableContract(
           contractConfig,
           ability.getAbility_id(),
-          Map.of(en, ability.getName()),
+          Map.of(en, ability.getName(), fr, ability.getName()),
           builder.build()
       );
     })).collect(Collectors.toList());
   }
-
-  // -- RECORD --
-
-  public record Choice (String key, String value){ }
 }
