@@ -137,7 +137,7 @@ public class CalderaExecutorTest {
       @Nullable final String endpointId,
       @Nullable final String assetGroupId) {
     CalderaInjectContent content = new CalderaInjectContent();
-    content.setEndpoint(endpointId);
+    content.setAsset(endpointId);
     content.setAssetgroup(assetGroupId);
     List<Expectation> expectations = new ArrayList<>();
     Expectation expectation = new Expectation();

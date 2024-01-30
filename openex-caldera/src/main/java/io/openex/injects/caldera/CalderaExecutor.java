@@ -2,9 +2,7 @@ package io.openex.injects.caldera;
 
 import io.openex.contract.Contract;
 import io.openex.database.model.Asset;
-import io.openex.database.model.Endpoint;
 import io.openex.database.model.Execution;
-import io.openex.database.model.Inject;
 import io.openex.execution.ExecutableInject;
 import io.openex.execution.Injector;
 import io.openex.injects.caldera.config.InjectorCalderaConfig;
@@ -12,8 +10,8 @@ import io.openex.injects.caldera.model.CalderaInjectContent;
 import io.openex.injects.caldera.service.InjectorCalderaService;
 import io.openex.model.Expectation;
 import io.openex.model.expectation.TechnicalExpectation;
-import io.openex.service.AssetEndpointService;
 import io.openex.service.AssetGroupService;
+import io.openex.service.AssetService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -38,7 +36,7 @@ public class CalderaExecutor extends Injector {
   private final InjectorCalderaConfig config;
   private final InjectorCalderaService calderaService;
   private final AssetGroupService assetGroupService;
-  private final AssetEndpointService assetEndpointService;
+  private final AssetService assetService;
 
   @Override
   public List<Expectation> process(
@@ -96,25 +94,15 @@ public class CalderaExecutor extends Injector {
 
   // -- ASSET --
 
-  @Override
-  public List<Asset> assets(@NotNull final Inject inject) {
-    try {
-      CalderaInjectContent content = contentConvert(inject, CalderaInjectContent.class);
-      return this.computeValidAsset(content);
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-  }
-
   private List<Asset> computeValidAsset(@NotNull final CalderaInjectContent content) {
     List<Asset> assets = new ArrayList<>();
-    if (hasText(content.getEndpoint())) {
-      String endpointId = content.getEndpoint();
-      Endpoint endpoint = this.assetEndpointService.endpoint(endpointId);
-      // Verify endpoint validity
-      endpoint.getSources().keySet().forEach((key) -> {
+    if (hasText(content.getAsset())) {
+      String assetId = content.getAsset();
+      Asset asset = this.assetService.asset(assetId);
+      // Verify asset validity
+      asset.getSources().keySet().forEach((key) -> {
         if (this.config.getCollectorIds().contains(key)) {
-          assets.add(endpoint);
+          assets.add(asset);
         }
       });
     }
@@ -122,7 +110,7 @@ public class CalderaExecutor extends Injector {
     if (hasText(content.getAssetgroup())) {
       String assetGroupId = content.getAssetgroup();
       List<Asset> assetsFromGroup = this.assetGroupService.assetsFromAssetGroup(assetGroupId);
-      // Verify endpoint validity
+      // Verify asset validity
       assets.addAll(
           assetsFromGroup.stream()
               .flatMap((e) -> {

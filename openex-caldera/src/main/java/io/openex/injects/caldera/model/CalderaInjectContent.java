@@ -15,8 +15,8 @@ public class CalderaInjectContent {
   @JsonProperty("obfuscator")
   private String obfuscator;
 
-  @JsonProperty("endpoint")
-  private String endpoint;
+  @JsonProperty("asset")
+  private String asset;
 
   @JsonProperty("assetgroup")
   private String assetgroup;
