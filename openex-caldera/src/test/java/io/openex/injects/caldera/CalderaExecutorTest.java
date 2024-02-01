@@ -10,7 +10,6 @@ import io.openex.injects.caldera.service.InjectorCalderaService;
 import io.openex.model.inject.form.Expectation;
 import io.openex.service.AssetEndpointService;
 import io.openex.service.AssetGroupService;
-import jakarta.annotation.Nullable;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -61,12 +60,11 @@ public class CalderaExecutorTest {
 
     Inject inject = new Inject();
     inject.setContract(contract.getId());
-    CalderaInjectContent calderaContent = calderaContent(endpoint.getId(), null);
+    inject.setAssets(List.of(endpoint));
+    CalderaInjectContent calderaContent = calderaContent();
     inject.setContent(this.mapper.valueToTree(calderaContent));
 
-    ExecutableInject executableInject = new ExecutableInject(
-        true, true, inject, contract, List.of(), List.of(), List.of()
-    );
+    ExecutableInject executableInject = new ExecutableInject(true, true, inject, contract, List.of());
     Execution execution = new Execution(executableInject.isRuntime());
 
     // MOCK
@@ -97,12 +95,11 @@ public class CalderaExecutorTest {
 
     Inject inject = new Inject();
     inject.setContract(contract.getId());
-    CalderaInjectContent calderaContent = calderaContent(null, assetGroup.getId());
+    inject.setAssetGroups(List.of(assetGroup));
+    CalderaInjectContent calderaContent = calderaContent();
     inject.setContent(this.mapper.valueToTree(calderaContent));
 
-    ExecutableInject executableInject = new ExecutableInject(
-        true, true, inject, contract, List.of(), List.of(), List.of()
-    );
+    ExecutableInject executableInject = new ExecutableInject(true, true, inject, contract, List.of());
     Execution execution = new Execution(executableInject.isRuntime());
 
     // MOCK
@@ -111,9 +108,9 @@ public class CalderaExecutorTest {
     Mockito.when(this.calderaService.linkId(paw3, contract.getId())).thenThrow();
 
     // -- EXECUTE --
-    List<io.openex.model.Expectation> expectations = this.calderaExecutor.process(execution, executableInject,
-        contract);
-    assertEquals(1, expectations.size());
+    List<io.openex.model.Expectation> expectations = this.calderaExecutor
+        .process(execution, executableInject, contract);
+    assertEquals(2, expectations.size()); // One for the asset group and one for the asset
 
     // -- CLEAN --
     this.deleteAssetGroup(assetGroup.getId());
@@ -133,17 +130,14 @@ public class CalderaExecutorTest {
     );
   }
 
-  private CalderaInjectContent calderaContent(
-      @Nullable final String endpointId,
-      @Nullable final String assetGroupId) {
+  private CalderaInjectContent calderaContent() {
     CalderaInjectContent content = new CalderaInjectContent();
-    content.setAsset(endpointId);
-    content.setAssetgroup(assetGroupId);
     List<Expectation> expectations = new ArrayList<>();
     Expectation expectation = new Expectation();
     expectation.setType(TECHNICAL);
     expectation.setName("Technical");
     expectation.setScore(10);
+    expectation.setExpectationGroup(true);
     expectations.add(expectation);
     content.setExpectations(expectations);
     return content;

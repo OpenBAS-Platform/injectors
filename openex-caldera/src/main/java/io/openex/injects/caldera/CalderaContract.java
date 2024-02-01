@@ -109,12 +109,14 @@ public class CalderaContract extends Contractor {
       builder.mandatory(obfuscatorField);
       builder.mandatoryGroup(assetField, assetGroupField);
       builder.optional(expectationsField);
-      return executableContract(
+      Contract contract = executableContract(
           contractConfig,
           ability.getAbility_id(),
           Map.of(en, ability.getName(), fr, ability.getName()),
           builder.build()
       );
+      contract.addContext("collector-ids", String.join(", ", this.config.getCollectorIds()));
+      return contract;
     })).collect(Collectors.toList());
   }
 }

@@ -15,12 +15,6 @@ public class CalderaInjectContent {
   @JsonProperty("obfuscator")
   private String obfuscator;
 
-  @JsonProperty("asset")
-  private String asset;
-
-  @JsonProperty("assetgroup")
-  private String assetgroup;
-
   @JsonProperty("expectations")
   private List<Expectation> expectations = new ArrayList<>();
 
