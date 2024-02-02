@@ -37,7 +37,7 @@ public class OvhSmsExecutor extends Injector {
     Inject inject = injection.getInject();
     OvhSmsContent content = contentConvert(injection, OvhSmsContent.class);
     String smsMessage = content.buildMessage(inject.getFooter(), inject.getHeader());
-    List<ExecutionContext> users = injection.getUsers();
+    List<ExecutionContext> users = injection.getContextUser();
     if (users.isEmpty()) {
       throw new UnsupportedOperationException("Sms needs at least one user");
     }

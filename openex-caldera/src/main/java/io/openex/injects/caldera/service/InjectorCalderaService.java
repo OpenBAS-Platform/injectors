@@ -7,11 +7,11 @@ import io.openex.injects.caldera.client.model.Link;
 import io.openex.injects.caldera.client.model.Result;
 import io.openex.injects.caldera.model.Obfuscator;
 import io.openex.injects.caldera.model.ResultStatus;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import jakarta.validation.constraints.NotBlank;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Comparator;
@@ -21,7 +21,6 @@ import java.util.Optional;
 import static org.springframework.util.StringUtils.hasText;
 
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class InjectorCalderaService {
 
@@ -48,7 +47,7 @@ public class InjectorCalderaService {
 
   public String linkId(
       @NotBlank final String paw,
-      @NotBlank final String abilityId) {
+      @NotBlank final String abilityId) throws RuntimeException {
     Agent agent = this.client.agent(paw, "links");
     // Take the last created
     Link agentLink = agent.getLinks()
@@ -79,7 +78,7 @@ public class InjectorCalderaService {
       //    - json object with stdout & stderr if ability execution return something
       String resultOutput = result.getOutput();
       byte[] decodedBytes = Base64.getDecoder().decode(resultOutput);
-      String decodedString = new String(decodedBytes);
+      String decodedString = new String(decodedBytes, StandardCharsets.UTF_8);
       resultStatus.setContent(hasText(decodedString) ? decodedString : "no output to show");
     }
     return resultStatus;
