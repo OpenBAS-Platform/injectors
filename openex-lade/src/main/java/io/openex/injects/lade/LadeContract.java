@@ -38,7 +38,7 @@ public class LadeContract extends Contractor {
 
     @Override
     public ContractConfig getConfig() {
-        return new ContractConfig(TYPE, Map.of(en, "Airbus LADE"), "#673AB7", "/img/airbus.png", isExpose());
+        return new ContractConfig(TYPE, Map.of(en, "Airbus LADE"), "#673AB7", "#673AB7", "/img/airbus.png", isExpose());
     }
 
     @Autowired

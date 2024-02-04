@@ -48,7 +48,7 @@ public class OvhSmsContract extends Contractor {
 
     @Override
     public ContractConfig getConfig() {
-        return new ContractConfig(TYPE, Map.of(en, "SMS (OVH)"), "#9c27b0", "/img/sms.png", isExpose());
+        return new ContractConfig(TYPE, Map.of(en, "SMS (OVH)"), "#9c27b0", "#9c27b0", "/img/sms.png", isExpose());
     }
 
     @Override

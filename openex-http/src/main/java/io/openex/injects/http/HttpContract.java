@@ -52,7 +52,7 @@ public class HttpContract extends Contractor {
   @Override
   public ContractConfig getConfig() {
     Map<SupportedLanguage, String> labels = Map.of(en, "HTTP Request", fr, "Requête HTTP");
-    return new ContractConfig(TYPE, labels, "#00bcd4", "/img/http.png", isExpose());
+    return new ContractConfig(TYPE, labels, "#00bcd4", "#00bcd4", "/img/http.png", isExpose());
   }
 
   @Autowired
