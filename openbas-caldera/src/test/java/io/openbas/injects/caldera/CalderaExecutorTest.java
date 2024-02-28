@@ -8,8 +8,8 @@ import io.openbas.injects.caldera.config.InjectorCalderaConfig;
 import io.openbas.injects.caldera.model.CalderaInjectContent;
 import io.openbas.injects.caldera.service.InjectorCalderaService;
 import io.openbas.model.inject.form.Expectation;
-import io.openbas.service.AssetEndpointService;
-import io.openbas.service.AssetGroupService;
+import io.openbas.asset.EndpointService;
+import io.openbas.asset.AssetGroupService;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -42,7 +42,7 @@ public class CalderaExecutorTest {
   private ObjectMapper mapper;
 
   @Autowired
-  private AssetEndpointService assetEndpointService;
+  private EndpointService endpointService;
   @Autowired
   private AssetGroupService assetGroupService;
 
@@ -154,11 +154,11 @@ public class CalderaExecutorTest {
         put(config.getCollectorIds().stream().findFirst().orElseThrow(), paw);
       }});
     }
-    return this.assetEndpointService.createEndpoint(endpoint);
+    return this.endpointService.createEndpoint(endpoint);
   }
 
   private void deleteEndpoint(@NotBlank final String endpointId) {
-    this.assetEndpointService.deleteEndpoint(endpointId);
+    this.endpointService.deleteEndpoint(endpointId);
   }
 
   private AssetGroup createAssetGroup(@NotEmpty final List<Asset> assets) {

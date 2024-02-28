@@ -1,5 +1,6 @@
 package io.openbas.injects.caldera;
 
+import io.openex.asset.AssetGroupService;
 import io.openbas.contract.Contract;
 import io.openbas.database.model.Asset;
 import io.openbas.database.model.AssetGroup;
@@ -11,8 +12,8 @@ import io.openbas.injects.caldera.config.InjectorCalderaConfig;
 import io.openbas.injects.caldera.model.CalderaInjectContent;
 import io.openbas.injects.caldera.service.InjectorCalderaService;
 import io.openbas.model.Expectation;
+import io.openbas.model.expectation.DetectionExpectation;
 import io.openbas.model.expectation.TechnicalExpectation;
-import io.openbas.service.AssetGroupService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
@@ -27,6 +28,8 @@ import java.util.stream.Stream;
 
 import static io.openbas.database.model.ExecutionTrace.traceInfo;
 import static io.openbas.helper.SupportedLanguage.en;
+import static io.openex.model.expectation.DetectionExpectation.detectionExpectation;
+import static io.openex.model.expectation.DetectionExpectation.detectionExpectationForAssetGroup;
 import static io.openbas.model.expectation.TechnicalExpectation.technicalExpectationForAsset;
 import static io.openbas.model.expectation.TechnicalExpectation.technicalExpectationForAssetGroup;
 
@@ -123,7 +126,7 @@ public class CalderaExecutor extends Injector {
   }
 
   /**
-   * In case of direct asset, we have an individual technical expectation for the asset
+   * In case of direct asset, we have an individual expectation for the asset
    */
   private void computeExpectationsForAsset(
       @NotNull final List<Expectation> expectations,
@@ -135,8 +138,9 @@ public class CalderaExecutor extends Injector {
           content.getExpectations()
               .stream()
               .flatMap((expectation) -> switch (expectation.getType()) {
-                case TECHNICAL ->
-                    Stream.of(technicalExpectationForAsset(expectation.getScore(), asset, expectationGroup)); // expectationGroup usefull in front-end
+                case TECHNICAL -> Stream.of(technicalExpectationForAsset(expectation.getScore(), asset,
+                    expectationGroup)); // expectationGroup usefully in front-end
+                case DETECTION -> Stream.of(detectionExpectation(expectation.getScore(), asset, expectationGroup));
                 default -> Stream.of();
               })
               .toList()
@@ -145,8 +149,8 @@ public class CalderaExecutor extends Injector {
   }
 
   /**
-   * In case of asset group if expectation group -> we have a technical expectation for the group and one for each asset
-   * if not expectation group -> we have an individual technical expectation for each asset
+   * In case of asset group if expectation group -> we have an expectation for the group and one for each asset if not
+   * expectation group -> we have an individual expectation for each asset
    */
   private void computeExpectationsForAssetGroup(
       @NotNull final List<Expectation> expectations,
@@ -162,7 +166,18 @@ public class CalderaExecutor extends Injector {
                   List<Asset> assets = this.assetGroupService.assetsFromAssetGroup(assetGroup.getId());
                   if (assets.stream().anyMatch((asset) -> expectations.stream()
                       .anyMatch((e) -> ((TechnicalExpectation) e).getAsset().getId().equals(asset.getId())))) {
-                    yield Stream.of(technicalExpectationForAssetGroup(expectation.getScore(), assetGroup, expectation.isExpectationGroup()));
+                    yield Stream.of(technicalExpectationForAssetGroup(expectation.getScore(), assetGroup,
+                        expectation.isExpectationGroup()));
+                  }
+                  yield Stream.of();
+                }
+                case DETECTION -> {
+                  // Verify that at least one asset in the group has been executed
+                  List<Asset> assets = this.assetGroupService.assetsFromAssetGroup(assetGroup.getId());
+                  if (assets.stream().anyMatch((asset) -> expectations.stream()
+                      .anyMatch((e) -> ((DetectionExpectation) e).getAsset().getId().equals(asset.getId())))) {
+                    yield Stream.of(detectionExpectationForAssetGroup(expectation.getScore(), assetGroup,
+                        expectation.isExpectationGroup()));
                   }
                   yield Stream.of();
                 }

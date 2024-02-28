@@ -6,7 +6,7 @@ import io.openbas.database.repository.InjectRepository;
 import io.openbas.database.repository.InjectStatusRepository;
 import io.openbas.injects.caldera.CalderaContract;
 import io.openbas.injects.caldera.model.ResultStatus;
-import io.openbas.service.AssetGroupService;
+import io.openbas.asset.AssetGroupService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
