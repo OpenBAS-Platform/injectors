@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.openex</groupId>
-    <artifactId>openex-injectors</artifactId>
+    <groupId>io.openbas</groupId>
+    <artifactId>openbas-injectors</artifactId>
     <version>3.5.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>OpenEx injectors</name>
-    <description>OpenEx injectors</description>
+    <name>OpenBAS injectors</name>
+    <description>OpenBAS injectors</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
@@ -48,8 +48,8 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.openex</groupId>
-            <artifactId>openex-framework</artifactId>
+            <groupId>io.openbas</groupId>
+            <artifactId>openbas-framework</artifactId>
             <version>3.5.0-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
@@ -113,10 +113,10 @@
     </build>
 
     <modules>
-        <module>openex-lade</module>
-        <module>openex-mastodon</module>
-        <module>openex-ovh</module>
-        <module>openex-http</module>
-        <module>openex-caldera</module>
+        <module>openbas-lade</module>
+        <module>openbas-mastodon</module>
+        <module>openbas-ovh</module>
+        <module>openbas-http</module>
+        <module>openbas-caldera</module>
     </modules>
 </project>
