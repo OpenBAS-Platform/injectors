@@ -30,7 +30,7 @@ import static io.openbas.contract.fields.ContractAsset.assetField;
 import static io.openbas.contract.fields.ContractAssetGroup.assetGroupField;
 import static io.openbas.contract.fields.ContractExpectations.expectationsField;
 import static io.openbas.contract.fields.ContractSelect.selectFieldWithDefault;
-import static io.openex.database.model.InjectExpectation.EXPECTATION_TYPE.DETECTION;
+import static io.openbas.database.model.InjectExpectation.EXPECTATION_TYPE.DETECTION;
 import static io.openbas.database.model.InjectExpectation.EXPECTATION_TYPE.TECHNICAL;
 import static io.openbas.helper.SupportedLanguage.en;
 import static io.openbas.helper.SupportedLanguage.fr;

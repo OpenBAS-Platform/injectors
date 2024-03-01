@@ -1,6 +1,6 @@
 package io.openbas.injects.caldera;
 
-import io.openex.asset.AssetGroupService;
+import io.openbas.asset.AssetGroupService;
 import io.openbas.contract.Contract;
 import io.openbas.database.model.Asset;
 import io.openbas.database.model.AssetGroup;
@@ -28,8 +28,8 @@ import java.util.stream.Stream;
 
 import static io.openbas.database.model.ExecutionTrace.traceInfo;
 import static io.openbas.helper.SupportedLanguage.en;
-import static io.openex.model.expectation.DetectionExpectation.detectionExpectation;
-import static io.openex.model.expectation.DetectionExpectation.detectionExpectationForAssetGroup;
+import static io.openbas.model.expectation.DetectionExpectation.detectionExpectation;
+import static io.openbas.model.expectation.DetectionExpectation.detectionExpectationForAssetGroup;
 import static io.openbas.model.expectation.TechnicalExpectation.technicalExpectationForAsset;
 import static io.openbas.model.expectation.TechnicalExpectation.technicalExpectationForAssetGroup;
 
