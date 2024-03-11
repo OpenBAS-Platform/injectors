@@ -31,7 +31,7 @@ import static io.openbas.contract.fields.ContractAssetGroup.assetGroupField;
 import static io.openbas.contract.fields.ContractExpectations.expectationsField;
 import static io.openbas.contract.fields.ContractSelect.selectFieldWithDefault;
 import static io.openbas.database.model.InjectExpectation.EXPECTATION_TYPE.DETECTION;
-import static io.openbas.database.model.InjectExpectation.EXPECTATION_TYPE.TECHNICAL;
+import static io.openbas.database.model.InjectExpectation.EXPECTATION_TYPE.PREVENTION;
 import static io.openbas.helper.SupportedLanguage.en;
 import static io.openbas.helper.SupportedLanguage.fr;
 
@@ -85,11 +85,11 @@ public class CalderaContract extends Contractor {
   }
 
   private ContractExpectations expectations() {
-    // Technical
-    Expectation technicalExpectation = new Expectation();
-    technicalExpectation.setType(TECHNICAL);
-    technicalExpectation.setName("Expect technical inject to failed");
-    technicalExpectation.setScore(0);
+    // Prevention
+    Expectation preventionExpectation = new Expectation();
+    preventionExpectation.setType(PREVENTION);
+    preventionExpectation.setName("Expect inject to be prevented");
+    preventionExpectation.setScore(0);
     // Detection
     Expectation detectionExpectation = new Expectation();
     detectionExpectation.setType(DETECTION);
@@ -97,7 +97,7 @@ public class CalderaContract extends Contractor {
     detectionExpectation.setScore(0);
 
     return expectationsField(
-        "expectations", "Expectations", List.of(technicalExpectation, detectionExpectation)
+        "expectations", "Expectations", List.of(preventionExpectation, detectionExpectation)
     );
   }
 

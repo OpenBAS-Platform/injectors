@@ -6,6 +6,7 @@ import io.openbas.database.repository.InjectRepository;
 import io.openbas.database.repository.InjectStatusRepository;
 import io.openbas.injectExpectation.InjectExpectationService;
 import io.openbas.injects.caldera.CalderaContract;
+import io.openbas.injects.caldera.config.InjectorCalderaConfig;
 import io.openbas.injects.caldera.model.ResultStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -15,12 +16,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 import static io.openbas.database.model.ExecutionTrace.traceError;
 import static io.openbas.database.model.ExecutionTrace.traceInfo;
-import static io.openbas.injectExpectation.InjectExpectationUtils.computeExpectationGroup;
+import static io.openbas.injectExpectation.InjectExpectationUtils.resultsBySourceId;
+import static io.openbas.injects.caldera.config.InjectorCalderaConfig.PRODUCT_NAME;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +33,7 @@ public class InjectorCalderaListener {
   private final InjectStatusRepository injectStatusRepository;
   private final InjectExpectationService injectExpectationService;
   private final InjectorCalderaService calderaService;
+  private final InjectorCalderaConfig injectorCalderaConfig;
   private final AssetGroupService assetGroupService;
 
   @Scheduled(fixedDelay = 60000, initialDelay = 0)
@@ -56,14 +60,15 @@ public class InjectorCalderaListener {
       for (String linkId : linkIds) {
         try {
           ResultStatus resultStatus = this.calderaService.results(linkId);
+
+          String currentAssetId = totalAssets.stream()
+              .filter((a) -> a.getSources().containsValue(resultStatus.getPaw()))
+              .findFirst()
+              .map(Asset::getId)
+              .orElseThrow();
+
           if (resultStatus.isComplete()) {
             completedActions.add(resultStatus);
-
-            String currentAssetId = totalAssets.stream()
-                .filter((a) -> a.getSources().containsValue(resultStatus.getPaw()))
-                .findFirst()
-                .map(Asset::getId)
-                .orElseThrow();
 
             computeExpectationForAsset(inject, currentAssetId, resultStatus.isFail(), resultStatus.getContent());
 
@@ -71,6 +76,12 @@ public class InjectorCalderaListener {
             if (resultStatus.getFinish().isAfter(finalExecutionTime)) {
               finalExecutionTime = resultStatus.getFinish();
             }
+          // TimeOut
+          } else if (injectStatus.getDate().isBefore(Instant.now().minus(5L, ChronoUnit.MINUTES))) {
+            resultStatus.setFail(true);
+            completedActions.add(resultStatus);
+
+            computeExpectationForAsset(inject, currentAssetId, resultStatus.isFail(), "Time out");
           }
         } catch (Exception e) {
           injectStatus.getReporting().addTrace(
@@ -95,16 +106,20 @@ public class InjectorCalderaListener {
   private void computeExpectationForAsset(
       @NotNull final Inject inject,
       @NotBlank final String assetId,
-      @NotNull final boolean success, // Is action failed, success for expectation
+      @NotNull final boolean fail, // Is action failed, success for expectation
       @NotBlank final String result) {
     InjectExpectation expectation = this.injectExpectationService
-        .technicalExpectationForAsset(inject, assetId);
+        .preventionExpectationForAsset(inject, assetId);
     if (expectation != null) {
       // Not already handle
-      if (expectation.getResult() == null) {
-        expectation.setResult(result);
-        expectation.setScore(success ? expectation.getExpectedScore() : 0);
-        this.injectExpectationService.update(expectation);
+      List<InjectExpectationResult> results = resultsBySourceId(expectation, this.injectorCalderaConfig.getId());
+      if (results.isEmpty()) {
+        this.injectExpectationService.computeExpectation(
+            expectation,
+            this.injectorCalderaConfig.getId(),
+            PRODUCT_NAME,
+            result,
+            fail);
       }
     }
   }
@@ -113,12 +128,23 @@ public class InjectorCalderaListener {
       @NotNull final Inject inject,
       @NotBlank final AssetGroup assetGroup) {
     InjectExpectation expectationAssetGroup = this.injectExpectationService
-        .technicalExpectationForAssetGroup(inject, assetGroup);
+        .preventionExpectationForAssetGroup(inject, assetGroup);
     if (expectationAssetGroup != null) {
       List<InjectExpectation> expectationAssets = this.injectExpectationService
-          .technicalExpectationForAssets(inject, assetGroup);
-      computeExpectationGroup(expectationAssetGroup, expectationAssets);
-      this.injectExpectationService.update(expectationAssetGroup);
+          .preventionExpectationForAssets(inject, assetGroup);
+      // Not already handle
+      List<InjectExpectationResult> results = resultsBySourceId(
+          expectationAssetGroup,
+          this.injectorCalderaConfig.getId()
+      );
+      if (results.isEmpty()) {
+        this.injectExpectationService.computeExpectationGroup(
+            expectationAssetGroup,
+            expectationAssets,
+            this.injectorCalderaConfig.getId(),
+            PRODUCT_NAME
+        );
+      }
     }
   }
 
