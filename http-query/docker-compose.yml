@@ -1,0 +1,11 @@
+version: '3'
+services:
+  injector-http-query:
+    image: openbas/injector-http-query:4.0.0
+    environment:
+      - OPENBAS_URL=http://localhost
+      - OPENBAS_TOKEN=ChangeMe
+      - INJECTOR_ID=ChangeMe
+      - "INJECTOR_NAME=HTTP query"
+      - INJECTOR_LOG_LEVEL=error
+    restart: always
