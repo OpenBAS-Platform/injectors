@@ -1,6 +1,5 @@
 package io.openbas.injects.ovh_sms;
 
-import io.openbas.contract.Contract;
 import io.openbas.database.model.Execution;
 import io.openbas.database.model.Inject;
 import io.openbas.execution.ExecutableInject;
@@ -31,13 +30,12 @@ public class OvhSmsExecutor extends Injector {
   @Override
   public List<Expectation> process(
       @NotNull final Execution execution,
-      @NotNull final ExecutableInject injection,
-      @NotNull final Contract contract)
+      @NotNull final ExecutableInject injection)
       throws Exception {
-    Inject inject = injection.getInject();
+    Inject inject = injection.getInjection().getInject();
     OvhSmsContent content = contentConvert(injection, OvhSmsContent.class);
     String smsMessage = content.buildMessage(inject.getFooter(), inject.getHeader());
-    List<ExecutionContext> users = injection.getContextUser();
+    List<ExecutionContext> users = injection.getUsers();
     if (users.isEmpty()) {
       throw new UnsupportedOperationException("Sms needs at least one user");
     }

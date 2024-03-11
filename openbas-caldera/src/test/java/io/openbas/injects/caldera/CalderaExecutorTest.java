@@ -54,28 +54,27 @@ public class CalderaExecutorTest {
   @Test
   void processEndpointTest() throws Exception {
     // -- PREPARE --
-    Contract contract = calderaContract();
+    String contract = calderaContract().getId();
 
     String paw = "paw-1";
     Endpoint endpoint = createEndpoint(paw, true);
 
     Inject inject = new Inject();
-    inject.setContract(contract.getId());
+    inject.setContract(contract);
     inject.setAssets(List.of(endpoint));
     CalderaInjectContent calderaContent = calderaContent();
     inject.setContent(this.mapper.valueToTree(calderaContent));
 
-    ExecutableInject executableInject = new ExecutableInject(true, true, inject, contract, List.of());
+    ExecutableInject executableInject = new ExecutableInject(true, true, inject, List.of());
     Execution execution = new Execution(executableInject.isRuntime());
 
     // MOCK
     ExploitResult exploitResult = new ExploitResult();
     exploitResult.setLinkId("linkId1");
-    Mockito.when(this.calderaService.exploitResult(paw, contract.getId())).thenReturn(exploitResult);
+    Mockito.when(this.calderaService.exploitResult(paw, contract)).thenReturn(exploitResult);
 
     // -- EXECUTE --
-    List<io.openbas.model.Expectation> expectations = this.calderaExecutor
-        .process(execution, executableInject, contract);
+    List<io.openbas.model.Expectation> expectations = this.calderaExecutor.process(execution, executableInject);
     assertEquals(1, expectations.size());
 
     // -- CLEAN --
@@ -102,7 +101,7 @@ public class CalderaExecutorTest {
     CalderaInjectContent calderaContent = calderaContent();
     inject.setContent(this.mapper.valueToTree(calderaContent));
 
-    ExecutableInject executableInject = new ExecutableInject(true, true, inject, contract, List.of());
+    ExecutableInject executableInject = new ExecutableInject(true, true, inject, List.of());
     Execution execution = new Execution(executableInject.isRuntime());
 
     // MOCK
@@ -115,8 +114,7 @@ public class CalderaExecutorTest {
     Mockito.when(this.calderaService.exploitResult(paw3, contract.getId())).thenThrow(new RuntimeException("Not exploited"));
 
     // -- EXECUTE --
-    List<io.openbas.model.Expectation> expectations = this.calderaExecutor
-        .process(execution, executableInject, contract);
+    List<io.openbas.model.Expectation> expectations = this.calderaExecutor.process(execution, executableInject);
     assertEquals(2, expectations.size()); // One for the asset group and one for the asset
 
     // -- CLEAN --

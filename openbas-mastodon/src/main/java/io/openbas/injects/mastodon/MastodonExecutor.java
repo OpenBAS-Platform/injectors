@@ -1,6 +1,5 @@
 package io.openbas.injects.mastodon;
 
-import io.openbas.contract.Contract;
 import io.openbas.database.model.*;
 import io.openbas.execution.ExecutableInject;
 import io.openbas.execution.Injector;
@@ -25,9 +24,8 @@ public class MastodonExecutor extends Injector {
     @Override
     public List<Expectation> process(
         @NotNull final Execution execution,
-        @NotNull final ExecutableInject injection,
-        @NotNull final Contract contract) throws Exception {
-        Inject inject = injection.getInject();
+        @NotNull final ExecutableInject injection) throws Exception {
+        Inject inject = injection.getInjection().getInject();
         MastodonContent content = contentConvert(injection, MastodonContent.class);
         String token = content.getToken();
         String status = content.buildStatus(inject.getFooter(), inject.getHeader());
