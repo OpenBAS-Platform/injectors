@@ -55,7 +55,7 @@ public class InjectorCalderaListener {
           .toList());
       totalAssets.addAll(assets);
 
-      String[] linkIds = injectStatus.getAsyncIds();
+      List<String> linkIds = injectStatus.statusIdentifiers();
       List<ResultStatus> completedActions = new ArrayList<>();
       for (String linkId : linkIds) {
         try {
@@ -91,7 +91,7 @@ public class InjectorCalderaListener {
       }
 
       // Compute status only if all actions are completed
-      if (completedActions.size() == linkIds.length) {
+      if (completedActions.size() == linkIds.size()) {
         assetGroups.forEach((assetGroup -> computeExpectationForAssetGroup(inject, assetGroup)));
         int failedActions = (int) completedActions.stream().filter(ResultStatus::isFail).count();
         computeInjectStatus(injectStatus, finalExecutionTime, completedActions.size(), failedActions);
@@ -163,9 +163,8 @@ public class InjectorCalderaListener {
             "Caldera success to execute ability on " + (completedActions - failedActions)
                 + "/" + completedActions + " asset(s)")
     );
-    int executionTime = (int)
-        (finalExecutionTime.toEpochMilli() - injectStatus.getReporting().getStartTime().toEpochMilli());
-    injectStatus.setExecutionTime(executionTime);
+    long executionTime = (finalExecutionTime.toEpochMilli() - injectStatus.getReporting().getStartTime().toEpochMilli());
+    injectStatus.setTrackingTotalExecutionTime(executionTime);
     this.injectStatusRepository.save(injectStatus);
   }
 

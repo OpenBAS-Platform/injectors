@@ -168,10 +168,9 @@ public class InjectorCalderaListenerTest {
     InjectStatus injectStatus = new InjectStatus();
     injectStatus.setName(PENDING.name());
     injectStatus.setInject(inject);
-    injectStatus.setAsyncIds(new String[]{"linkId1"});
-    Execution execution = new Execution(false);
-    execution.stop();
-    injectStatus.setReporting(execution);
+    InjectStatusExecution statusExecution = new InjectStatusExecution();
+    statusExecution.setIdentifiers(List.of("linkId1"));
+    injectStatus.getTraces().add(statusExecution);
     return injectStatusRepository.save(injectStatus);
   }
 

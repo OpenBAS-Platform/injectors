@@ -33,7 +33,7 @@ public class LadeListener {
     // For each workflow ask for traces and status
     injectStatuses.forEach(injectStatus -> {
       // Add traces and close inject if needed.
-      String asyncId = Arrays.stream(injectStatus.getAsyncIds())
+      String asyncId = injectStatus.statusIdentifiers().stream()
           .findFirst()
           .orElse(null); // Lade handle only one asyncID for now
       try {
@@ -41,9 +41,9 @@ public class LadeListener {
         if (workflowStatus.isDone()) {
           String name = workflowStatus.isFail() ? ExecutionStatus.ERROR.name() : ExecutionStatus.SUCCESS.name();
           injectStatus.setName(name);
-          int executionTime = (int) (workflowStatus.getStopTime().toEpochMilli()
-              - injectStatus.getReporting().getStartTime().toEpochMilli());
-          injectStatus.setExecutionTime(executionTime);
+          long executionTime = workflowStatus.getStopTime().toEpochMilli()
+              - injectStatus.getReporting().getStartTime().toEpochMilli();
+          injectStatus.setTrackingTotalExecutionTime(executionTime);
         }
         injectStatus.getReporting().setTraces(workflowStatus.getTraces());
         this.injectStatusRepository.save(injectStatus);
