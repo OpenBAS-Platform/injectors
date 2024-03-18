@@ -1,8 +1,8 @@
 import json
 from typing import Dict
 
+from contracts_mailer import TYPE, EmailContracts
 from pybas import OpenBAS
-from contracts_mailer import EmailContracts
 from pybas._injectors.injector_helper import OpenBASInjectorHelper
 from pybas.utils import EnhancedJSONEncoder
 
@@ -14,8 +14,8 @@ class OpenBASEmail:
         config = {
             "injector_id": "ba0003bc-4edc-45f3-b047-bda6c3b66f74",
             "injector_name": "Mailer injector",
-            "injector_type": "openbas_mailer",
-            "injector_contracts": email_json_contract
+            "injector_type": TYPE,
+            "injector_contracts": email_json_contract,
         }
         injector_config = {
             "connection": {
@@ -46,4 +46,3 @@ class OpenBASEmail:
 if __name__ == "__main__":
     openBASEmail = OpenBASEmail()
     openBASEmail.start()
-

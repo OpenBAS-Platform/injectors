@@ -2,6 +2,7 @@ from typing import List
 
 from pybas._contracts.contract_builder import ContractBuilder
 from pybas._contracts.contract_config import (
+    Contract,
     ContractAttachment,
     ContractCardinality,
     ContractCheckbox,
@@ -12,10 +13,8 @@ from pybas._contracts.contract_config import (
     ContractText,
     ContractTextArea,
     SupportedLanguage,
-    Contract,
 )
 from pybas._contracts.contract_utils import ContractVariable, VariableType
-
 
 TYPE = "openbas_mailer"
 EMAIL_DEFAULT = "138ad8f8-32f8-4a22-8114-aaa12322bd11"
