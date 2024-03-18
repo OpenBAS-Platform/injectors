@@ -14,6 +14,8 @@ import java.util.List;
 @ConfigurationProperties(prefix = "injector.caldera")
 public class InjectorCalderaConfig {
 
+  public static final String PRODUCT_NAME = "Caldera";
+
   private final static String REST_V1_URI = "/api/rest";
   private final static String REST_V2_URI = "/api/v2";
   private final static String PLUGIN_ACCESS_URI = "/plugin/access";

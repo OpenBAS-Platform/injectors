@@ -9,7 +9,7 @@ import io.openbas.database.repository.InjectStatusRepository;
 import io.openbas.injects.caldera.CalderaContract;
 import io.openbas.injects.caldera.config.InjectorCalderaConfig;
 import io.openbas.injects.caldera.model.ResultStatus;
-import io.openbas.service.AssetEndpointService;
+import io.openbas.asset.EndpointService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.junit.jupiter.api.DisplayName;
@@ -55,7 +55,7 @@ public class InjectorCalderaListenerTest {
   private InjectExpectationRepository injectExpectationRepository;
 
   @Autowired
-  private AssetEndpointService assetEndpointService;
+  private EndpointService endpointService;
 
   @MockBean
   private InjectorCalderaService calderaService; // Mock
@@ -136,11 +136,11 @@ public class InjectorCalderaListenerTest {
         put(config.getCollectorIds().stream().findFirst().orElseThrow(), paw);
       }});
     }
-    return this.assetEndpointService.createEndpoint(endpoint);
+    return this.endpointService.createEndpoint(endpoint);
   }
 
   private void deleteEndpoint(@NotBlank final Endpoint endpoint) {
-    this.assetEndpointService.deleteEndpoint(endpoint.getId());
+    this.endpointService.deleteEndpoint(endpoint.getId());
   }
 
   // Inject

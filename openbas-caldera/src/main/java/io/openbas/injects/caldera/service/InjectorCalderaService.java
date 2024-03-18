@@ -1,10 +1,7 @@
 package io.openbas.injects.caldera.service;
 
 import io.openbas.injects.caldera.client.InjectorCalderaClient;
-import io.openbas.injects.caldera.client.model.Ability;
-import io.openbas.injects.caldera.client.model.Agent;
-import io.openbas.injects.caldera.client.model.Link;
-import io.openbas.injects.caldera.client.model.Result;
+import io.openbas.injects.caldera.client.model.*;
 import io.openbas.injects.caldera.model.Obfuscator;
 import io.openbas.injects.caldera.model.ResultStatus;
 import jakarta.validation.constraints.NotBlank;
@@ -45,7 +42,7 @@ public class InjectorCalderaService {
 
   // -- LINK --
 
-  public String linkId(
+  public ExploitResult exploitResult(
       @NotBlank final String paw,
       @NotBlank final String abilityId) throws RuntimeException {
     Agent agent = this.client.agent(paw, "links");
@@ -56,7 +53,11 @@ public class InjectorCalderaService {
         .max(Comparator.comparing(l -> Instant.parse(l.getDecide())))
         .orElseThrow(() -> new RuntimeException("Caldera fail to execute ability " + abilityId + " on paw " + paw));
     assert paw.equals(agentLink.getPaw());
-    return agentLink.getId();
+    ExploitResult exploitResult = new ExploitResult();
+    exploitResult.setLinkId(agentLink.getId());
+    byte[] decodedBytes = Base64.getDecoder().decode(agentLink.getCommand());
+    exploitResult.setCommand(new String(decodedBytes, StandardCharsets.UTF_8));
+    return exploitResult;
   }
 
   public ResultStatus results(@NotBlank final String linkId) {

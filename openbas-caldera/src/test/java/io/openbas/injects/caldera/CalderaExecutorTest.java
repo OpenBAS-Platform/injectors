@@ -4,12 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openbas.contract.Contract;
 import io.openbas.database.model.*;
 import io.openbas.execution.ExecutableInject;
+import io.openbas.injects.caldera.client.model.ExploitResult;
 import io.openbas.injects.caldera.config.InjectorCalderaConfig;
 import io.openbas.injects.caldera.model.CalderaInjectContent;
 import io.openbas.injects.caldera.service.InjectorCalderaService;
 import io.openbas.model.inject.form.Expectation;
-import io.openbas.service.AssetEndpointService;
-import io.openbas.service.AssetGroupService;
+import io.openbas.asset.EndpointService;
+import io.openbas.asset.AssetGroupService;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -25,7 +26,7 @@ import java.util.*;
 import static io.openbas.contract.Contract.executableContract;
 import static io.openbas.contract.ContractDef.contractBuilder;
 import static io.openbas.database.model.Endpoint.PLATFORM_TYPE.Linux;
-import static io.openbas.database.model.InjectExpectation.EXPECTATION_TYPE.TECHNICAL;
+import static io.openbas.database.model.InjectExpectation.EXPECTATION_TYPE.PREVENTION;
 import static io.openbas.helper.SupportedLanguage.en;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -42,7 +43,7 @@ public class CalderaExecutorTest {
   private ObjectMapper mapper;
 
   @Autowired
-  private AssetEndpointService assetEndpointService;
+  private EndpointService endpointService;
   @Autowired
   private AssetGroupService assetGroupService;
 
@@ -68,7 +69,9 @@ public class CalderaExecutorTest {
     Execution execution = new Execution(executableInject.isRuntime());
 
     // MOCK
-    Mockito.when(this.calderaService.linkId(paw, contract.getId())).thenReturn("linkId1");
+    ExploitResult exploitResult = new ExploitResult();
+    exploitResult.setLinkId("linkId1");
+    Mockito.when(this.calderaService.exploitResult(paw, contract.getId())).thenReturn(exploitResult);
 
     // -- EXECUTE --
     List<io.openbas.model.Expectation> expectations = this.calderaExecutor
@@ -103,9 +106,13 @@ public class CalderaExecutorTest {
     Execution execution = new Execution(executableInject.isRuntime());
 
     // MOCK
-    Mockito.when(this.calderaService.linkId(paw1, contract.getId())).thenReturn("linkId1");
-    Mockito.when(this.calderaService.linkId(paw2, contract.getId())).thenReturn("linkId2");
-    Mockito.when(this.calderaService.linkId(paw3, contract.getId())).thenThrow();
+    ExploitResult exploitResult1 = new ExploitResult();
+    exploitResult1.setLinkId("linkId1");
+    ExploitResult exploitResult2 = new ExploitResult();
+    exploitResult2.setLinkId("linkId2");
+    Mockito.when(this.calderaService.exploitResult(paw1, contract.getId())).thenReturn(exploitResult1);
+    Mockito.when(this.calderaService.exploitResult(paw2, contract.getId())).thenReturn(exploitResult2);
+    Mockito.when(this.calderaService.exploitResult(paw3, contract.getId())).thenThrow(new RuntimeException("Not exploited"));
 
     // -- EXECUTE --
     List<io.openbas.model.Expectation> expectations = this.calderaExecutor
@@ -134,8 +141,8 @@ public class CalderaExecutorTest {
     CalderaInjectContent content = new CalderaInjectContent();
     List<Expectation> expectations = new ArrayList<>();
     Expectation expectation = new Expectation();
-    expectation.setType(TECHNICAL);
-    expectation.setName("Technical");
+    expectation.setType(PREVENTION);
+    expectation.setName("Prevention");
     expectation.setScore(10);
     expectation.setExpectationGroup(true);
     expectations.add(expectation);
@@ -154,11 +161,11 @@ public class CalderaExecutorTest {
         put(config.getCollectorIds().stream().findFirst().orElseThrow(), paw);
       }});
     }
-    return this.assetEndpointService.createEndpoint(endpoint);
+    return this.endpointService.createEndpoint(endpoint);
   }
 
   private void deleteEndpoint(@NotBlank final String endpointId) {
-    this.assetEndpointService.deleteEndpoint(endpointId);
+    this.endpointService.deleteEndpoint(endpointId);
   }
 
   private AssetGroup createAssetGroup(@NotEmpty final List<Asset> assets) {
