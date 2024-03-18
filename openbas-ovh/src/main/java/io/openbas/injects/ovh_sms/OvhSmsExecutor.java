@@ -18,8 +18,8 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static io.openbas.database.model.ExecutionTrace.traceError;
-import static io.openbas.database.model.ExecutionTrace.traceSuccess;
+import static io.openbas.database.model.InjectStatusExecution.traceError;
+import static io.openbas.database.model.InjectStatusExecution.traceSuccess;
 
 @Component(OvhSmsContract.TYPE)
 @RequiredArgsConstructor
@@ -45,14 +45,14 @@ public class OvhSmsExecutor extends Injector {
       String email = user.getEmail();
       if (!StringUtils.hasLength(phone)) {
         String message = "Sms fail for " + email + ": no phone number";
-        execution.addTrace(traceError(user.getId(), message));
+        execution.addTrace(traceError(message));
       } else {
         try {
           String callResult = smsService.sendSms(context, phone, smsMessage);
           String message = "Sms sent to " + email + " through " + phone + " (" + callResult + ")";
-          execution.addTrace(traceSuccess(user.getId(), message));
+          execution.addTrace(traceSuccess(message));
         } catch (Exception e) {
-          execution.addTrace(traceError(user.getId(), e.getMessage(), e));
+          execution.addTrace(traceError(e.getMessage()));
         }
       }
     });

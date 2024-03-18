@@ -41,11 +41,11 @@ public class LadeListener {
         if (workflowStatus.isDone()) {
           String name = workflowStatus.isFail() ? ExecutionStatus.ERROR.name() : ExecutionStatus.SUCCESS.name();
           injectStatus.setName(name);
-          long executionTime = workflowStatus.getStopTime().toEpochMilli()
-              - injectStatus.getReporting().getStartTime().toEpochMilli();
-          injectStatus.setTrackingTotalExecutionTime(executionTime);
+          // long executionTime = workflowStatus.getStopTime().toEpochMilli()
+          //     - injectStatus.getReporting().getStartTime().toEpochMilli();
+          // injectStatus.setTrackingTotalExecutionTime(executionTime);
         }
-        injectStatus.getReporting().setTraces(workflowStatus.getTraces());
+        // injectStatus.getReporting().setTraces(workflowStatus.getTraces());
         this.injectStatusRepository.save(injectStatus);
         // Update related inject
         Inject relatedInject = injectStatus.getInject();

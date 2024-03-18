@@ -7,6 +7,7 @@ import io.openbas.database.model.Execution;
 import io.openbas.injects.http.model.HttpFormPostModel;
 import io.openbas.injects.http.model.HttpGetModel;
 import io.openbas.injects.http.model.HttpRawPostModel;
+import jakarta.annotation.Resource;
 import org.apache.hc.client5.http.ClientProtocolException;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
@@ -24,7 +25,6 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.logging.Logger;
 
 import static io.openbas.contract.fields.ContractTuple.FILE_PREFIX;
-import static io.openbas.database.model.ExecutionTrace.traceError;
+import static io.openbas.database.model.InjectStatusExecution.traceError;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Component
@@ -79,7 +79,7 @@ public class HttpService {
                     builder.addBinaryBody(pair.getKey(), file.data(), ContentType.parse(file.contentType()), file.name());
                 } else {
                     String message = "Error finding attachment for " + fileId + " when Sending form post";
-                    execution.addTrace(traceError("http", message));
+                    execution.addTrace(traceError(message));
                 }
             } else {
                 ContentType contentType = isJsonText(val) ? ContentType.APPLICATION_JSON : ContentType.TEXT_PLAIN;

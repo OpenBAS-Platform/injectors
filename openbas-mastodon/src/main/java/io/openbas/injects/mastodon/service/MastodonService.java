@@ -1,10 +1,10 @@
 package io.openbas.injects.mastodon.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.openbas.database.model.Execution;
-import io.openbas.database.model.ExecutionTrace;
-import io.openbas.injects.mastodon.config.MastodonConfig;
 import io.openbas.database.model.DataAttachment;
+import io.openbas.database.model.Execution;
+import io.openbas.injects.mastodon.config.MastodonConfig;
+import jakarta.annotation.Resource;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
@@ -17,10 +17,11 @@ import org.apache.hc.core5.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.Resource;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static io.openbas.database.model.InjectStatusExecution.traceError;
 
 @Component
 public class MastodonService {
@@ -74,12 +75,12 @@ public class MastodonService {
                         attachmentIds.add(mapper.readTree(body).get("id").asText());
                         return true;
                     } else {
-                        execution.addTrace(ExecutionTrace.traceError(getClass().getSimpleName(), "Cannot upload attachment " + attachment.name(), null));
+                        execution.addTrace(traceError("Cannot upload attachment " + attachment.name()));
                         return false;
                     }
                 });
             } catch (IOException e) {
-                execution.addTrace(ExecutionTrace.traceError(getClass().getSimpleName(), "Cannot upload attachment " + attachment.name(), e));
+                execution.addTrace(traceError("Cannot upload attachment " + attachment.name()));
             }
         });
         Thread.sleep(3000);

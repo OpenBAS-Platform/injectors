@@ -28,7 +28,7 @@ import java.util.logging.Level;
 import java.util.stream.Stream;
 
 import static io.openbas.database.model.ExecutionTrace.COMMAND_LINE_IDENTIFIER;
-import static io.openbas.database.model.ExecutionTrace.traceInfo;
+import static io.openbas.database.model.InjectStatusExecution.traceInfo;
 import static io.openbas.model.expectation.DetectionExpectation.detectionExpectation;
 import static io.openbas.model.expectation.DetectionExpectation.detectionExpectationForAssetGroup;
 import static io.openbas.model.expectation.PreventionExpectation.preventionExpectationForAsset;
@@ -82,8 +82,7 @@ public class CalderaExecutor extends Injector {
     }
 
     String message = ""; // "Caldera execute ability " + contract.getLabel().get(en) + " on " + asyncIds.size() + " asset(s)";
-    execution.addTrace(traceInfo("caldera", message));
-    execution.setAsyncIds(asyncIds.toArray(new String[0]));
+    execution.addTrace(traceInfo(message, asyncIds));
 
     return expectations;
   }

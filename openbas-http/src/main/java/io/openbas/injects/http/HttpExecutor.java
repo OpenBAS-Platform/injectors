@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static io.openbas.database.model.ExecutionTrace.traceError;
-import static io.openbas.database.model.ExecutionTrace.traceSuccess;
+import static io.openbas.database.model.InjectStatusExecution.traceError;
+import static io.openbas.database.model.InjectStatusExecution.traceSuccess;
 import static io.openbas.injects.http.HttpContract.*;
 import static io.openbas.injects.http.service.HttpContractType.POST;
 import static io.openbas.injects.http.service.HttpContractType.PUT;
@@ -54,9 +54,9 @@ public class HttpExecutor extends Injector {
     try {
       String callResult = processExecution(execution, injection);
       String message = "Api request sent (" + callResult + ")";
-      execution.addTrace(traceSuccess("api", message));
+      execution.addTrace(traceSuccess(message));
     } catch (Exception e) {
-      execution.addTrace(traceError("api", e.getMessage(), e));
+      execution.addTrace(traceError(e.getMessage()));
     }
     return List.of();
   }

@@ -8,7 +8,7 @@ import io.openbas.contract.Contract;
 import io.openbas.contract.ContractConfig;
 import io.openbas.contract.ContractDef;
 import io.openbas.contract.fields.ContractSelect;
-import io.openbas.database.model.ExecutionTrace;
+import io.openbas.database.model.InjectStatusExecution;
 import io.openbas.injects.lade.config.LadeConfig;
 import io.openbas.injects.lade.model.LadeAuth;
 import io.openbas.injects.lade.model.LadeWorkflow;
@@ -296,11 +296,11 @@ public class LadeService {
                 String eventLevel = workflowEvent.get("level").asText();
                 String message = workflowEvent.get("message").asText();
                 if (!message.isEmpty() && !message.equals("null")) {
-                    ExecutionTrace trace;
+                    InjectStatusExecution trace;
                     if (eventLevel.equals("error")) {
-                        trace = ExecutionTrace.traceError("lade", message);
+                        trace = InjectStatusExecution.traceError(message);
                     } else {
-                        trace = ExecutionTrace.traceSuccess("lade", message);
+                        trace = InjectStatusExecution.traceSuccess(message);
                     }
                     ladeWorkflow.addTrace(trace);
                 }

@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static io.openbas.database.model.ExecutionTrace.traceError;
-import static io.openbas.database.model.ExecutionTrace.traceInfo;
+import static io.openbas.database.model.InjectStatusExecution.traceError;
+import static io.openbas.database.model.InjectStatusExecution.traceInfo;
 
 @Component(LadeContract.TYPE)
 @RequiredArgsConstructor
@@ -38,11 +38,10 @@ public class LadeExecutor extends Injector {
             actionWorkflowId = ladeService.executeScenario(bundleIdentifier, inject.getContract(), content);
         default -> throw new UnsupportedOperationException(ladeType + " not supported");
       }
-      execution.setAsyncIds(new String[]{actionWorkflowId});
       String message = "Lade " + ladeType + " sent with workflow (" + actionWorkflowId + ")";
-      execution.addTrace(traceInfo("lade", message));
+      execution.addTrace(traceInfo(message, List.of(actionWorkflowId)));
     } catch (Exception e) {
-      execution.addTrace(traceError("lade", e.getMessage(), e));
+      execution.addTrace(traceError(e.getMessage()));
     }
     return List.of();
   }

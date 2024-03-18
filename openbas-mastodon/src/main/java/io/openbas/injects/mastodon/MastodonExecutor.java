@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static io.openbas.database.model.ExecutionTrace.traceError;
-import static io.openbas.database.model.ExecutionTrace.traceSuccess;
+import static io.openbas.database.model.InjectStatusExecution.traceError;
+import static io.openbas.database.model.InjectStatusExecution.traceSuccess;
 
 @Component(MastodonContract.TYPE)
 @RequiredArgsConstructor
@@ -35,9 +35,9 @@ public class MastodonExecutor extends Injector {
         try {
             String callResult = mastodonService.sendStatus(execution, token, status, attachments);
             String message = "Mastodon status sent (" + callResult + ")";
-            execution.addTrace(traceSuccess("mastodon", message));
+            execution.addTrace(traceSuccess(message));
         } catch (Exception e) {
-            execution.addTrace(traceError("mastodon", e.getMessage(), e));
+            execution.addTrace(traceError(e.getMessage()));
         }
         return List.of();
     }
