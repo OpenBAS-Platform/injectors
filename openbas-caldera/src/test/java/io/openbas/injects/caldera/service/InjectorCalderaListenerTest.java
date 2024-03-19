@@ -114,7 +114,8 @@ public class InjectorCalderaListenerTest {
     Exercise exercise = new Exercise();
     exercise.setName("Exercice name");
     exercise.setStart(Instant.now());
-    exercise.setReplyTo("test@test.com");
+    exercise.setFrom("test@test.com");
+    exercise.setReplyTo(List.of("test@test.com"));
     exercise.setStatus(RUNNING);
     return this.exerciseRepository.save(exercise);
   }
