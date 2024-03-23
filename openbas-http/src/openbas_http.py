@@ -23,7 +23,7 @@ class OpenBASHttp:
         http_json_contract = json.dumps(http_contract, cls=EnhancedJSONEncoder)
         config = {
             "injector_id": "ba0003bc-4edc-45f3-b047-bda6c3b66f78",
-            "injector_name": "Http injector",
+            "injector_name": "HTTP query",
             "injector_type": TYPE,
             "injector_contracts": http_json_contract,
         }
