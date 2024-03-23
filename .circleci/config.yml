@@ -199,7 +199,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - build_rolling_2:
           requires:
             - ensure_formatting
@@ -207,7 +207,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - notify_rolling:
           requires:
             - build_rolling_1
