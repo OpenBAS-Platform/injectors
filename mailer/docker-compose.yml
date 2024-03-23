@@ -1,11 +1,11 @@
 version: '3'
 services:
-  injector-http:
-    image: openbas/injector-http:4.0.0
+  injector-mailer:
+    image: openbas/injector-mailer:4.0.0
     environment:
       - OPENBAS_URL=http://localhost
       - OPENBAS_TOKEN=ChangeMe
       - INJECTOR_ID=ChangeMe
-      - "INJECTOR_NAME=HTTP query"
+      - INJECTOR_NAME=Mailer
       - INJECTOR_LOG_LEVEL=error
     restart: always
