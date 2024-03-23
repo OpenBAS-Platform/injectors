@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Create a bug report to help us improve OpenCTI
+about: Create a bug report to help us improve OpenBAS
 title: ''
 labels: bug, needs triage
 assignees: ''
@@ -13,9 +13,9 @@ assignees: ''
 
 ## Environment
 
-1. OS (where OpenCTI server runs): { e.g. Mac OS 10, Windows 10, Ubuntu 16.4, etc. }
-2. OpenCTI version: { e.g. OpenCTI 1.0.2 }
-3. OpenCTI client: { e.g. frontend or python }
+1. OS (where OpenBAS server runs): { e.g. Mac OS 10, Windows 10, Ubuntu 16.4, etc. }
+2. OpenBAS version: { e.g. OpenBAS 1.0.2 }
+3. OpenBAS client: { e.g. frontend or python }
 4. Other environment details:
 
 ## Reproducible Steps

@@ -12,9 +12,9 @@ from contracts_http import (
     TYPE,
     HttpContracts,
 )
-from pybas import OpenBAS
-from pybas._injectors.injector_helper import OpenBASInjectorHelper
-from pybas.utils import EnhancedJSONEncoder
+from pyobas import OpenBAS
+from pyobas._injectors.injector_helper import OpenBASInjectorHelper
+from pyobas.utils import EnhancedJSONEncoder
 
 
 class OpenBASHttp:

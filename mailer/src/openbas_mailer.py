@@ -2,9 +2,9 @@ import json
 from typing import Dict
 
 from contracts_mailer import TYPE, EmailContracts
-from pybas import OpenBAS
-from pybas._injectors.injector_helper import OpenBASInjectorHelper
-from pybas.utils import EnhancedJSONEncoder
+from pyobas import OpenBAS
+from pyobas._injectors.injector_helper import OpenBASInjectorHelper
+from pyobas.utils import EnhancedJSONEncoder
 
 
 class OpenBASEmail:
