@@ -1,4 +1,3 @@
-import json
 import time
 from typing import Dict
 
@@ -14,18 +13,16 @@ from contracts_http import (
 )
 from pyobas import OpenBAS
 from pyobas._injectors.injector_helper import OpenBASInjectorHelper
-from pyobas.utils import EnhancedJSONEncoder
 
 
 class OpenBASHttp:
     def __init__(self):
-        http_contract = HttpContracts.build_contract()
-        http_json_contract = json.dumps(http_contract, cls=EnhancedJSONEncoder)
+        http_post_contracts = HttpContracts.build_contract()
         config = {
             "injector_id": "ba0003bc-4edc-45f3-b047-bda6c3b66f78",
             "injector_name": "HTTP query",
             "injector_type": TYPE,
-            "injector_contracts": http_json_contract,
+            "injector_contracts": http_post_contracts,
         }
         injector_config = {
             "connection": {

@@ -13,6 +13,7 @@ from pyobas._contracts.contract_config import (
     ContractText,
     ContractTextArea,
     SupportedLanguage,
+    prepare_contracts,
 )
 from pyobas._contracts.contract_utils import ContractVariable, VariableType
 
@@ -100,4 +101,4 @@ class EmailContracts:
             manual=False,
         )
         global_email.add_variable(document_uri_variable)
-        return [standard_email, global_email]
+        return prepare_contracts([standard_email, global_email])

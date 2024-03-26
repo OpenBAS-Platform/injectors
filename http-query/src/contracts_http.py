@@ -12,6 +12,7 @@ from pyobas._contracts.contract_config import (
     ContractTextArea,
     ContractTuple,
     SupportedLanguage,
+    prepare_contracts,
 )
 
 TYPE = "openbas_http"
@@ -147,10 +148,10 @@ class HttpContracts:
             fields=get_instance,
             manual=False,
         )
-        return [
+        return prepare_contracts([
             raw_post_contract,
             form_post_contract,
             raw_put_contract,
             form_put_contract,
             get_contract,
-        ]
+        ])

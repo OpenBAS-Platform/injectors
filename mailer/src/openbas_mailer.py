@@ -1,21 +1,18 @@
-import json
 from typing import Dict
 
 from contracts_mailer import TYPE, EmailContracts
 from pyobas import OpenBAS
 from pyobas._injectors.injector_helper import OpenBASInjectorHelper
-from pyobas.utils import EnhancedJSONEncoder
 
 
 class OpenBASEmail:
     def __init__(self):
-        email_contract = EmailContracts.build_contract()
-        email_json_contract = json.dumps(email_contract, cls=EnhancedJSONEncoder)
+        email_contracts = EmailContracts.build_contract()
         config = {
             "injector_id": "ba0003bc-4edc-45f3-b047-bda6c3b66f74",
             "injector_name": "Mailer injector",
             "injector_type": TYPE,
-            "injector_contracts": email_json_contract,
+            "injector_contracts": email_contracts,
         }
         injector_config = {
             "connection": {
