@@ -1,20 +1,15 @@
 from typing import List
 
 from pyobas._contracts.contract_builder import ContractBuilder
-from pyobas._contracts.contract_config import (
-    Contract,
-    ContractAttachment,
-    ContractCardinality,
-    ContractCheckbox,
-    ContractConfig,
-    ContractElement,
-    ContractExpectations,
-    ContractTeam,
-    ContractText,
-    ContractTextArea,
-    SupportedLanguage,
-    prepare_contracts,
-)
+from pyobas._contracts.contract_config import (Contract, ContractAttachment,
+                                               ContractCardinality,
+                                               ContractCheckbox,
+                                               ContractConfig, ContractElement,
+                                               ContractExpectations,
+                                               ContractTeam, ContractText,
+                                               ContractTextArea,
+                                               SupportedLanguage,
+                                               prepare_contracts)
 from pyobas._contracts.contract_utils import ContractVariable, VariableType
 
 TYPE = "openbas_mailer"

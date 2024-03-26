@@ -1,19 +1,14 @@
 from typing import List
 
 from pyobas._contracts.contract_builder import ContractBuilder
-from pyobas._contracts.contract_config import (
-    Contract,
-    ContractAttachment,
-    ContractCardinality,
-    ContractCheckbox,
-    ContractConfig,
-    ContractElement,
-    ContractText,
-    ContractTextArea,
-    ContractTuple,
-    SupportedLanguage,
-    prepare_contracts,
-)
+from pyobas._contracts.contract_config import (Contract, ContractAttachment,
+                                               ContractCardinality,
+                                               ContractCheckbox,
+                                               ContractConfig, ContractElement,
+                                               ContractText, ContractTextArea,
+                                               ContractTuple,
+                                               SupportedLanguage,
+                                               prepare_contracts)
 
 TYPE = "openbas_http"
 HTTP_RAW_POST_CONTRACT = "5948c96c-4064-4c0d-b079-51ec33f31b91"
@@ -148,10 +143,12 @@ class HttpContracts:
             fields=get_instance,
             manual=False,
         )
-        return prepare_contracts([
-            raw_post_contract,
-            form_post_contract,
-            raw_put_contract,
-            form_put_contract,
-            get_contract,
-        ])
+        return prepare_contracts(
+            [
+                raw_post_contract,
+                form_post_contract,
+                raw_put_contract,
+                form_put_contract,
+                get_contract,
+            ]
+        )
