@@ -50,7 +50,7 @@ public class CalderaContract extends Contractor {
   }
 
   @Override
-  protected String getType() {
+  public String getType() {
     return TYPE;
   }
 
