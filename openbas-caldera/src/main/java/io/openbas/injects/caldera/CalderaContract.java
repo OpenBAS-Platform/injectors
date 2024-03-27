@@ -45,7 +45,7 @@ public class CalderaContract extends Contractor {
   private final InjectorCalderaService injectorCalderaService;
 
   @Override
-  protected boolean isExpose() {
+  public boolean isExpose() {
     return this.config.isEnable();
   }
 
@@ -124,6 +124,7 @@ public class CalderaContract extends Contractor {
           builder.build()
       );
       contract.addContext("collector-ids", String.join(", ", this.config.getCollectorIds()));
+      contract.addAttackPattern("");
       return contract;
     })).collect(Collectors.toList());
   }
