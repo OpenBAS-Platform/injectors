@@ -33,19 +33,16 @@ public class LadeListener {
     // For each workflow ask for traces and status
     injectStatuses.forEach(injectStatus -> {
       // Add traces and close inject if needed.
-      String asyncId = injectStatus.statusIdentifiers().stream()
-          .findFirst()
-          .orElse(null); // Lade handle only one asyncID for now
+      String asyncId = injectStatus.statusIdentifiers().stream().findFirst().orElse(null); // Lade handle only one asyncID for now
       try {
         LadeWorkflow workflowStatus = this.ladeService.getWorkflowStatus(asyncId);
         if (workflowStatus.isDone()) {
-          String name = workflowStatus.isFail() ? ExecutionStatus.ERROR.name() : ExecutionStatus.SUCCESS.name();
+          ExecutionStatus name = workflowStatus.isFail() ? ExecutionStatus.ERROR : ExecutionStatus.SUCCESS;
           injectStatus.setName(name);
-          // long executionTime = workflowStatus.getStopTime().toEpochMilli()
-          //     - injectStatus.getReporting().getStartTime().toEpochMilli();
-          // injectStatus.setTrackingTotalExecutionTime(executionTime);
+          long executionTime = workflowStatus.getStopTime().toEpochMilli() - injectStatus.getTrackingSentDate().toEpochMilli();
+          injectStatus.setTrackingTotalExecutionTime(executionTime);
         }
-        // injectStatus.getReporting().setTraces(workflowStatus.getTraces());
+        injectStatus.setTraces(workflowStatus.getTraces());
         this.injectStatusRepository.save(injectStatus);
         // Update related inject
         Inject relatedInject = injectStatus.getInject();

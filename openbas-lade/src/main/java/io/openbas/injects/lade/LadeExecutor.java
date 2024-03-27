@@ -6,7 +6,7 @@ import io.openbas.database.model.Inject;
 import io.openbas.execution.ExecutableInject;
 import io.openbas.execution.Injector;
 import io.openbas.injects.lade.service.LadeService;
-import io.openbas.model.Expectation;
+import io.openbas.model.ExecutionProcess;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class LadeExecutor extends Injector {
   private final LadeService ladeService;
 
   @Override
-  public List<Expectation> process(
+  public ExecutionProcess process(
       @NotNull final Execution execution,
       @NotNull final ExecutableInject injection) {
     Inject inject = injection.getInjection().getInject();
@@ -43,6 +43,6 @@ public class LadeExecutor extends Injector {
     } catch (Exception e) {
       execution.addTrace(traceError(e.getMessage()));
     }
-    return List.of();
+    return new ExecutionProcess(true, List.of());
   }
 }

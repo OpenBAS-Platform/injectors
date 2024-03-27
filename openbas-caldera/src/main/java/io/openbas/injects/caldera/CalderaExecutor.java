@@ -12,6 +12,7 @@ import io.openbas.injects.caldera.client.model.ExploitResult;
 import io.openbas.injects.caldera.config.InjectorCalderaConfig;
 import io.openbas.injects.caldera.model.CalderaInjectContent;
 import io.openbas.injects.caldera.service.InjectorCalderaService;
+import io.openbas.model.ExecutionProcess;
 import io.openbas.model.Expectation;
 import io.openbas.model.expectation.DetectionExpectation;
 import io.openbas.model.expectation.PreventionExpectation;
@@ -44,9 +45,7 @@ public class CalderaExecutor extends Injector {
   private final AssetGroupService assetGroupService;
 
   @Override
-  public List<Expectation> process(
-      @NotNull final Execution execution,
-      @NotNull final ExecutableInject injection) throws Exception {
+  public ExecutionProcess process(@NotNull final Execution execution, @NotNull final ExecutableInject injection) throws Exception {
     CalderaInjectContent content = contentConvert(injection, CalderaInjectContent.class);
     String obfuscator = content.getObfuscator();
 
@@ -84,7 +83,7 @@ public class CalderaExecutor extends Injector {
     String message = ""; // "Caldera execute ability " + contract.getLabel().get(en) + " on " + asyncIds.size() + " asset(s)";
     execution.addTrace(traceInfo(message, asyncIds));
 
-    return expectations;
+    return new ExecutionProcess(false, expectations);
   }
 
   // -- PRIVATE --

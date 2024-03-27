@@ -166,7 +166,7 @@ public class InjectorCalderaListenerTest {
 
   private InjectStatus createInjectStatus(@NotNull final Inject inject) {
     InjectStatus injectStatus = new InjectStatus();
-    injectStatus.setName(PENDING.name());
+    injectStatus.setName(PENDING);
     injectStatus.setInject(inject);
     InjectStatusExecution statusExecution = new InjectStatusExecution();
     statusExecution.setIdentifiers(List.of("linkId1"));

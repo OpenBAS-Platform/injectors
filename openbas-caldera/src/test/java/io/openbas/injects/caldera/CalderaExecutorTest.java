@@ -8,6 +8,7 @@ import io.openbas.injects.caldera.client.model.ExploitResult;
 import io.openbas.injects.caldera.config.InjectorCalderaConfig;
 import io.openbas.injects.caldera.model.CalderaInjectContent;
 import io.openbas.injects.caldera.service.InjectorCalderaService;
+import io.openbas.model.ExecutionProcess;
 import io.openbas.model.inject.form.Expectation;
 import io.openbas.asset.EndpointService;
 import io.openbas.asset.AssetGroupService;
@@ -74,8 +75,8 @@ public class CalderaExecutorTest {
     Mockito.when(this.calderaService.exploitResult(paw, contract)).thenReturn(exploitResult);
 
     // -- EXECUTE --
-    List<io.openbas.model.Expectation> expectations = this.calderaExecutor.process(execution, executableInject);
-    assertEquals(1, expectations.size());
+    ExecutionProcess executionProcess = this.calderaExecutor.process(execution, executableInject);
+    assertEquals(1, executionProcess.getExpectations().size());
 
     // -- CLEAN --
     this.deleteEndpoint(endpoint.getId());
@@ -114,8 +115,8 @@ public class CalderaExecutorTest {
     Mockito.when(this.calderaService.exploitResult(paw3, contract.getId())).thenThrow(new RuntimeException("Not exploited"));
 
     // -- EXECUTE --
-    List<io.openbas.model.Expectation> expectations = this.calderaExecutor.process(execution, executableInject);
-    assertEquals(2, expectations.size()); // One for the asset group and one for the asset
+    ExecutionProcess executionProcess = this.calderaExecutor.process(execution, executableInject);
+    assertEquals(2, executionProcess.getExpectations().size()); // One for the asset group and one for the asset
 
     // -- CLEAN --
     this.deleteAssetGroup(assetGroup.getId());

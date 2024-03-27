@@ -7,7 +7,7 @@ import io.openbas.injects.http.model.HttpFormPostModel;
 import io.openbas.injects.http.model.HttpGetModel;
 import io.openbas.injects.http.model.HttpRawPostModel;
 import io.openbas.injects.http.service.HttpService;
-import io.openbas.model.Expectation;
+import io.openbas.model.ExecutionProcess;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -48,9 +48,7 @@ public class HttpExecutor extends Injector {
   }
 
   @Override
-  public List<Expectation> process(
-      @NotNull final Execution execution,
-      @NotNull final ExecutableInject injection) {
+  public ExecutionProcess process(@NotNull final Execution execution, @NotNull final ExecutableInject injection) {
     try {
       String callResult = processExecution(execution, injection);
       String message = "Api request sent (" + callResult + ")";
@@ -58,6 +56,6 @@ public class HttpExecutor extends Injector {
     } catch (Exception e) {
       execution.addTrace(traceError(e.getMessage()));
     }
-    return List.of();
+    return new ExecutionProcess(false, List.of());
   }
 }
