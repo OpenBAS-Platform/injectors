@@ -1,35 +1,34 @@
 from typing import Dict
 
-from contracts_mailer import TYPE, EmailContracts
-from pyobas import OpenBAS
-from pyobas._injectors.injector_helper import OpenBASInjectorHelper
+from contracts_mailer import EmailContracts
+from pyobas._injectors.injector_helper import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
 class OpenBASEmail:
     def __init__(self):
-        email_contracts = EmailContracts.build_contract()
-        config = {
-            "injector_id": "ba0003bc-4edc-45f3-b047-bda6c3b66f74",
-            "injector_name": "Mailer injector",
-            "injector_type": TYPE,
-            "injector_contracts": email_contracts,
-        }
-        injector_config = {
-            "connection": {
-                "host": "192.168.2.36",
-                "vhost": "/",
-                "use_ssl": False,
-                "port": 5672,
-                "user": "guest",
-                "pass": "guest",
+        self.config = OpenBASConfigHelper(
+            __file__,
+            {
+                # API information
+                "openbas_url": {"env": "OPENBAS_URL", "file_path": ["openbas", "url"]},
+                "openbas_token": {
+                    "env": "OPENBAS_TOKEN",
+                    "file_path": ["openbas", "token"],
+                },
+                # Config information
+                "injector_id": {"env": "INJECTOR_ID", "file_path": ["injector", "id"]},
+                "injector_name": {
+                    "env": "INJECTOR_NAME",
+                    "file_path": ["injector", "name"],
+                },
+                "injector_type": {
+                    "env": "INJECTOR_TYPE",
+                    "file_path": ["injector", "type"],
+                },
+                "injector_contracts": {"data": EmailContracts.build_contract()},
             },
-            "listen": "openbas_injector_openbas_mailer",
-        }
-        self.client = OpenBAS(
-            url="http://localhost:3001/api",
-            token="3207fa04-35d8-4baa-a735-17033abf101d",
         )
-        self.helper = OpenBASInjectorHelper(self.client, config, injector_config)
+        self.helper = OpenBASInjectorHelper(self.config)
 
     def _process_message(self, data: Dict) -> str:
         print(data)

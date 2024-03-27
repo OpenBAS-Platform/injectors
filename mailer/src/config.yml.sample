@@ -1,0 +1,10 @@
+openbas:
+  url: 'http://localhost:3001/api'
+  token: 'ChangeMe'
+
+injector:
+  id: 'changeme'
+  type: 'openbas_mailer'
+  name: 'Mailer'
+  log_level: 'info'
+

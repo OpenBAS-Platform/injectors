@@ -8,38 +8,36 @@ from contracts_http import (
     HTTP_GET_CONTRACT,
     HTTP_RAW_POST_CONTRACT,
     HTTP_RAW_PUT_CONTRACT,
-    TYPE,
     HttpContracts,
 )
-from pyobas import OpenBAS
-from pyobas._injectors.injector_helper import OpenBASInjectorHelper
+from pyobas._injectors.injector_helper import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
 class OpenBASHttp:
     def __init__(self):
-        http_post_contracts = HttpContracts.build_contract()
-        config = {
-            "injector_id": "ba0003bc-4edc-45f3-b047-bda6c3b66f78",
-            "injector_name": "HTTP query",
-            "injector_type": TYPE,
-            "injector_contracts": http_post_contracts,
-        }
-        injector_config = {
-            "connection": {
-                "host": "192.168.2.36",
-                "vhost": "/",
-                "use_ssl": False,
-                "port": 5672,
-                "user": "guest",
-                "pass": "guest",
+        self.config = OpenBASConfigHelper(
+            __file__,
+            {
+                # API information
+                "openbas_url": {"env": "OPENBAS_URL", "file_path": ["openbas", "url"]},
+                "openbas_token": {
+                    "env": "OPENBAS_TOKEN",
+                    "file_path": ["openbas", "token"],
+                },
+                # Config information
+                "injector_id": {"env": "INJECTOR_ID", "file_path": ["injector", "id"]},
+                "injector_name": {
+                    "env": "INJECTOR_NAME",
+                    "file_path": ["injector", "name"],
+                },
+                "injector_type": {
+                    "env": "INJECTOR_TYPE",
+                    "file_path": ["injector", "type"],
+                },
+                "injector_contracts": {"data": HttpContracts.build_contract()},
             },
-            "listen": "openbas_injector_openbas_http",
-        }
-        self.client = OpenBAS(
-            url="http://localhost:3001/api",
-            token="3207fa04-35d8-4baa-a735-17033abf101d",
         )
-        self.helper = OpenBASInjectorHelper(self.client, config, injector_config)
+        self.helper = OpenBASInjectorHelper(self.config)
 
     @staticmethod
     def http_execution(data: Dict):
