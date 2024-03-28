@@ -20,8 +20,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.openbas.database.model.ExecutionTrace.traceError;
-import static io.openbas.database.model.ExecutionTrace.traceInfo;
+import static io.openbas.database.model.InjectStatusExecution.traceError;
+import static io.openbas.database.model.InjectStatusExecution.traceInfo;
 import static io.openbas.injectExpectation.InjectExpectationUtils.resultsBySourceId;
 import static io.openbas.injects.caldera.config.InjectorCalderaConfig.PRODUCT_NAME;
 
@@ -45,7 +45,7 @@ public class InjectorCalderaListener {
     injectStatuses.forEach((injectStatus -> {
       Inject inject = injectStatus.getInject();
       // Add traces and close inject if needed.
-      Instant finalExecutionTime = injectStatus.getReporting().getStartTime();
+      Instant finalExecutionTime = injectStatus.getTrackingSentDate();
 
       List<Asset> assets = injectStatus.getInject().getAssets();
       List<AssetGroup> assetGroups = injectStatus.getInject().getAssetGroups();
@@ -55,7 +55,7 @@ public class InjectorCalderaListener {
           .toList());
       totalAssets.addAll(assets);
 
-      String[] linkIds = injectStatus.getAsyncIds();
+      List<String> linkIds = injectStatus.statusIdentifiers();
       List<ResultStatus> completedActions = new ArrayList<>();
       for (String linkId : linkIds) {
         try {
@@ -71,27 +71,29 @@ public class InjectorCalderaListener {
             completedActions.add(resultStatus);
 
             computeExpectationForAsset(inject, currentAssetId, resultStatus.isFail(), resultStatus.getContent());
+            injectStatus.setTrackingTotalSuccess(injectStatus.getTrackingTotalSuccess() + 1);
 
             // Compute biggest execution time
             if (resultStatus.getFinish().isAfter(finalExecutionTime)) {
               finalExecutionTime = resultStatus.getFinish();
             }
           // TimeOut
-          } else if (injectStatus.getDate().isBefore(Instant.now().minus(5L, ChronoUnit.MINUTES))) {
+          } else if (injectStatus.getTrackingSentDate().isBefore(Instant.now().minus(5L, ChronoUnit.MINUTES))) {
             resultStatus.setFail(true);
             completedActions.add(resultStatus);
 
             computeExpectationForAsset(inject, currentAssetId, resultStatus.isFail(), "Time out");
+            injectStatus.setTrackingTotalError(injectStatus.getTrackingTotalSuccess() + 1);
           }
         } catch (Exception e) {
-          injectStatus.getReporting().addTrace(
-              traceError("caldera", "Caldera error to execute ability", e)
-          );
+           injectStatus.getTraces().add(
+               traceError("Caldera error to execute ability")
+           );
         }
       }
 
       // Compute status only if all actions are completed
-      if (completedActions.size() == linkIds.length) {
+      if (completedActions.size() == linkIds.size()) {
         assetGroups.forEach((assetGroup -> computeExpectationForAssetGroup(inject, assetGroup)));
         int failedActions = (int) completedActions.stream().filter(ResultStatus::isFail).count();
         computeInjectStatus(injectStatus, finalExecutionTime, completedActions.size(), failedActions);
@@ -155,17 +157,16 @@ public class InjectorCalderaListener {
       @NotNull final Instant finalExecutionTime,
       final int completedActions,
       final int failedActions) {
-    boolean hasError = injectStatus.getReporting().getTraces().stream()
-        .anyMatch(trace -> trace.getStatus().equals(ExecutionStatus.ERROR));
-    injectStatus.setName(hasError ? ExecutionStatus.ERROR.name() : ExecutionStatus.SUCCESS.name());
-    injectStatus.getReporting().addTrace(
-        traceInfo("caldera",
-            "Caldera success to execute ability on " + (completedActions - failedActions)
-                + "/" + completedActions + " asset(s)")
-    );
-    int executionTime = (int)
-        (finalExecutionTime.toEpochMilli() - injectStatus.getReporting().getStartTime().toEpochMilli());
-    injectStatus.setExecutionTime(executionTime);
+     boolean hasError = injectStatus.getTraces().stream()
+         .anyMatch(trace -> trace.getStatus().equals(ExecutionStatus.ERROR));
+     injectStatus.setName(hasError ? ExecutionStatus.ERROR : ExecutionStatus.SUCCESS);
+     injectStatus.getTraces().add(
+         traceInfo("caldera",
+             "Caldera success to execute ability on " + (completedActions - failedActions)
+                 + "/" + completedActions + " asset(s)")
+     );
+    long executionTime = (finalExecutionTime.toEpochMilli() - injectStatus.getTrackingSentDate().toEpochMilli());
+    injectStatus.setTrackingTotalExecutionTime(executionTime);
     this.injectStatusRepository.save(injectStatus);
   }
 

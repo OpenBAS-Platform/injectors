@@ -1,7 +1,6 @@
 package io.openbas.injects.caldera;
 
 import io.openbas.asset.AssetGroupService;
-import io.openbas.contract.Contract;
 import io.openbas.database.model.Asset;
 import io.openbas.database.model.AssetGroup;
 import io.openbas.database.model.Execution;
@@ -12,6 +11,7 @@ import io.openbas.injects.caldera.client.model.ExploitResult;
 import io.openbas.injects.caldera.config.InjectorCalderaConfig;
 import io.openbas.injects.caldera.model.CalderaInjectContent;
 import io.openbas.injects.caldera.service.InjectorCalderaService;
+import io.openbas.model.ExecutionProcess;
 import io.openbas.model.Expectation;
 import io.openbas.model.expectation.DetectionExpectation;
 import io.openbas.model.expectation.PreventionExpectation;
@@ -27,9 +27,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
-import static io.openbas.database.model.ExecutionTrace.COMMAND_LINE_IDENTIFIER;
-import static io.openbas.database.model.ExecutionTrace.traceInfo;
-import static io.openbas.helper.SupportedLanguage.en;
+import static io.openbas.database.model.InjectStatusExecution.EXECUTION_TYPE_COMMAND;
+import static io.openbas.database.model.InjectStatusExecution.traceInfo;
 import static io.openbas.model.expectation.DetectionExpectation.detectionExpectation;
 import static io.openbas.model.expectation.DetectionExpectation.detectionExpectationForAssetGroup;
 import static io.openbas.model.expectation.PreventionExpectation.preventionExpectationForAsset;
@@ -45,26 +44,24 @@ public class CalderaExecutor extends Injector {
   private final AssetGroupService assetGroupService;
 
   @Override
-  public List<Expectation> process(
-      @NotNull final Execution execution,
-      @NotNull final ExecutableInject injection,
-      @NotNull final Contract contract) throws Exception {
+  public ExecutionProcess process(@NotNull final Execution execution, @NotNull final ExecutableInject injection) throws Exception {
     CalderaInjectContent content = contentConvert(injection, CalderaInjectContent.class);
     String obfuscator = content.getObfuscator();
 
-    Map<Asset, Boolean> assets = this.computeValidAsset(injection.getInject());
+    Map<Asset, Boolean> assets = this.computeValidAsset(injection.getInjection().getInject());
 
     List<String> asyncIds = new ArrayList<>();
     List<Expectation> expectations = new ArrayList<>();
 
     // Execute inject for all assets
     Map<String, Asset> paws = computePaws(assets.keySet().stream().toList());
+    String contract = injection.getInjection().getInject().getContract();
     for (Map.Entry<String, Asset> entryPaw : paws.entrySet()) {
       try {
-        this.calderaService.exploit(obfuscator, entryPaw.getKey(), contract.getId());
-        ExploitResult exploitResult = this.calderaService.exploitResult(entryPaw.getKey(), contract.getId());
+        this.calderaService.exploit(obfuscator, entryPaw.getKey(), contract);
+        ExploitResult exploitResult = this.calderaService.exploitResult(entryPaw.getKey(), contract);
         asyncIds.add(exploitResult.getLinkId());
-        execution.addTrace(traceInfo(COMMAND_LINE_IDENTIFIER, exploitResult.getCommand()));
+        execution.addTrace(traceInfo(EXECUTION_TYPE_COMMAND, exploitResult.getCommand()));
 
         // Compute expectations
         boolean isInGroup = assets.get(entryPaw.getValue());
@@ -75,18 +72,17 @@ public class CalderaExecutor extends Injector {
       }
     }
 
-    List<AssetGroup> assetGroups = injection.getInject().getAssetGroups();
+    List<AssetGroup> assetGroups = injection.getInjection().getInject().getAssetGroups();
     assetGroups.forEach((assetGroup -> computeExpectationsForAssetGroup(expectations, content, assetGroup)));
 
     if (asyncIds.isEmpty()) {
       throw new UnsupportedOperationException("Caldera inject needs at least one valid asset");
     }
 
-    String message = "Caldera execute ability " + contract.getLabel().get(en) + " on " + asyncIds.size() + " asset(s)";
-    execution.addTrace(traceInfo("caldera", message));
-    execution.setAsyncIds(asyncIds.toArray(new String[0]));
+    String message = "Caldera execute ability on " + asyncIds.size() + " asset(s)";
+    execution.addTrace(traceInfo(message, asyncIds));
 
-    return expectations;
+    return new ExecutionProcess(true, expectations);
   }
 
   // -- PRIVATE --

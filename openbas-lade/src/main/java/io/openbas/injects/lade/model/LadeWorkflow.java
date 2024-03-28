@@ -1,6 +1,6 @@
 package io.openbas.injects.lade.model;
 
-import io.openbas.database.model.ExecutionTrace;
+import io.openbas.database.model.InjectStatusExecution;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 public class LadeWorkflow {
 
-    private final List<ExecutionTrace> traces = new ArrayList<>();
+    private final List<InjectStatusExecution> traces = new ArrayList<>();
 
     @Setter
     private boolean done = false;
@@ -22,7 +22,7 @@ public class LadeWorkflow {
     @Setter
     private Instant stopTime;
 
-    public void addTrace(ExecutionTrace trace) {
+    public void addTrace(InjectStatusExecution trace) {
         this.traces.add(trace);
     }
 
