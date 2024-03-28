@@ -76,7 +76,7 @@ public class InjectorCalderaListener {
               finalExecutionTime = resultStatus.getFinish();
             }
           // TimeOut
-          } else if (injectStatus.getDate().isBefore(Instant.now().minus(5L, ChronoUnit.MINUTES))) {
+          } else if (injectStatus.getTrackingSentDate().isBefore(Instant.now().minus(5L, ChronoUnit.MINUTES))) {
             resultStatus.setFail(true);
             completedActions.add(resultStatus);
 

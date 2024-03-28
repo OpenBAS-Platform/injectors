@@ -1,7 +1,6 @@
 package io.openbas.injects.caldera;
 
 import io.openbas.asset.AssetGroupService;
-import io.openbas.contract.Contract;
 import io.openbas.database.model.Asset;
 import io.openbas.database.model.AssetGroup;
 import io.openbas.database.model.Execution;
@@ -28,7 +27,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
-import static io.openbas.database.model.ExecutionTrace.COMMAND_LINE_IDENTIFIER;
+import static io.openbas.database.model.InjectStatusExecution.EXECUTION_TYPE_COMMAND;
 import static io.openbas.database.model.InjectStatusExecution.traceInfo;
 import static io.openbas.model.expectation.DetectionExpectation.detectionExpectation;
 import static io.openbas.model.expectation.DetectionExpectation.detectionExpectationForAssetGroup;
@@ -62,7 +61,7 @@ public class CalderaExecutor extends Injector {
         this.calderaService.exploit(obfuscator, entryPaw.getKey(), contract);
         ExploitResult exploitResult = this.calderaService.exploitResult(entryPaw.getKey(), contract);
         asyncIds.add(exploitResult.getLinkId());
-        execution.addTrace(traceInfo(COMMAND_LINE_IDENTIFIER, exploitResult.getCommand()));
+        execution.addTrace(traceInfo(EXECUTION_TYPE_COMMAND, exploitResult.getCommand()));
 
         // Compute expectations
         boolean isInGroup = assets.get(entryPaw.getValue());
