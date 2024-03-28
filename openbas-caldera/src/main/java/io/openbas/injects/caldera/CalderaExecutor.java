@@ -79,10 +79,10 @@ public class CalderaExecutor extends Injector {
       throw new UnsupportedOperationException("Caldera inject needs at least one valid asset");
     }
 
-    String message = ""; // "Caldera execute ability " + contract.getLabel().get(en) + " on " + asyncIds.size() + " asset(s)";
+    String message = "Caldera execute ability on " + asyncIds.size() + " asset(s)";
     execution.addTrace(traceInfo(message, asyncIds));
 
-    return new ExecutionProcess(false, expectations);
+    return new ExecutionProcess(true, expectations);
   }
 
   // -- PRIVATE --
