@@ -87,7 +87,7 @@ class OpenBASHttp:
         inject_id = data["injection"]["inject_id"]
         # Notify API of reception and expected number of operations
         reception_data = {"tracking_total_count": 1}
-        self.client.inject.execution_reception(inject_id=inject_id, data=reception_data)
+        self.helper.api.inject.execution_reception(inject_id=inject_id, data=reception_data)
         # Execute inject
         try:
             execution_result = self.http_execution(data)
@@ -97,7 +97,7 @@ class OpenBASHttp:
                 "execution_duration": int(time.time() - start),
                 "execution_context_identifiers": None,
             }
-            self.client.inject.execution_callback(
+            self.helper.api.inject.execution_callback(
                 inject_id=inject_id, data=callback_data
             )
         except Exception as e:
@@ -107,7 +107,7 @@ class OpenBASHttp:
                 "execution_duration": int(time.time() - start),
                 "execution_context_identifiers": None,
             }
-            self.client.inject.execution_callback(
+            self.helper.api.inject.execution_callback(
                 inject_id=inject_id, data=callback_data
             )
             print(e)
