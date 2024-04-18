@@ -10,7 +10,7 @@ from contracts_http import (
     HTTP_RAW_PUT_CONTRACT,
     HttpContracts,
 )
-from pyobas import OpenBASConfigHelper, OpenBASInjectorHelper
+from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
 class OpenBASHttp:
