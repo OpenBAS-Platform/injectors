@@ -4,7 +4,7 @@ openbas:
 
 injector:
   id: 'changeme'
-  type: 'openbas_http'
+  type: 'http_query'
   name: 'HTTP query'
   log_level: 'info'
 
