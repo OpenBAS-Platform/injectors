@@ -2,7 +2,7 @@
 name: Question
 about: Ask a question concerning OpenBAS injectors
 title: ''
-labels: needs triage
+labels: needs triage, question
 assignees: ''
 
 ---
