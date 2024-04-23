@@ -37,7 +37,7 @@ class OpenBASHttp:
                 "injector_contracts": {"data": HttpContracts.build_contract()},
             },
         )
-        self.helper = OpenBASInjectorHelper(self.config, open("img/http.png", "rb"))
+        self.helper = OpenBASInjectorHelper(self.config, open("img/icon-http.png", "rb"))
 
     @staticmethod
     def _request_data_parts_body(request_data):
