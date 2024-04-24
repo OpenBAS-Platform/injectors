@@ -1,0 +1,10 @@
+openbas:
+  url: 'http://localhost:3001'
+  token: 'ChangeMe'
+
+injector:
+  id: 'changeme'
+  type: 'openbas_tanium'
+  name: 'Tanium'
+  log_level: 'info'
+

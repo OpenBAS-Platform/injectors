@@ -159,5 +159,5 @@ class OpenBASHttp:
 
 
 if __name__ == "__main__":
-    openBASEmail = OpenBASHttp()
-    openBASEmail.start()
+    openBASHttp = OpenBASHttp()
+    openBASHttp.start()
