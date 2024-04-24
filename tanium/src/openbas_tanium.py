@@ -2,10 +2,7 @@ import time
 from typing import Dict
 
 import requests
-from contracts_tanium import (
-    COMMAND_LINE_WINDOWS_CONTRACT,
-    TaniumContracts
-)
+from contracts_tanium import COMMAND_LINE_WINDOWS_CONTRACT, TaniumContracts
 from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
@@ -34,7 +31,9 @@ class OpenBASTanium:
                 "injector_custom_contracts": {"data": True},
             },
         )
-        self.helper = OpenBASInjectorHelper(self.config, open("img/icon-tanium.png", "rb"))
+        self.helper = OpenBASInjectorHelper(
+            self.config, open("img/icon-tanium.png", "rb")
+        )
 
     def attachments_to_files(self, request_data):
         documents = request_data["injection"].get("inject_documents", [])
