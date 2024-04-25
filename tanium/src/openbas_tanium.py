@@ -1,8 +1,7 @@
 import time
 from typing import Dict
 
-import requests
-from contracts_tanium import COMMAND_LINE_WINDOWS_CONTRACT, TaniumContracts
+from contracts_tanium import TaniumContracts
 from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
