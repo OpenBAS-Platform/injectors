@@ -50,7 +50,7 @@ class OpenBASTanium:
         # If asset not found, report error
 
         # If asset found, launch the action
-        inject_contract = data["injection"]["inject_contract"]
+        # inject_contract = data["injection"]["inject_contract"]
 
         # Nothing supported
         return {
