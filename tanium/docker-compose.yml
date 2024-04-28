@@ -1,7 +1,7 @@
 version: '3'
 services:
   injector-http-query:
-    image: openbas/injector-tanium:4.0.0
+    image: openbas/injector-tanium:3.5.1
     environment:
       - OPENBAS_URL=http://localhost
       - OPENBAS_TOKEN=ChangeMe
