@@ -28,6 +28,10 @@ class OpenBASTanium:
                 },
                 "injector_contracts": {"data": TaniumContracts.build_contract()},
                 "injector_custom_contracts": {"data": True},
+                "injector_simulation_agent": {"data": True},
+                "injector_simulation_agent_platforms": {
+                    "data": ["Windows", "Linux", "MacOS"]
+                },
             },
         )
         self.helper = OpenBASInjectorHelper(

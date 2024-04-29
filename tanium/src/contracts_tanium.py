@@ -70,6 +70,7 @@ class TaniumContracts:
             },
             fields=command_line_windows_instance,
             manual=False,
+            platforms=["Windows"],
         )
         command_line_linux_instance: List[ContractElement] = (
             ContractBuilder()
@@ -105,6 +106,7 @@ class TaniumContracts:
             },
             fields=command_line_linux_instance,
             manual=False,
+            platforms=["Linux"],
         )
         execute_file_windows_instance: List[ContractElement] = (
             ContractBuilder()
@@ -141,6 +143,7 @@ class TaniumContracts:
             },
             fields=execute_file_windows_instance,
             manual=False,
+            platforms=["Windows"],
         )
         return prepare_contracts(
             [
