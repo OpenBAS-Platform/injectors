@@ -6,7 +6,6 @@ services:
       - OPENBAS_URL=http://localhost
       - OPENBAS_TOKEN=ChangeMe
       - INJECTOR_ID=ChangeMe
-      - INJECTOR_TYPE=openbas_tanium
       - "INJECTOR_NAME=Tanium"
       - INJECTOR_LOG_LEVEL=error
     restart: always

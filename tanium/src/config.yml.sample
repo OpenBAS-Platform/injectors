@@ -4,7 +4,6 @@ openbas:
 
 injector:
   id: 'changeme'
-  type: 'openbas_tanium'
   name: 'Tanium'
   log_level: 'info'
 

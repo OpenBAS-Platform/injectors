@@ -6,7 +6,6 @@ services:
       - OPENBAS_URL=http://localhost
       - OPENBAS_TOKEN=ChangeMe
       - INJECTOR_ID=ChangeMe
-      - INJECTOR_TYPE=openbas_http_query
       - "INJECTOR_NAME=HTTP query"
       - INJECTOR_LOG_LEVEL=error
     restart: always
