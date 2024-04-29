@@ -33,6 +33,7 @@ class OpenBASHttp:
                 "injector_type": {
                     "env": "INJECTOR_TYPE",
                     "file_path": ["injector", "type"],
+                    "default": "openbas_http_query",
                 },
                 "injector_contracts": {"data": HttpContracts.build_contract()},
             },

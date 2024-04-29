@@ -25,6 +25,7 @@ class OpenBASTanium:
                 "injector_type": {
                     "env": "INJECTOR_TYPE",
                     "file_path": ["injector", "type"],
+                    "default": "openbas_tanium",
                 },
                 "injector_contracts": {"data": TaniumContracts.build_contract()},
                 "injector_custom_contracts": {"data": True},
