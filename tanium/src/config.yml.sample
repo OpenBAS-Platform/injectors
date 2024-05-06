@@ -1,9 +1,0 @@
-openbas:
-  url: 'http://localhost:3001'
-  token: 'ChangeMe'
-
-injector:
-  id: 'changeme'
-  name: 'Tanium'
-  log_level: 'info'
-
