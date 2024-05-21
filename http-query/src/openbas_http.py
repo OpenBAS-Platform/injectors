@@ -83,7 +83,9 @@ class OpenBASHttp:
             password = data["injection"]["inject_content"]["basicPassword"]
             session.auth = (user, password)
         # Contract execution
-        inject_contract = data["injection"]["inject_injector_contract"]["injector_contract_id"]
+        inject_contract = data["injection"]["inject_injector_contract"][
+            "injector_contract_id"
+        ]
         url = data["injection"]["inject_content"]["uri"]
         http_files = self.attachments_to_files(data)
         # Get
