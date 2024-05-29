@@ -1,7 +1,7 @@
 # OpenBAS injectors
 
 [![Website](https://img.shields.io/badge/website-openbas.io-blue.svg)](https://openbas.io)
-[![CircleCI](https://circleci.com/gh/OpenBAS-Platform/injectors-python.svg?style=shield)](https://circleci.com/gh/OpenBAS-Platform/injectors-python/tree/main)
+[![CircleCI](https://circleci.com/gh/OpenBAS-Platform/injectors.svg?style=shield)](https://circleci.com/gh/OpenBAS-Platform/injectors/tree/main)
 [![Slack Status](https://img.shields.io/badge/slack-3K%2B%20members-4A154B)](https://community.filigran.io)
 
 The following repository is used to store the OpenBAS injectors for the platform integration with other tools and applications. To know how to enable injectors on OpenBAS, please read the [dedicated documentation](https://docs.openbas.io/latest/deployment/injectors).
@@ -16,7 +16,7 @@ If you want to help use improve or develop new injector, please check out the **
 
 ## License
 
-**Unless specified otherwise**, injectors are released under the [Apache 2.0](https://github.com/OpenBAS-Platform/injectors-python/blob/master/LICENSE). If an injector is released by its author under a different license, the subfolder corresponding to it will contain a *LICENSE* file.
+**Unless specified otherwise**, injectors are released under the [Apache 2.0](https://github.com/OpenBAS-Platform/injectors/blob/master/LICENSE). If an injector is released by its author under a different license, the subfolder corresponding to it will contain a *LICENSE* file.
 
 ## About
 
