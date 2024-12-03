@@ -91,6 +91,43 @@ jobs:
       - ms-teams/report:
           only_on_fail: true
           webhook_url: $MS_TEAMS_WEBHOOK_URL
+  build_prerelease_1:
+    working_directory: ~/openbas
+    docker:
+      - image: cimg/base:stable-20.04
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: sudo apt-get update -qq && sudo apt install curl gettext-base
+      - run:
+          working_directory: ~/openbas/http-query
+          name: Build Docker image openbas/injector-http-query
+          command: docker build -t openbas/injector-http-query:prerelease .
+      - run:
+          name: Publish Docker Image to Docker Hub
+          command: |
+            echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker push openbas/injector-http-query:prerelease
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - ms-teams/report:
+          only_on_fail: true
+          webhook_url: $MS_TEAMS_WEBHOOK_URL
+  deploy_testing:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - kubernetes/install-kubectl
+      - run: kubectl --server=https://api.staging.eu-west.filigran.io --token=$K8S_TOKEN -n customer-testing rollout restart deployment -l app=openbas-injector
+  deploy_prerelease:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - kubernetes/install-kubectl
+      - run: kubectl --server=https://api.staging.eu-west.filigran.io --token=$K8S_TOKEN_PRE_RELEASE -n customer-prerelease-openbas rollout restart deployment -l app=openbas-injector
   notify_rolling:
     docker:
       - image: "cimg/base:stable"
@@ -133,9 +170,24 @@ workflows:
             branches:
               only:
                 - main
-      - notify_rolling:
+      - build_prerelease_1:
+          requires:
+            - ensure_formatting
+            - linter
+          filters:
+            branches:
+              only:
+                - release/*
+      - deploy_testing:
           requires:
             - build_rolling_1
+      - deploy_prerelease:
+          requires:
+            - build_prerelease_1
+      - notify_rolling:
+          requires:
+            - deploy_testing
+            - deploy_prerelease
       - notify:
           requires:
             - build_1
