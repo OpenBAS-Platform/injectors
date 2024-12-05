@@ -78,6 +78,10 @@ jobs:
       - setup_remote_docker
       - run: sudo apt-get update -qq && sudo apt install curl gettext-base
       - run:
+         working_directory: ~/openbas
+         name: Replace pyobas requirement of stable version with latest main branch code
+         command: find . -name requirements.txt -exec sed 's|^pyobas==.*$|pyobas @ git+https://github.com/OpenBAS-Platform/client-python@main|' -i {} \;
+      - run:
           working_directory: ~/openbas/http-query
           name: Build Docker image openbas/injector-http-query
           command: docker build -t openbas/injector-http-query:rolling .
@@ -100,6 +104,10 @@ jobs:
       - checkout
       - setup_remote_docker
       - run: sudo apt-get update -qq && sudo apt install curl gettext-base
+      - run:
+          working_directory: ~/openbas
+          name: Replace pyobas requirement of stable version with latest release branch code
+          command: find . -name requirements.txt -exec sed 's|^pyobas==.*$|pyobas @ git+https://github.com/OpenBAS-Platform/client-python@${CIRCLE_BRANCH}|' -i {} \;
       - run:
           working_directory: ~/openbas/http-query
           name: Build Docker image openbas/injector-http-query
