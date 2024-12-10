@@ -56,12 +56,16 @@ jobs:
       - run:
           working_directory: ~/openbas/http-query
           name: Build Docker image openbas/injector-http-query
-          command: docker build -t openbas/injector-http-query:latest . && docker tag openbas/injector-http-query:latest openbas/injector-http-query:${CIRCLE_TAG}
+          command: |
+            LATEST_VERSION=$(git describe --tags --abbrev=0)
+            TAGS="openbas//injector-http-query:${CIRCLE_TAG}"
+            [ "$CIRCLE_TAG" = "$LATEST_VERSION" ] && TAGS="$TAGS openbas//injector-http-query:latest"
+            docker build -t openbas//injector-http-query:latest . && docker tag $TAGS
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker push openbas/injector-http-query:latest
+            [ "$CIRCLE_TAG" = "$LATEST_VERSION" ] && docker push openbas/injector-http-query:latest
             docker push openbas/injector-http-query:${CIRCLE_TAG}
       - slack/notify:
           event: fail
