@@ -60,7 +60,7 @@ jobs:
             LATEST_VERSION=$(git describe --tags --abbrev=0)
             TAGS="openbas//injector-http-query:${CIRCLE_TAG}"
             [ "$CIRCLE_TAG" = "$LATEST_VERSION" ] && TAGS="$TAGS openbas//injector-http-query:latest"
-            docker build -t openbas//injector-http-query:latest . && docker tag $TAGS
+            docker build --progress=plain -t openbas//injector-http-query:latest . && docker tag $TAGS
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
@@ -88,7 +88,7 @@ jobs:
       - run:
           working_directory: ~/openbas/http-query
           name: Build Docker image openbas/injector-http-query
-          command: docker build -t openbas/injector-http-query:rolling .
+          command: docker build --progress=plain -t openbas/injector-http-query:rolling .
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
@@ -111,11 +111,12 @@ jobs:
       - run:
           working_directory: ~/openbas
           name: Replace pyobas requirement of stable version with latest release branch code
-          command: find . -name requirements.txt -exec sed 's|^pyobas==.*$|pyobas @ git+https://github.com/OpenBAS-Platform/client-python@${CIRCLE_BRANCH}|' -i {} \;
+          # We safely expand the CIRCLE_BRANCH variable because the CircleCI filters already enforce a strict release/x.x.x pattern using regex
+          command: find . -name requirements.txt -exec sed "s|^pyobas==.*$|pyobas @ git+https://github.com/OpenBAS-Platform/client-python@${CIRCLE_BRANCH}|" -i {} \;
       - run:
           working_directory: ~/openbas/http-query
           name: Build Docker image openbas/injector-http-query
-          command: docker build -t openbas/injector-http-query:prerelease .
+          command: docker build --progress=plain -t openbas/injector-http-query:prerelease .
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
@@ -190,7 +191,7 @@ workflows:
           filters:
             branches:
               only:
-                - release/*
+                - /^release\/\d+\.\d+\.\d+$/
       - deploy_testing:
           requires:
             - build_rolling_1
