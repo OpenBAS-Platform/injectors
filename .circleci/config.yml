@@ -49,6 +49,9 @@ jobs:
     working_directory: ~/openbas
     docker:
       - image: cimg/base:stable-20.04
+    environment:
+      LATEST_SEMANTIC_VERSION: $(git tag --sort=-v:refname | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+      IS_LATEST: $([ "$CIRCLE_TAG" = "$LATEST_SEMANTIC_VERSION" ] && echo "true" || echo "false")
     steps:
       - checkout
       - setup_remote_docker
@@ -57,15 +60,14 @@ jobs:
           working_directory: ~/openbas/http-query
           name: Build Docker image openbas/injector-http-query
           command: |
-            LATEST_VERSION=$(git describe --tags --abbrev=0)
             TAGS="openbas/injector-http-query:${CIRCLE_TAG}"
-            [ "$CIRCLE_TAG" = "$LATEST_VERSION" ] && TAGS="$TAGS openbas/injector-http-query:latest"
-            docker build --progress=plain -t openbas/injector-http-query:latest . && docker tag $TAGS
+            $IS_LATEST && TAGS="$TAGS openbas/injector-http-query:latest"
+            docker build --progress=plain . && docker tag $TAGS
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            [ "$CIRCLE_TAG" = "$LATEST_VERSION" ] && docker push openbas/injector-http-query:latest
+            $IS_LATEST && docker push openbas/injector-http-query:latest
             docker push openbas/injector-http-query:${CIRCLE_TAG}
       - slack/notify:
           event: fail
