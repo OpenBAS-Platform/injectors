@@ -60,9 +60,9 @@ jobs:
           working_directory: ~/openbas/http-query
           name: Build Docker image openbas/injector-http-query
           command: |
-            TAGS="openbas/injector-http-query:${CIRCLE_TAG}"
-            $IS_LATEST && TAGS="$TAGS openbas/injector-http-query:latest"
-            docker build --progress=plain . && docker tag $TAGS
+            TAGS="-t openbas/injector-http-query:${CIRCLE_TAG}"
+            $IS_LATEST && TAGS="$TAGS -t openbas/injector-http-query:latest"
+            docker build --progress=plain $TAGS .
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
