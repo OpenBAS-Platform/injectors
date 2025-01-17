@@ -17,6 +17,10 @@
       "prPriority": 5
     },
     {
+      "matchBaseBranches": ["release/current"],
+      "commitMessageSuffix": null
+    },
+    {
       "matchJsonata": ["$exists(isVulnerabilityAlert)"],
       "matchBaseBranches": ["release/current"],
       "enabled": false
