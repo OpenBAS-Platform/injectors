@@ -142,7 +142,7 @@ class OpenBASHttp:
                 "execution_message": execution_result["message"],
                 "execution_status": execution_result["status"],
                 "execution_duration": int(time.time() - start),
-                "execution_context_identifiers": None,
+                "execution_action": "complete",
             }
             self.helper.api.inject.execution_callback(
                 inject_id=inject_id, data=callback_data
@@ -152,7 +152,7 @@ class OpenBASHttp:
                 "execution_message": str(e),
                 "execution_status": "ERROR",
                 "execution_duration": int(time.time() - start),
-                "execution_context_identifiers": None,
+                "execution_action": "complete",
             }
             self.helper.api.inject.execution_callback(
                 inject_id=inject_id, data=callback_data
