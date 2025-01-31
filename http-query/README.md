@@ -76,7 +76,7 @@ Install the required python dependencies (preferably in a virtual environment):
 pip3 install -r requirements.txt
 ```
 
-Then, start the connector:
+Then, start the injector:
 
 ```shell
 python3 openbas_http.py

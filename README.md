@@ -8,7 +8,7 @@ The following repository is used to store the OpenBAS injectors for the platform
 
 ## Injectors list and statuses
 
-This repository is used to host connectors that are supported by the core development team of OpenBAS. Nevertheless, the community is also developing a lot of injectors, third-parties modules directly linked to OpenBAS. You can find the list of all available connectors and plugins in the [OpenBAS ecosystem dedicated space](https://filigran.notion.site/OpenBAS-Ecosystem-30d8eb73d7d04611843e758ddef8941b).
+This repository is used to host injectors that are supported by the core development team of OpenBAS. Nevertheless, the community is also developing a lot of injectors, third-parties modules directly linked to OpenBAS. You can find the list of all available injectors and plugins in the [OpenBAS ecosystem dedicated space](https://filigran.notion.site/OpenBAS-Ecosystem-30d8eb73d7d04611843e758ddef8941b).
 
 ## Contributing
 
