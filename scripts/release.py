@@ -93,11 +93,7 @@ os.system(
 )
 
 logging.info("[injectors] Tagging")
-os.system(
-    "git tag -f "
-    + new_version
-    + " && git push -f --tags > /dev/null 2>&1"
-)
+os.system("git tag -f " + new_version + " && git push -f --tags > /dev/null 2>&1")
 
 logging.info("[injectors] Generating release")
 os.system("gren release > /dev/null 2>&1")
@@ -150,5 +146,7 @@ requests.patch(
     json={"body": new_release_note},
 )
 
-closeRelease("https://api.github.com/repos/OpenBAS-Platform/injectors", new_version, github_token)
+closeRelease(
+    "https://api.github.com/repos/OpenBAS-Platform/injectors", new_version, github_token
+)
 logging.info("[injectors] Release done!")
