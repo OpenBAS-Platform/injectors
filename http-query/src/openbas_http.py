@@ -1,3 +1,4 @@
+import json
 import time
 from typing import Dict
 
@@ -138,8 +139,11 @@ class OpenBASHttp:
         # Execute inject
         try:
             execution_result = self.http_execution(data)
+            jsonResult = json.loads(execution_result["message"])
+            execution_raw_structured = {"url": jsonResult["url"]}
             callback_data = {
                 "execution_message": execution_result["message"],
+                "execution_raw_structured": json.dumps(execution_raw_structured),
                 "execution_status": execution_result["status"],
                 "execution_duration": int(time.time() - start),
                 "execution_action": "complete",

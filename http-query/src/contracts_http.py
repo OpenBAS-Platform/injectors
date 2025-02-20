@@ -1,5 +1,6 @@
 from typing import List
 
+from contracts.contract_config import ContractOutput
 from pyobas.contracts import ContractBuilder
 from pyobas.contracts.contract_config import (
     Contract,
@@ -38,6 +39,14 @@ class HttpContracts:
             color_light="#00bcd4",
             expose=True,
         )
+        # Output
+        output = ContractOutput(
+            "url",
+            "Text",
+            # FIXME: it's an example
+            ["reconnaissance phase"]
+        )
+        # Fields
         basic_auth_field = ContractCheckbox(
             key="basicAuth",
             label="Use basic authentication",
@@ -77,7 +86,7 @@ class HttpContracts:
             },
             fields=raw_post_instance,
             manual=False,
-        )
+        ).add_output(output)
         raw_put_contract = Contract(
             contract_id=HTTP_RAW_PUT_CONTRACT,
             config=contract_config,
@@ -87,7 +96,7 @@ class HttpContracts:
             },
             fields=raw_post_instance,
             manual=False,
-        )
+        ).add_output(output)
         # Post contract form
         attachment_field = ContractAttachment(
             key="attachments",
@@ -118,7 +127,7 @@ class HttpContracts:
             },
             fields=form_post_instance,
             manual=False,
-        )
+        ).add_output(output)
         form_put_contract = Contract(
             contract_id=HTTP_FORM_PUT_CONTRACT,
             config=contract_config,
@@ -128,7 +137,7 @@ class HttpContracts:
             },
             fields=form_post_instance,
             manual=False,
-        )
+        ).add_output(output)
         # Get contract
         get_instance: List[ContractElement] = (
             ContractBuilder()
@@ -146,7 +155,7 @@ class HttpContracts:
             },
             fields=get_instance,
             manual=False,
-        )
+        ).add_output(output)
         return prepare_contracts(
             [
                 raw_post_contract,
