@@ -1,4 +1,3 @@
-import json
 import time
 from typing import Dict
 
@@ -40,7 +39,7 @@ class OpenBASHttp:
             },
         )
         self.helper = OpenBASInjectorHelper(
-            self.config, open("img/icon-http.png", "rb")
+            self.config, open("img/icon-nmap.png", "rb")
         )
 
     @staticmethod
@@ -139,11 +138,8 @@ class OpenBASHttp:
         # Execute inject
         try:
             execution_result = self.http_execution(data)
-            jsonResult = json.loads(execution_result["message"])
-            execution_raw_structured = {"url": jsonResult["url"]}
             callback_data = {
                 "execution_message": execution_result["message"],
-                "execution_output_structured": json.dumps(execution_raw_structured),
                 "execution_status": execution_result["status"],
                 "execution_duration": int(time.time() - start),
                 "execution_action": "complete",
