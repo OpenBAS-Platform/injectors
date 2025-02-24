@@ -45,6 +45,7 @@ class HttpContracts:
             type=ContractOutputType.Text,
             field="url",
             isMultiple=False,
+            labels=["remote"],
         )
         # Fields
         basic_auth_field = ContractCheckbox(
@@ -77,7 +78,7 @@ class HttpContracts:
             .mandatory(ContractTextArea(key="body", label="Raw request data"))
             .build_fields()
         )
-        outputs = List[ContractOutput](
+        outputs: List[ContractOutputElement] = (
             ContractBuilder().add_outputs([output]).build_outputs()
         )
         raw_post_contract = Contract(

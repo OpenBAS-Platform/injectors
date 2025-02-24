@@ -7,7 +7,6 @@ from pyobas.contracts.contract_config import (
     ContractCardinality,
     ContractConfig,
     ContractElement,
-    ContractOutput,
     ContractOutputElement,
     ContractOutputType,
     SupportedLanguage,
@@ -42,17 +41,18 @@ class NmapContracts:
             mandatory=True,
         )
         # Output
-        output = ContractOutput(
+        output = ContractOutputElement(
             type=ContractOutputType.Port,
             field="ports",
             isMultiple=True,
+            labels=["scan"],
         )
         # Post contract raw
         nmap_contract_fields: List[ContractElement] = (
             ContractBuilder().add_fields([targets]).build_fields()
         )
         nmap_contract_outputs: List[ContractOutputElement] = (
-            ContractBuilder().add_outputs([output]).build_elements()
+            ContractBuilder().add_outputs([output]).build_outputs()
         )
         syn_scan_contract = Contract(
             contract_id=TCP_SYN_SCAN_CONTRACT,
