@@ -1,6 +1,5 @@
 from typing import List
 
-from contracts.contract_config import ContractOutput
 from pyobas.contracts import ContractBuilder
 from pyobas.contracts.contract_config import (
     Contract,
@@ -9,6 +8,8 @@ from pyobas.contracts.contract_config import (
     ContractCheckbox,
     ContractConfig,
     ContractElement,
+    ContractOutputElement,
+    ContractOutputType,
     ContractText,
     ContractTextArea,
     ContractTuple,
@@ -40,11 +41,10 @@ class HttpContracts:
             expose=True,
         )
         # Output
-        output = ContractOutput(
-            "url",
-            "Text",
-            # FIXME: it's an example
-            ["reconnaissance phase"],
+        output = ContractOutputElement(
+            type=ContractOutputType.Text,
+            field="url",
+            isMultiple=False,
         )
         # Fields
         basic_auth_field = ContractCheckbox(

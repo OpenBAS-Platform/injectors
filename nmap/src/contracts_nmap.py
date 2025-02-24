@@ -3,14 +3,16 @@ from typing import List
 from pyobas.contracts import ContractBuilder
 from pyobas.contracts.contract_config import (
     Contract,
+    ContractAsset,
     ContractCardinality,
     ContractConfig,
     ContractElement,
+    ContractOutput,
+    ContractOutputElement,
+    ContractOutputType,
     SupportedLanguage,
     prepare_contracts,
-    ContractOutput,
 )
-from pyobas.contracts.contract_config import ContractAsset
 
 TYPE = "openbas_nmap"
 TCP_SYN_SCAN_CONTRACT = "5948c96c-4064-4c0d-b079-51ec33f31b91"
@@ -40,15 +42,17 @@ class NmapContracts:
             mandatory=True,
         )
         # Output
-        output = (
-            "url",
-            "Text",
-            # FIXME: it's an example
-            ["reconnaissance phase"],
+        output = ContractOutput(
+            type=ContractOutputType.Port,
+            field="ports",
+            isMultiple=True,
         )
         # Post contract raw
-        nmap_contract_instance: List[ContractElement] = (
-            ContractBuilder().add_fields([targets]).build()
+        nmap_contract_fields: List[ContractElement] = (
+            ContractBuilder().add_fields([targets]).build_fields()
+        )
+        nmap_contract_outputs: List[ContractOutputElement] = (
+            ContractBuilder().add_outputs([output]).build_elements()
         )
         syn_scan_contract = Contract(
             contract_id=TCP_SYN_SCAN_CONTRACT,
@@ -57,7 +61,8 @@ class NmapContracts:
                 SupportedLanguage.en: "Nmap - SYN Scan",
                 SupportedLanguage.fr: "Nmap - SYN Scan",
             },
-            fields=nmap_contract_instance,
+            fields=nmap_contract_fields,
+            outputs=nmap_contract_outputs,
             manual=False,
         )
         tcp_scan_contract = Contract(
@@ -67,7 +72,8 @@ class NmapContracts:
                 SupportedLanguage.en: "Nmap - TCP Connect Scan",
                 SupportedLanguage.fr: "Nmap - TCP Connect Scan",
             },
-            fields=nmap_contract_instance,
+            fields=nmap_contract_fields,
+            outputs=nmap_contract_outputs,
             manual=False,
         )
         return prepare_contracts([syn_scan_contract, tcp_scan_contract])
