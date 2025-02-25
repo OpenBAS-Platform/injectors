@@ -88,4 +88,6 @@ class NmapContracts:
             outputs=nmap_contract_outputs,
             manual=False,
         )
-        return prepare_contracts([syn_scan_contract, tcp_scan_contract, fin_scan_contract])
+        return prepare_contracts(
+            [syn_scan_contract, tcp_scan_contract, fin_scan_contract]
+        )

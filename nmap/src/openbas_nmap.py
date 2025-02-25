@@ -1,6 +1,6 @@
-import time
 import json
 import subprocess
+import time
 from typing import Dict
 
 import requests
@@ -42,9 +42,14 @@ class OpenBASHttp:
         )
 
     def nmap_execution(self, data: Dict) -> Dict:
-        nmap = subprocess.run(['nmap', '-Pn', '-sV', '-oX', '-', 'google.com'], check=True, capture_output=True)
-        jc = subprocess.run(['jc', '--xml', '-p'], input=nmap.stdout, capture_output=True)
-
+        nmap = subprocess.run(
+            ["nmap", "-Pn", "-sV", "-oX", "-", "google.com"],
+            check=True,
+            capture_output=True,
+        )
+        jc = subprocess.run(
+            ["jc", "--xml", "-p"], input=nmap.stdout, capture_output=True
+        )
 
     def process_message(self, data: Dict) -> None:
         start = time.time()
