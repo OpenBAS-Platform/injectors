@@ -1,4 +1,6 @@
 import time
+import json
+import subprocess
 from typing import Dict
 
 import requests
@@ -39,6 +41,11 @@ class OpenBASHttp:
             self.config, open("img/icon-nmap.png", "rb")
         )
 
+    def nmap_execution(self, data: Dict) -> Dict:
+        nmap = subprocess.run(['nmap', '-Pn', '-sV', '-oX', '-', 'google.com'], check=True, capture_output=True)
+        jc = subprocess.run(['jc', '--xml', '-p'], input=nmap.stdout, capture_output=True)
+
+
     def process_message(self, data: Dict) -> None:
         start = time.time()
         inject_id = data["injection"]["inject_id"]
@@ -49,7 +56,7 @@ class OpenBASHttp:
         )
         # Execute inject
         try:
-            execution_result = self.http_execution(data)
+            execution_result = self.nmap_execution(data)
             callback_data = {
                 "execution_message": execution_result["message"],
                 "execution_status": execution_result["status"],

@@ -16,6 +16,7 @@ from pyobas.contracts.contract_config import (
 TYPE = "openbas_nmap"
 TCP_SYN_SCAN_CONTRACT = "5948c96c-4064-4c0d-b079-51ec33f31b91"
 TCP_CONNECT_SCAN_CONTRACT = "bb503f7c-1f17-49e1-ac31-f4c2e99fd704"
+FIN_SCAN_CONTRACT = "ddc6387f-ba7f-498f-b383-0f568e1c6ae4"
 
 
 class NmapContracts:
@@ -35,7 +36,7 @@ class NmapContracts:
         )
         targets = ContractAsset(
             cardinality=ContractCardinality.Multiple,
-            key="targets",
+            key="assets",
             label="Targeted assets",
             defaultValue=None,
             mandatory=True,
@@ -76,4 +77,15 @@ class NmapContracts:
             outputs=nmap_contract_outputs,
             manual=False,
         )
-        return prepare_contracts([syn_scan_contract, tcp_scan_contract])
+        fin_scan_contract = Contract(
+            contract_id=TCP_CONNECT_SCAN_CONTRACT,
+            config=contract_config,
+            label={
+                SupportedLanguage.en: "Nmap - FIN Scan",
+                SupportedLanguage.fr: "Nmap - FIN Scan",
+            },
+            fields=nmap_contract_fields,
+            outputs=nmap_contract_outputs,
+            manual=False,
+        )
+        return prepare_contracts([syn_scan_contract, tcp_scan_contract, fin_scan_contract])
