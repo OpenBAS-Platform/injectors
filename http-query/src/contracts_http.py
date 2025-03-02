@@ -8,6 +8,8 @@ from pyobas.contracts.contract_config import (
     ContractCheckbox,
     ContractConfig,
     ContractElement,
+    ContractOutputElement,
+    ContractOutputType,
     ContractText,
     ContractTextArea,
     ContractTuple,
@@ -38,6 +40,15 @@ class HttpContracts:
             color_light="#00bcd4",
             expose=True,
         )
+        # Output
+        output = ContractOutputElement(
+            type=ContractOutputType.Text,
+            field="url",
+            isMultiple=False,
+            isFindingCompatible=False,
+            labels=["remote"],
+        )
+        # Fields
         basic_auth_field = ContractCheckbox(
             key="basicAuth",
             label="Use basic authentication",
@@ -60,13 +71,16 @@ class HttpContracts:
         )
         auth_fields = [basic_auth_field, username_field, basic_password]
         # Post contract raw
-        raw_post_instance: List[ContractElement] = (
+        raw_post_fields: List[ContractElement] = (
             ContractBuilder()
             .mandatory(ContractText(key="uri", label="URL"))
             .add_fields(auth_fields)
             .optional(ContractTuple(key="headers", label="Headers"))
             .mandatory(ContractTextArea(key="body", label="Raw request data"))
-            .build()
+            .build_fields()
+        )
+        outputs: List[ContractOutputElement] = (
+            ContractBuilder().add_outputs([output]).build_outputs()
         )
         raw_post_contract = Contract(
             contract_id=HTTP_RAW_POST_CONTRACT,
@@ -75,7 +89,8 @@ class HttpContracts:
                 SupportedLanguage.en: "HTTP Request - POST (raw body)",
                 SupportedLanguage.fr: "Requête HTTP - POST (body brut)",
             },
-            fields=raw_post_instance,
+            fields=raw_post_fields,
+            outputs=outputs,
             manual=False,
         )
         raw_put_contract = Contract(
@@ -85,7 +100,8 @@ class HttpContracts:
                 SupportedLanguage.en: "HTTP Request - PUT (raw body)",
                 SupportedLanguage.fr: "Requête HTTP - PUT (body brut)",
             },
-            fields=raw_post_instance,
+            fields=raw_post_fields,
+            outputs=outputs,
             manual=False,
         )
         # Post contract form
@@ -94,7 +110,7 @@ class HttpContracts:
             label="Attachments",
             cardinality=ContractCardinality.Multiple,
         )
-        form_post_instance: List[ContractElement] = (
+        form_post_fields: List[ContractElement] = (
             ContractBuilder()
             .mandatory(ContractText(key="uri", label="URL"))
             .add_fields(auth_fields)
@@ -107,7 +123,7 @@ class HttpContracts:
                 )
             )
             .optional(attachment_field)
-            .build()
+            .build_fields()
         )
         form_post_contract = Contract(
             contract_id=HTTP_FORM_POST_CONTRACT,
@@ -116,7 +132,8 @@ class HttpContracts:
                 SupportedLanguage.en: "HTTP Request - POST (key/value)",
                 SupportedLanguage.fr: "Requête HTTP - POST (clé/valeur)",
             },
-            fields=form_post_instance,
+            fields=form_post_fields,
+            outputs=outputs,
             manual=False,
         )
         form_put_contract = Contract(
@@ -126,16 +143,17 @@ class HttpContracts:
                 SupportedLanguage.en: "HTTP Request - PUT (key/value)",
                 SupportedLanguage.fr: "Requête HTTP - PUT (clé/valeur)",
             },
-            fields=form_post_instance,
+            fields=form_post_fields,
+            outputs=outputs,
             manual=False,
         )
         # Get contract
-        get_instance: List[ContractElement] = (
+        get_fields: List[ContractElement] = (
             ContractBuilder()
             .mandatory(ContractText(key="uri", label="URL"))
             .add_fields(auth_fields)
             .optional(ContractTuple(key="headers", label="Headers"))
-            .build()
+            .build_fields()
         )
         get_contract = Contract(
             contract_id=HTTP_GET_CONTRACT,
@@ -144,7 +162,8 @@ class HttpContracts:
                 SupportedLanguage.en: "HTTP Request - GET",
                 SupportedLanguage.fr: "Requête HTTP - GET",
             },
-            fields=get_instance,
+            fields=get_fields,
+            outputs=outputs,
             manual=False,
         )
         return prepare_contracts(

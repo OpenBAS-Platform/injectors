@@ -1,0 +1,9 @@
+openbas:
+  url: 'http://localhost:3001'
+  token: 'ChangeMe'
+
+injector:
+  id: 'changeme'
+  name: 'Nmap'
+  log_level: 'info'
+

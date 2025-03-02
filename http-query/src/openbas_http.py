@@ -1,3 +1,4 @@
+import json
 import time
 from typing import Dict
 
@@ -54,6 +55,7 @@ class OpenBASHttp:
         success = 200 <= response.status_code < 300
         success_status = "SUCCESS" if success else "ERROR"
         return {
+            "url": response.url,
             "code": response.status_code,
             "status": success_status,
             "message": response.text,
@@ -138,8 +140,10 @@ class OpenBASHttp:
         # Execute inject
         try:
             execution_result = self.http_execution(data)
+            execution_outputs = {"url": execution_result["url"]}
             callback_data = {
                 "execution_message": execution_result["message"],
+                "execution_output_structured": json.dumps(execution_outputs),
                 "execution_status": execution_result["status"],
                 "execution_duration": int(time.time() - start),
                 "execution_action": "complete",
