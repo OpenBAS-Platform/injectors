@@ -9,10 +9,10 @@ from pyobas.contracts.contract_config import (
     ContractElement,
     ContractOutputElement,
     ContractOutputType,
+    ContractSelect,
+    ContractText,
     SupportedLanguage,
     prepare_contracts,
-    ContractText,
-    ContractSelect,
 )
 
 TYPE = "openbas_nmap"

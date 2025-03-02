@@ -1,13 +1,12 @@
 import json
-import socket
 import subprocess
 import time
 from typing import Dict
 
 from contracts_nmap import (
+    FIN_SCAN_CONTRACT,
     TCP_CONNECT_SCAN_CONTRACT,
     TCP_SYN_SCAN_CONTRACT,
-    FIN_SCAN_CONTRACT,
     NmapContracts,
 )
 from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
