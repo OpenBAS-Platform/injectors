@@ -45,6 +45,7 @@ class HttpContracts:
             type=ContractOutputType.Text,
             field="url",
             isMultiple=False,
+            isFindingCompatible=False,
             labels=["remote"],
         )
         # Fields

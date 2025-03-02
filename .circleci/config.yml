@@ -64,11 +64,20 @@ jobs:
             $IS_LATEST && TAGS="$TAGS -t openbas/injector-http-query:latest"
             docker build --progress=plain $TAGS .
       - run:
+          working_directory: ~/openbas/nmap
+          name: Build Docker image openbas/injector-nmap
+          command: |
+            TAGS="-t openbas/injector-nmap:${CIRCLE_TAG}"
+            $IS_LATEST && TAGS="$TAGS -t openbas/injector-nmap:latest"
+            docker build --progress=plain $TAGS .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             $IS_LATEST && docker push openbas/injector-http-query:latest
             docker push openbas/injector-http-query:${CIRCLE_TAG}
+            $IS_LATEST && docker push openbas/injector-nmap:latest
+            docker push openbas/injector-nmap:${CIRCLE_TAG}
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -92,10 +101,15 @@ jobs:
           name: Build Docker image openbas/injector-http-query
           command: docker build --progress=plain -t openbas/injector-http-query:rolling .
       - run:
+          working_directory: ~/openbas/nmap
+          name: Build Docker image openbas/injector-nmap
+          command: docker build --progress=plain -t openbas/injector-nmap:rolling .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push openbas/injector-http-query:rolling
+            docker push openbas/injector-nmap:rolling
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -120,10 +134,15 @@ jobs:
           name: Build Docker image openbas/injector-http-query
           command: docker build --progress=plain -t openbas/injector-http-query:prerelease .
       - run:
+          working_directory: ~/openbas/nmap
+          name: Build Docker image openbas/injector-nmap
+          command: docker build --progress=plain -t openbas/injector-nmap:prerelease .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push openbas/injector-http-query:prerelease
+            docker push openbas/injector-nmap:prerelease
       - slack/notify:
           event: fail
           template: basic_fail_1

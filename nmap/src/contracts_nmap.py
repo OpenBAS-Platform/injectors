@@ -11,6 +11,8 @@ from pyobas.contracts.contract_config import (
     ContractOutputType,
     SupportedLanguage,
     prepare_contracts,
+    ContractText,
+    ContractSelect,
 )
 
 TYPE = "openbas_nmap"
@@ -34,26 +36,77 @@ class NmapContracts:
             color_light="#00bcd4",
             expose=True,
         )
-        targets = ContractAsset(
+        target_selector = ContractSelect(
+            key="target_selector",
+            label="Type of targets",
+            defaultValue=["assets"],
+            mandatory=True,
+            mandatoryGroups=["assets", "targets"],
+            choices={"assets": "Assets", "manual": "Manual"},
+        )
+        targets_assets = ContractAsset(
             cardinality=ContractCardinality.Multiple,
             key="assets",
             label="Targeted assets",
-            defaultValue=None,
             mandatory=True,
+            linkedFields=[target_selector],
+            linkedValues=["assets"],
         )
+        target_property_selector = ContractSelect(
+            key="target_property_selector",
+            label="Targeted property",
+            defaultValue=["seen_ip"],
+            mandatory=True,
+            choices={
+                "seen_ip": "Seen IP",
+                "local_ip": "Local IP (first)",
+                "hostname": "Hostname",
+            },
+            linkedFields=[target_selector],
+            linkedValues=["assets"],
+        )
+        targets_manual = ContractText(
+            key="targets",
+            label="Targeted hostnames or IPs (separated by commas)",
+            mandatory=False,
+            mandatoryConditionField="target_selector",
+            mandatoryConditionValue="manual",
+            linkedFields=[target_selector],
+            linkedValues=["manual"],
+        )
+
         # Output
-        output = ContractOutputElement(
+        output_ports_scans = ContractOutputElement(
+            type=ContractOutputType.PortsScan,
+            field="scan_results",
+            isMultiple=True,
+            isFindingCompatible=True,
+            labels=["scan"],
+        )
+        output_port = ContractOutputElement(
             type=ContractOutputType.Port,
             field="ports",
             isMultiple=True,
+            isFindingCompatible=False,
             labels=["scan"],
         )
         # Post contract raw
         nmap_contract_fields: List[ContractElement] = (
-            ContractBuilder().add_fields([targets]).build_fields()
+            ContractBuilder()
+            .add_fields(
+                [
+                    target_selector,
+                    targets_assets,
+                    target_property_selector,
+                    targets_manual,
+                ]
+            )
+            .build_fields()
         )
         nmap_contract_outputs: List[ContractOutputElement] = (
-            ContractBuilder().add_outputs([output]).build_outputs()
+            ContractBuilder()
+            .add_outputs([output_ports_scans, output_port])
+            .build_outputs()
         )
         syn_scan_contract = Contract(
             contract_id=TCP_SYN_SCAN_CONTRACT,
@@ -78,7 +131,7 @@ class NmapContracts:
             manual=False,
         )
         fin_scan_contract = Contract(
-            contract_id=TCP_CONNECT_SCAN_CONTRACT,
+            contract_id=FIN_SCAN_CONTRACT,
             config=contract_config,
             label={
                 SupportedLanguage.en: "Nmap - FIN Scan",

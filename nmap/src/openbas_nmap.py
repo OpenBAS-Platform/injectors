@@ -1,18 +1,19 @@
 import json
+import socket
 import subprocess
 import time
 from typing import Dict
 
-import requests
 from contracts_nmap import (
     TCP_CONNECT_SCAN_CONTRACT,
     TCP_SYN_SCAN_CONTRACT,
+    FIN_SCAN_CONTRACT,
     NmapContracts,
 )
 from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
-class OpenBASHttp:
+class OpenBASNmap:
     def __init__(self):
         self.config = OpenBASConfigHelper(
             __file__,
@@ -41,15 +42,91 @@ class OpenBASHttp:
             self.config, open("img/icon-nmap.png", "rb")
         )
 
-    def nmap_execution(self, data: Dict) -> Dict:
+    def nmap_execution(self, start: float, data: Dict) -> Dict:
+        inject_id = data["injection"]["inject_id"]
+        contract_id = data["injection"]["inject_injector_contract"]["convertedContent"][
+            "contract_id"
+        ]
+        nmap_args = ["nmap", "-Pn"]
+        if contract_id == TCP_SYN_SCAN_CONTRACT:
+            nmap_args.append("-sS")
+        elif contract_id == TCP_CONNECT_SCAN_CONTRACT:
+            nmap_args.append("-sT")
+        elif contract_id == FIN_SCAN_CONTRACT:
+            nmap_args.append("-sF")
+        nmap_args = nmap_args + ["-oX", "-"]
+
+        asset_list = []
+        if data["injection"]["inject_content"]["target_selector"] == "assets":
+            target_property_selector = data["injection"]["inject_content"][
+                "target_property_selector"
+            ]
+            for asset in data["assets"]:
+                asset_list.append(asset["asset_id"])
+                if target_property_selector == "seen_ip":
+                    nmap_args.append(asset["endpoint_seen_ip"])
+                elif target_property_selector == "local_ip":
+                    if len(asset["endpoint_ips"]) == 0:
+                        raise ValueError("No IP found for this endpoint")
+                    nmap_args.append(asset["endpoint_ips"][0])
+                else:
+                    nmap_args.append(asset["endpoint_hostname"])
+        else:
+            for target in data["injection"]["inject_content"]["targets"].split(","):
+                asset_list.append(target.strip())
+                nmap_args.append(target.strip())
+
+        self.helper.injector_logger.info(
+            "Executing nmap with command: " + " ".join(nmap_args)
+        )
+        callback_data = {
+            "execution_message": " ".join(nmap_args),
+            "execution_status": "INFO",
+            "execution_duration": int(time.time() - start),
+            "execution_action": "command_execution",
+        }
+        self.helper.api.inject.execution_callback(
+            inject_id=inject_id, data=callback_data
+        )
         nmap = subprocess.run(
-            ["nmap", "-Pn", "-sV", "-oX", "-", "google.com"],
+            nmap_args,
             check=True,
             capture_output=True,
         )
         jc = subprocess.run(
             ["jc", "--xml", "-p"], input=nmap.stdout, capture_output=True
         )
+        result = json.loads(jc.stdout.decode("utf-8").strip())
+        run = result["nmaprun"]
+        if not isinstance(run["host"], list):
+            run["host"] = [run["host"]]
+
+        ports_scans_results = []
+        ports_results = []
+        for idx, host in enumerate(run["host"]):
+            if "ports" in host and "port" in host["ports"]:
+                for port in host["ports"]["port"]:
+                    if port["state"]["@state"] == "open":
+                        ports_results.append(int(port["@portid"]))
+                        port_result = {
+                            "port": int(port["@portid"]),
+                            "service": port["service"]["@name"],
+                        }
+                        if (
+                            data["injection"]["inject_content"]["target_selector"]
+                            == "assets"
+                        ):
+                            port_result["asset_id"] = asset_list[idx]
+                            port_result["host"] = host["address"]["@addr"]
+                        else:
+                            port_result["asset_id"] = None
+                            port_result["host"] = asset_list[idx]
+                        ports_scans_results.append(port_result)
+
+        return {
+            "message": "Targets successfully scanned",
+            "outputs": {"scan_results": ports_scans_results, "ports": ports_results},
+        }
 
     def process_message(self, data: Dict) -> None:
         start = time.time()
@@ -61,10 +138,11 @@ class OpenBASHttp:
         )
         # Execute inject
         try:
-            execution_result = self.nmap_execution(data)
+            execution_result = self.nmap_execution(start, data)
             callback_data = {
                 "execution_message": execution_result["message"],
-                "execution_status": execution_result["status"],
+                "execution_output_structured": json.dumps(execution_result["outputs"]),
+                "execution_status": "SUCCESS",
                 "execution_duration": int(time.time() - start),
                 "execution_action": "complete",
             }
@@ -88,5 +166,5 @@ class OpenBASHttp:
 
 
 if __name__ == "__main__":
-    openBASHttp = OpenBASHttp()
-    openBASHttp.start()
+    openBASNmap = OpenBASNmap()
+    openBASNmap.start()
