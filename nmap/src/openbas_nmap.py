@@ -123,7 +123,9 @@ class OpenBASNmap:
                         ports_scans_results.append(port_result)
 
         return {
-            "message": "Targets successfully scanned",
+            "message": "Targets successfully scanned ("
+            + str(len(ports_results))
+            + " ports found )",
             "outputs": {"scan_results": ports_scans_results, "ports": ports_results},
         }
 
