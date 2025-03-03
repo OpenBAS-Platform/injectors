@@ -11,7 +11,7 @@ RUN apk update && apk upgrade && \
     pip3 install --no-cache-dir -r requirements.txt && \
     apk del git build-base
 
-# Expose and entrypoint
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+# Expose and entrypoint2
+COPY entrypoint2.sh /
+RUN chmod +x /entrypoint2.sh
+ENTRYPOINT ["/entrypoint2.sh"]
