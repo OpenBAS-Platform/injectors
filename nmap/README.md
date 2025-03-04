@@ -2,7 +2,7 @@
 
 Table of Contents
 
-- [OpenBAS Nmap Injector](#openbas-http-query-injector)
+- [OpenBAS Nmap Injector](#openbas-nmap-injector)
     - [Prerequisites](#prerequisites)
     - [Configuration variables](#configuration-variables)
         - [OpenBAS environment variables](#openbas-environment-variables)
