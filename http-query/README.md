@@ -38,7 +38,6 @@ Below are the parameters you'll need to set for running the injector properly:
 | Parameter        | config.yml | Docker environment variable | Default | Mandatory | Description                                                                            |
 |------------------|------------|-----------------------------|---------|-----------|----------------------------------------------------------------------------------------|
 | Injector ID      | id         | `INJECTOR_ID`               | /       | Yes       | A unique `UUIDv4` identifier for this injector instance.                               |
-| Injector Type    | type       | `INJECTOR_TYPE`             |         | Yes       | Type of the injector.                                                                  |
 | Collector Name   | name       | `INJECTOR_NAME`             |         | Yes       | Name of the injector.                                                                  |
 | Log Level        | log_level  | `INJECTOR_LOG_LEVEL`        | info    | Yes       | Determines the verbosity of the logs. Options are `debug`, `info`, `warn`, or `error`. |
 
