@@ -12,6 +12,6 @@ RUN apk update && apk upgrade && \
     apk del git build-base
 
 # Expose and entrypoint
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+COPY entrypoint2.sh /
+RUN chmod +x /entrypoint2.sh
+ENTRYPOINT ["/entrypoint2.sh"]
