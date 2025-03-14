@@ -64,6 +64,12 @@ docker compose up -d
 
 ### Manual Deployment
 
+#### Prerequisites
+
+Nmap must be installed and available on the system you are running.
+
+#### Configuration
+
 Create a file `config.yml` based on the provided `config.yml.sample`.
 
 Replace the configuration variables with the appropriate configurations for
