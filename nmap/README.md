@@ -35,11 +35,11 @@ Below are the parameters you'll need to set for OpenBAS:
 
 Below are the parameters you'll need to set for running the injector properly:
 
-| Parameter        | config.yml | Docker environment variable | Default | Mandatory | Description                                                                            |
-|------------------|------------|-----------------------------|---------|-----------|----------------------------------------------------------------------------------------|
-| Injector ID      | id         | `INJECTOR_ID`               | /       | Yes       | A unique `UUIDv4` identifier for this injector instance.                               |
-| Collector Name   | name       | `INJECTOR_NAME`             |         | Yes       | Name of the injector.                                                                  |
-| Log Level        | log_level  | `INJECTOR_LOG_LEVEL`        | info    | Yes       | Determines the verbosity of the logs. Options are `debug`, `info`, `warn`, or `error`. |
+| Parameter      | config.yml | Docker environment variable | Default | Mandatory | Description                                                                            |
+|----------------|------------|-----------------------------|---------|-----------|----------------------------------------------------------------------------------------|
+| Injector ID    | id         | `INJECTOR_ID`               | /       | Yes       | A unique `UUIDv4` identifier for this injector instance.                               |
+| Collector Name | name       | `INJECTOR_NAME`             |         | Yes       | Name of the injector.                                                                  |
+| Log Level      | log_level  | `INJECTOR_LOG_LEVEL`        | info    | Yes       | Determines the verbosity of the logs. Options are `debug`, `info`, `warn`, or `error`. |
 
 ## Deployment
 
@@ -83,4 +83,53 @@ python3 openbas_nmap.py
 
 ## Behavior
 
-This injector enables new inject contracts, allowing for Nmap FIN Scan, SYN Scan and TCP Connect Scan.
+The injector enables new inject contracts, supporting the following Nmap scan types:
+
+### Nmap - FIN Scan
+
+Command executed:
+
+```shell
+nmap -Pn -sF
+```
+
+### Nmap - SYN Scan
+
+Command executed:
+
+```shell
+nmap -Pn -sS
+```
+
+### Nmap - TCP Connect Scan
+
+Command executed:
+
+```shell
+nmap -Pn -sT
+```
+
+### Target Selection
+
+The targets vary based on the provided options:
+
+If type of targets is Assets:
+
+| Targeted property | Asset property       | 
+|-------------------|----------------------|
+| Seen IP           | Seen IP address      |
+| Local IP (first)  | IP Addresses (first) |
+| Hostname          | Hostname             |
+
+If type of targets is Manual:
+
+- Hostnames or IP addresses are provided directly as comma-separated values.
+
+### Resources
+
+- Official Nmap Documentation: https://nmap.org/docs.html
+- Options Explanation:
+    - -Pn: Host Discovery
+    - -sS: SYN Scan
+    - -sT: TCP Connect Scan
+    - -sF: FIN Scan
