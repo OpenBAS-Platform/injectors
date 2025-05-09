@@ -1,7 +1,7 @@
 version: '3'
 services:
   injector-http-query:
-    image: openbas/injector-http-query:1.16.0
+    image: openbas/injector-http-query:1.16.1
     environment:
       - OPENBAS_URL=http://localhost
       - OPENBAS_TOKEN=ChangeMe
