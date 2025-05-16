@@ -109,7 +109,7 @@ If no specific template is provided and the contract requires it, the injector w
 
 ```bash
 nuclei -t /
-
+```
 
 ## Behavior
 
