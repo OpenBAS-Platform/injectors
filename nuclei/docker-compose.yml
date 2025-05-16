@@ -1,0 +1,11 @@
+version: '3'
+services:
+  injector-nmap:
+    image: openbas/injector-nuclei:1.16.1
+    environment:
+      - OPENBAS_URL=http://localhost
+      - OPENBAS_TOKEN=ChangeMe
+      - INJECTOR_ID=ChangeMe
+      - "INJECTOR_NAME=Nuclei"
+      - INJECTOR_LOG_LEVEL=error
+    restart: always
