@@ -93,64 +93,56 @@ python3 openbas_nuclei.py
 
 The Nuclei injector supports contract-based scans by dynamically constructing and executing Nuclei commands based on provided tags or templates.
 
-### Supported Contracts
+## Supported Contracts
 
-The following scan types are supported through `-tags`:
+The following scan types are supported via `-tags`:
 
-- cloud
-- misconfiguration
-- exposure
-- panel
-- xss
-- wordpress
-- http
+- Cloud
+- Misconfiguration
+- Exposure
+- Panel
+- XSS
+- WordPress
+- HTTP
 
-If no specific template is provided and the contract requires it, the injector will fallback to a default minimal scan using:
+The CVE scan uses the `-tags cve` argument and enforces JSON output.
+
+The Template scan accepts a manual template via `-t <template>` or `template_path`.
+
+## Target Selection
+
+Targets are selected based on the `target_selector` field.
+
+### If target type is **Assets**:
+
+| Selected Property | Uses Asset Field         |
+|-------------------|-------------------------|
+| Seen IP           | endpoint_seen_ip         |
+| Local IP          | First IP from endpoint_ips |
+| Hostname          | endpoint_hostname       |
+
+### If target type is **Manual**:
+
+Direct comma-separated values of IPs or hostnames are used.
+
+## Example Execution
+
+A sample command executed by this injector might look like:
 
 ```bash
-nuclei -t /
+nuclei -u 192.168.1.10 -tags xss
 ```
-
-## Behavior
-
-The Nuclei injector supports multiple contract-based scans using tags or templates. It constructs and runs Nuclei commands dynamically based on injection input.
-
-### Supported Contracts
-The following scan types are supported via -tags:
--Cloud
--Misconfiguration
--Exposure
--Panel
--XSS
--WordPress
--HTTP
-- Commonly Used Flags:
-    - -Pn: Host Discovery
-    - -sS: SYN Scan
-    - -sT: TCP Connect Scan
-    - -sF: FIN Scan
-    - 
-Command executed:
-
-```shell
-nmap -Pn -sF
+Or with a specific template:
+```bash
+nuclei -u 10.0.0.5 -t cves/2021/CVE-2021-1234.yaml -j
 ```
+## Output Parsing
+- The injector captures and parses the JSON output of Nuclei, and returns:
 
-### Nmap - SYN Scan
+- Confirmed findings (if any) with severity and CVE IDs
 
-Command executed:
+- Other lines as unstructured output
 
-```shell
-nmap -Pn -sS
-```
-
-### Nmap - TCP Connect Scan
-
-Command executed:
-
-```shell
-nmap -Pn -sT
-```
 
 ## Target Selection
 
