@@ -22,7 +22,7 @@ Make sure the injector can reach RabbitMQ on the specified hostname and port.
 Configuration is done via `docker-compose.yml` (for Docker) or `config.yml` (for manual deployment).
 
 ### OpenBAS Environment Variables
-
+Below are the parameters you'll need to set for OpenBAS:
 | Parameter       | config.yml | Docker Environment Variable | Required | Description                                      |
 |-----------------|------------|-----------------------------|----------|--------------------------------------------------|
 | OpenBAS URL     | url        | `OPENBAS_URL`               | Yes      | The base URL of the OpenBAS platform.           |
@@ -53,11 +53,23 @@ docker compose up -d
 # -d for detached
 ```
 
-### Manual Deployment
+## Manual Deployment
+
+### Prerequisites
+
+You must have [Nuclei](https://nuclei.projectdiscovery.io/) installed and available in your system's `PATH`.
+
+### Configuration
+
+1. Copy the sample config file:
+
+```bash
+cp config.yml.sample config.yml
+```
 
 #### Prerequisites
 
-Nuclei must be installed and available on the system you are running.
+You must have Nuclei installed and available in your system's PATH.
 
 #### Configuration
 
@@ -77,13 +89,47 @@ Then, start the injector:
 ```shell
 python3 openbas_nuclei.py
 ```
+## Behavior
+
+The Nuclei injector supports contract-based scans by dynamically constructing and executing Nuclei commands based on provided tags or templates.
+
+### Supported Contracts
+
+The following scan types are supported through `-tags`:
+
+- cloud
+- misconfiguration
+- exposure
+- panel
+- xss
+- wordpress
+- http
+
+If no specific template is provided and the contract requires it, the injector will fallback to a default minimal scan using:
+
+```bash
+nuclei -t /
+
 
 ## Behavior
 
-The injector enables new inject contracts, supporting the following Nuclei scan types:
+The Nuclei injector supports multiple contract-based scans using tags or templates. It constructs and runs Nuclei commands dynamically based on injection input.
 
-### Nmap - FIN Scan
-
+### Supported Contracts
+The following scan types are supported via -tags:
+-Cloud
+-Misconfiguration
+-Exposure
+-Panel
+-XSS
+-WordPress
+-HTTP
+- Commonly Used Flags:
+    - -Pn: Host Discovery
+    - -sS: SYN Scan
+    - -sT: TCP Connect Scan
+    - -sF: FIN Scan
+    - 
 Command executed:
 
 ```shell
@@ -106,27 +152,32 @@ Command executed:
 nmap -Pn -sT
 ```
 
-### Target Selection
+## Target Selection
 
-The targets vary based on the provided options:
+The targets vary based on the provided input type:
 
-If type of targets is Assets:
+### If target type is **Assets**:
 
-| Targeted property | Asset property       | 
-|-------------------|----------------------|
-| Seen IP           | Seen IP address      |
-| Local IP (first)  | IP Addresses (first) |
-| Hostname          | Hostname             |
+| Targeted Property   | Source Property        |
+|---------------------|------------------------|
+| Seen IP             | Seen IP address        |
+| Local IP (first)    | IP Addresses (first)   |
+| Hostname            | Hostname               |
 
-If type of targets is Manual:
+### If target type is **Manual**:
 
 - Hostnames or IP addresses are provided directly as comma-separated values.
 
-### Resources
+## Results
 
-- Official Nmap Documentation: https://nmap.org/docs.html
-- Options Explanation:
-    - -Pn: Host Discovery
-    - -sS: SYN Scan
-    - -sT: TCP Connect Scan
-    - -sF: FIN Scan
+Scan results are categorized into:
+
+- **CVEs** (based on template classifications)
+- **Other vulnerabilities** (general issues found)
+
+If no vulnerabilities are detected, the injector will clearly indicate this with a **"Nothing Found"** message.
+
+## Resources
+
+- Official Nuclei Documentation: [https://nuclei.projectdiscovery.io](https://nuclei.projectdiscovery.io)
+- Template directory: [https://github.com/projectdiscovery/nuclei-templates](https://github.com/projectdiscovery/nuclei-templates)
