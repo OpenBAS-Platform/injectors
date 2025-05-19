@@ -23,7 +23,7 @@ RUN apk update && apk upgrade && \
     && rm -rf /var/cache/apk/*
 
 # Nuclei Installation
-RUN curl -sSL "$NUCLEI_VERSION" -o nuclei.zip && \
+RUN curl -sSL "$NUCLEI_URL" -o nuclei.zip && \
     unzip nuclei.zip -d /usr/local/bin && \
     rm -rf nuclei.zip
 
