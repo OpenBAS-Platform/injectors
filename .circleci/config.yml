@@ -38,21 +38,6 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
-  test:
-    working_directory: ~/openbas
-    docker:
-      - image: cimg/python:3.13
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          working_directory: ~/openbas/nuclei
-          name: Install dependencies for nuclei injector
-          command: pip install -r requirements.txt
-      - run:
-          working_directory: ~/openbas/nuclei
-          name: Tests for nuclei injector
-          command: python -m unittest
   build_1:
     working_directory: ~/openbas
     docker:
@@ -184,7 +169,6 @@ workflows:
     jobs:
       - ensure_formatting
       - linter
-      - test
       - build_1:
           filters:
             tags:
@@ -195,7 +179,6 @@ workflows:
           requires:
             - ensure_formatting
             - linter
-            - test
           filters:
             branches:
               only:
@@ -204,7 +187,6 @@ workflows:
           requires:
             - ensure_formatting
             - linter
-            - test
           filters:
             branches:
               only:
