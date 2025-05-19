@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from nuclei.helpers.nuclei_command_builder import NucleiCommandBuilder
-from nuclei.nuclei_contracts.constants import (
+from nuclei.nuclei_contracts.nuclei_constants import (
     CLOUD_SCAN_CONTRACT,
     CVE_SCAN_CONTRACT,
     HTTP_SCAN_CONTRACT,

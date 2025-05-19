@@ -1,13 +1,5 @@
 from typing import Dict, List
 
-from nuclei_contracts.nuclei_constants import (
-    ASSETS_KEY,
-    CONTRACT_LABELS,
-    TARGET_PROPERTY_SELECTOR_KEY,
-    TARGET_SELECTOR_KEY,
-    TARGETS_KEY,
-    TYPE,
-)
 from pyobas.contracts import ContractBuilder
 from pyobas.contracts.contract_config import (
     Contract,
@@ -21,6 +13,15 @@ from pyobas.contracts.contract_config import (
     ContractText,
     SupportedLanguage,
     prepare_contracts,
+)
+
+from nuclei.nuclei_contracts.nuclei_constants import (
+    ASSETS_KEY,
+    CONTRACT_LABELS,
+    TARGET_PROPERTY_SELECTOR_KEY,
+    TARGET_SELECTOR_KEY,
+    TARGETS_KEY,
+    TYPE,
 )
 
 
