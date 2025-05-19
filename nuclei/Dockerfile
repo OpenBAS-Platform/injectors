@@ -31,4 +31,4 @@ RUN curl -sSL "$NUCLEI_URL" -o nuclei.zip && \
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose and entrypoint
-CMD ["python3", "nuclei/openbas_nuclei.py"]
+CMD ["python3", "-m", "nuclei.openbas_nuclei"]

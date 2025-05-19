@@ -3,10 +3,10 @@ import subprocess
 import time
 from typing import Dict
 
-from helpers.nuclei_command_builder import NucleiCommandBuilder
-from helpers.nuclei_output_parser import NucleiOutputParser
-from helpers.nuclei_process import NucleiProcess
-from nuclei_contracts.nuclei_contracts import NucleiContracts
+from nuclei.helpers.nuclei_command_builder import NucleiCommandBuilder
+from nuclei.helpers.nuclei_output_parser import NucleiOutputParser
+from nuclei.helpers.nuclei_process import NucleiProcess
+from nuclei.nuclei_contracts.nuclei_contracts import NucleiContracts
 from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
@@ -33,7 +33,7 @@ class OpenBASNuclei:
                 "injector_contracts": {"data": NucleiContracts.build_contracts()},
             },
         )
-        self.helper = OpenBASInjectorHelper(self.config, open("img/nuclei.jpg", "rb"))
+        self.helper = OpenBASInjectorHelper(self.config, open("nuclei/img/nuclei.jpg", "rb"))
 
         if not self._check_nuclei_installed():
             raise RuntimeError(
