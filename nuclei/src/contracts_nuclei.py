@@ -1,4 +1,5 @@
 from typing import List
+
 from pyobas.contracts import ContractBuilder
 from pyobas.contracts.contract_config import (
     Contract,
@@ -102,13 +103,15 @@ class NucleiContracts:
         )
         fields: List[ContractElement] = (
             ContractBuilder()
-            .add_fields([
-                target_selector,
-                targets_assets,
-                target_property_selector,
-                targets_manual,
-				template_manual,
-            ])
+            .add_fields(
+                [
+                    target_selector,
+                    targets_assets,
+                    target_property_selector,
+                    targets_manual,
+                    template_manual,
+                ]
+            )
             .build_fields()
         )
         nuclei_contract_outputs: List[ContractOutputElement] = (
@@ -128,13 +131,47 @@ class NucleiContracts:
                 manual=False,
             )
 
-        return prepare_contracts([
-            build_contract(CLOUD_SCAN_CONTRACT, "Nuclei - Cloud Templates", "Nuclei - Cloud Templates"),
-            build_contract(MISCONFIG_SCAN_CONTRACT, "Nuclei - Misconfigurations Templates", "Nuclei - Misconfigurations Templates"),
-            build_contract(EXPOSURE_SCAN_CONTRACT, "Nuclei - Exposures Templates", "Nuclei - Expositions Templates"),
-            build_contract(CVE_SCAN_CONTRACT, "Nuclei - CVE Templates", "Nuclei - CVE Templates"),
-            build_contract(PANEL_SCAN_CONTRACT, "Nuclei - Panel Templates", "Nuclei - Panel Templates"),
-            build_contract(XSS_SCAN_CONTRACT, "Nuclei - XSS Templates", "Nuclei - XSS Templates"),
-            build_contract(WORDPRESS_SCAN_CONTRACT, "Nuclei - Wordpress Templates", "Nuclei - Wordpress Templates"),
-            build_contract(TEMPLATE_SCAN_CONTRACT, "Nuclei - Manual Templates", "Nuclei - Manual Templates"),
-        ])
+        return prepare_contracts(
+            [
+                build_contract(
+                    CLOUD_SCAN_CONTRACT,
+                    "Nuclei - Cloud Templates",
+                    "Nuclei - Cloud Templates",
+                ),
+                build_contract(
+                    MISCONFIG_SCAN_CONTRACT,
+                    "Nuclei - Misconfigurations Templates",
+                    "Nuclei - Misconfigurations Templates",
+                ),
+                build_contract(
+                    EXPOSURE_SCAN_CONTRACT,
+                    "Nuclei - Exposures Templates",
+                    "Nuclei - Expositions Templates",
+                ),
+                build_contract(
+                    CVE_SCAN_CONTRACT,
+                    "Nuclei - CVE Templates",
+                    "Nuclei - CVE Templates",
+                ),
+                build_contract(
+                    PANEL_SCAN_CONTRACT,
+                    "Nuclei - Panel Templates",
+                    "Nuclei - Panel Templates",
+                ),
+                build_contract(
+                    XSS_SCAN_CONTRACT,
+                    "Nuclei - XSS Templates",
+                    "Nuclei - XSS Templates",
+                ),
+                build_contract(
+                    WORDPRESS_SCAN_CONTRACT,
+                    "Nuclei - Wordpress Templates",
+                    "Nuclei - Wordpress Templates",
+                ),
+                build_contract(
+                    TEMPLATE_SCAN_CONTRACT,
+                    "Nuclei - Manual Templates",
+                    "Nuclei - Manual Templates",
+                ),
+            ]
+        )

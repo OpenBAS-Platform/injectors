@@ -1,22 +1,24 @@
-import re
 import json
+import re
 import subprocess
 import time
 from typing import Dict
 
+from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
+
 from contracts_nuclei import (
     CLOUD_SCAN_CONTRACT,
-    MISCONFIG_SCAN_CONTRACT,
-    EXPOSURE_SCAN_CONTRACT,
     CVE_SCAN_CONTRACT,
-    XSS_SCAN_CONTRACT,
-    PANEL_SCAN_CONTRACT,
-    WORDPRESS_SCAN_CONTRACT,
-    TEMPLATE_SCAN_CONTRACT,
+    EXPOSURE_SCAN_CONTRACT,
     HTTP_SCAN_CONTRACT,
+    MISCONFIG_SCAN_CONTRACT,
+    PANEL_SCAN_CONTRACT,
+    TEMPLATE_SCAN_CONTRACT,
+    WORDPRESS_SCAN_CONTRACT,
+    XSS_SCAN_CONTRACT,
     NucleiContracts,
 )
-from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
+
 
 class OpenBASNuclei:
     def __init__(self):
@@ -41,13 +43,13 @@ class OpenBASNuclei:
                 "injector_contracts": {"data": NucleiContracts.build_contracts()},
             },
         )
-        self.helper = OpenBASInjectorHelper(
-            self.config, open("img/nuclei.jpg", "rb")
-        )
+        self.helper = OpenBASInjectorHelper(self.config, open("img/nuclei.jpg", "rb"))
 
     def nuclei_execution(self, start: float, data: Dict) -> Dict:
         inject_id = data["injection"]["inject_id"]
-        contract_id = data["injection"]["inject_injector_contract"]["convertedContent"]["contract_id"]
+        contract_id = data["injection"]["inject_injector_contract"]["convertedContent"][
+            "contract_id"
+        ]
         nuclei_args = ["nuclei"]
         content = data["injection"]["inject_content"]
         added_j = False
@@ -58,7 +60,7 @@ class OpenBASNuclei:
             PANEL_SCAN_CONTRACT: "panel",
             XSS_SCAN_CONTRACT: "xss",
             WORDPRESS_SCAN_CONTRACT: "wordpress",
-            HTTP_SCAN_CONTRACT: "http"
+            HTTP_SCAN_CONTRACT: "http",
         }
         is_manual = content.get("target_selector") == "manual"
         has_no_template = not (content.get("template") or content.get("template_path"))
@@ -104,14 +106,19 @@ class OpenBASNuclei:
                 else:
                     targets.append(asset["endpoint_hostname"])
         else:
-            targets = [t.strip() for t in data["injection"]["inject_content"]["targets"].split(",")]
+            targets = [
+                t.strip()
+                for t in data["injection"]["inject_content"]["targets"].split(",")
+            ]
         targets = self.get_targets(data)
         for target in targets:
             nuclei_args += ["-u", target]
 
         input_data = "\n".join(targets).encode("utf-8")
 
-        self.helper.injector_logger.info("Executing nuclei with: " + " ".join(nuclei_args))
+        self.helper.injector_logger.info(
+            "Executing nuclei with: " + " ".join(nuclei_args)
+        )
         self.helper.api.inject.execution_callback(
             inject_id=inject_id,
             data={
@@ -121,38 +128,51 @@ class OpenBASNuclei:
                 "execution_action": "command_execution",
             },
         )
-        result = subprocess.run(nuclei_args, input=input_data, capture_output=True, check=True)
+        result = subprocess.run(
+            nuclei_args, input=input_data, capture_output=True, check=True
+        )
         lines = result.stdout.decode("utf-8").splitlines()
         findings = []
         others = []
         for line in lines:
             try:
                 j = json.loads(line)
-                if j.get("matcher-status"):  # Vérifier que le statut de la correspondance est "true"
-                    cve_ids = j.get("info", {}).get("classification", {}).get("cve-id", ["Unknown CVE"])
-                    severity = j.get("info", {}).get("severity", "Unknown Severity")  # Extraire la sévérité
+                if j.get(
+                    "matcher-status"
+                ):  # Vérifier que le statut de la correspondance est "true"
+                    cve_ids = (
+                        j.get("info", {})
+                        .get("classification", {})
+                        .get("cve-id", ["Unknown CVE"])
+                    )
+                    severity = j.get("info", {}).get(
+                        "severity", "Unknown Severity"
+                    )  # Extraire la sévérité
                     host = j.get("host", j.get("url", ""))  # Extraire l'hôte ou l'URL
                     if isinstance(cve_ids, list):
                         cve_str = ", ".join(c.upper() for c in cve_ids)
                     else:
-                        cve_str = f'{cve_ids.upper()}'
+                        cve_str = f"{cve_ids.upper()}"
                     finding = {
-                            "severity": severity,
-                            "host": host,
-                            "id": cve_str,
-                        }
+                        "severity": severity,
+                        "host": host,
+                        "id": cve_str,
+                    }
                     if not any(
-                            f["host"] == finding["host"] and f["id"] == finding["id"] and f["severity"] == finding[
-                                    "severity"]
-                            for f in findings
-                        ):
-                        self.helper.injector_logger.info("New finding: " + " ".join(finding))
+                        f["host"] == finding["host"]
+                        and f["id"] == finding["id"]
+                        and f["severity"] == finding["severity"]
+                        for f in findings
+                    ):
+                        self.helper.injector_logger.info(
+                            "New finding: " + " ".join(finding)
+                        )
                         findings.append(finding)
 
             except json.JSONDecodeError:
                 self.helper.injector_logger.debug(f"Line added to others: {line}")
                 if line.strip():  # Ajoute uniquement si la ligne n'est pas vide
-                    clean_line = re.sub(r'\x1b\[[0-9;]*m', '', line)
+                    clean_line = re.sub(r"\x1b\[[0-9;]*m", "", line)
                     others.append(clean_line)
         message_parts = []
         if findings:
@@ -217,7 +237,10 @@ class OpenBASNuclei:
             self.helper.api.inject.execution_callback(
                 inject_id=inject_id, data=callback_data
             )
+
     def start(self):
         self.helper.listen(message_callback=self.process_message)
+
+
 if __name__ == "__main__":
     OpenBASNuclei().start()
