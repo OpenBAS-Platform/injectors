@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  injector-nuclei:
+    image: openbas/injector-nuclei:1.16.1
+    environment:
+      - OPENBAS_URL=http://localhost
+      - OPENBAS_TOKEN=ChangeMe
+      - INJECTOR_ID=ChangeMe
+      - "INJECTOR_NAME=Nuclei"
+    restart: always
+    depends_on:
+      openbas:
+        condition: service_healthy
