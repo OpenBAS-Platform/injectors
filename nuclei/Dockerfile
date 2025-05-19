@@ -6,7 +6,7 @@ ENV NUCLEI_URL=https://github.com/projectdiscovery/nuclei/releases/download/v${N
 WORKDIR /opt/openbas-injector-nuclei
 
 # Copy the injector
-COPY src/ ./
+COPY ./ ./
 
 # Install Python modules
 RUN apk update && apk upgrade && \
@@ -31,7 +31,4 @@ RUN curl -sSL "$NUCLEI_URL" -o nuclei.zip && \
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose and entrypoint
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-
-ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python3", "nuclei/openbas_nuclei.py"]
