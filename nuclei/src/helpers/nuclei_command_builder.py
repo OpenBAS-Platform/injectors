@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from nuclei.src.contracts.constants import (
+from contracts.constants import (
     CLOUD_SCAN_CONTRACT,
     CVE_SCAN_CONTRACT,
     EXPOSURE_SCAN_CONTRACT,
