@@ -1,7 +1,5 @@
-from typing import List, Dict
+from typing import Dict, List
 
-from nuclei.src.contracts.constants import TYPE, TARGET_SELECTOR_KEY, ASSETS_KEY, TARGET_PROPERTY_SELECTOR_KEY, \
-    TARGETS_KEY, CONTRACT_LABELS
 from pyobas.contracts import ContractBuilder
 from pyobas.contracts.contract_config import (
     Contract,
@@ -16,6 +14,16 @@ from pyobas.contracts.contract_config import (
     SupportedLanguage,
     prepare_contracts,
 )
+
+from nuclei.src.contracts.constants import (
+    ASSETS_KEY,
+    CONTRACT_LABELS,
+    TARGET_PROPERTY_SELECTOR_KEY,
+    TARGET_SELECTOR_KEY,
+    TARGETS_KEY,
+    TYPE,
+)
+
 
 class NucleiContracts:
 
@@ -88,13 +96,15 @@ class NucleiContracts:
 
         fields: List[ContractElement] = (
             ContractBuilder()
-            .add_fields([
-                target_selector,
-                targets_assets,
-                target_property_selector,
-                targets_manual,
-				template_manual,
-            ])
+            .add_fields(
+                [
+                    target_selector,
+                    targets_assets,
+                    target_property_selector,
+                    targets_manual,
+                    template_manual,
+                ]
+            )
             .build_fields()
         )
         nuclei_contract_outputs: List[ContractOutputElement] = (
@@ -114,10 +124,12 @@ class NucleiContracts:
                 manual=False,
             )
 
-        return prepare_contracts([
-            build_contract(cid, f"Nuclei - {en}", f"Nuclei - {fr}")
-            for cid, (en, fr) in CONTRACT_LABELS.items()
-        ])
+        return prepare_contracts(
+            [
+                build_contract(cid, f"Nuclei - {en}", f"Nuclei - {fr}")
+                for cid, (en, fr) in CONTRACT_LABELS.items()
+            ]
+        )
 
     @staticmethod
     def extract_targets(data: Dict) -> List[str]:

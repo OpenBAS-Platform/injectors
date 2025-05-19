@@ -1,8 +1,16 @@
 from typing import Dict, List
 
-from nuclei.src.contracts.constants import CLOUD_SCAN_CONTRACT, MISCONFIG_SCAN_CONTRACT, EXPOSURE_SCAN_CONTRACT, \
-    PANEL_SCAN_CONTRACT, XSS_SCAN_CONTRACT, WORDPRESS_SCAN_CONTRACT, HTTP_SCAN_CONTRACT, CVE_SCAN_CONTRACT, \
-    TEMPLATE_SCAN_CONTRACT
+from nuclei.src.contracts.constants import (
+    CLOUD_SCAN_CONTRACT,
+    CVE_SCAN_CONTRACT,
+    EXPOSURE_SCAN_CONTRACT,
+    HTTP_SCAN_CONTRACT,
+    MISCONFIG_SCAN_CONTRACT,
+    PANEL_SCAN_CONTRACT,
+    TEMPLATE_SCAN_CONTRACT,
+    WORDPRESS_SCAN_CONTRACT,
+    XSS_SCAN_CONTRACT,
+)
 
 
 class NucleiCommandBuilder:
@@ -16,7 +24,9 @@ class NucleiCommandBuilder:
         HTTP_SCAN_CONTRACT: "http",
     }
 
-    def build_args(self, contract_id: str, content: Dict, targets: List[str]) -> List[str]:
+    def build_args(
+        self, contract_id: str, content: Dict, targets: List[str]
+    ) -> List[str]:
         args = ["nuclei"]
         json_output = False
 
@@ -25,7 +35,9 @@ class NucleiCommandBuilder:
             json_output = True
         elif contract_id in self.TAG_MAP:
             args += ["-tags", self.TAG_MAP[contract_id]]
-        elif contract_id == TEMPLATE_SCAN_CONTRACT and not (content.get("template") or content.get("template_path")):
+        elif contract_id == TEMPLATE_SCAN_CONTRACT and not (
+            content.get("template") or content.get("template_path")
+        ):
             args += ["-t", "/"]
         else:
             raise ValueError("Unknown contract ID")

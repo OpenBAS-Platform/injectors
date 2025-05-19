@@ -3,11 +3,12 @@ import subprocess
 import time
 from typing import Dict
 
+from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
+
 from nuclei.src.contracts.nuclei_contracts import NucleiContracts
 from nuclei.src.helpers.nuclei_command_builder import NucleiCommandBuilder
 from nuclei.src.helpers.nuclei_output_parser import NucleiOutputParser
 from nuclei.src.helpers.nuclei_process import NucleiProcess
-from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
 class OpenBASNuclei:
@@ -16,11 +17,19 @@ class OpenBASNuclei:
             __file__,
             {
                 "openbas_url": {"env": "OPENBAS_URL", "file_path": ["openbas", "url"]},
-                "openbas_token": {"env": "OPENBAS_TOKEN", "file_path": ["openbas", "token"]},
+                "openbas_token": {
+                    "env": "OPENBAS_TOKEN",
+                    "file_path": ["openbas", "token"],
+                },
                 "injector_id": {"env": "INJECTOR_ID", "file_path": ["injector", "id"]},
-                "injector_name": {"env": "INJECTOR_NAME", "file_path": ["injector", "name"]},
+                "injector_name": {
+                    "env": "INJECTOR_NAME",
+                    "file_path": ["injector", "name"],
+                },
                 "injector_type": {
-                    "env": "INJECTOR_TYPE", "file_path": ["injector", "type"], "default": "openbas_nuclei"
+                    "env": "INJECTOR_TYPE",
+                    "file_path": ["injector", "type"],
+                    "default": "openbas_nuclei",
                 },
                 "injector_contracts": {"data": NucleiContracts.build_contracts()},
             },
@@ -28,7 +37,9 @@ class OpenBASNuclei:
         self.helper = OpenBASInjectorHelper(self.config, open("img/nuclei.jpg", "rb"))
 
         if not self._check_nuclei_installed():
-            raise RuntimeError("Nuclei is not installed or is not accessible from your PATH.")
+            raise RuntimeError(
+                "Nuclei is not installed or is not accessible from your PATH."
+            )
         self._update_templates()
 
         self.command_builder = NucleiCommandBuilder()
@@ -36,14 +47,18 @@ class OpenBASNuclei:
 
     def nuclei_execution(self, start: float, data: Dict) -> Dict:
         inject_id = data["injection"]["inject_id"]
-        contract_id = data["injection"]["inject_injector_contract"]["convertedContent"]["contract_id"]
+        contract_id = data["injection"]["inject_injector_contract"]["convertedContent"][
+            "contract_id"
+        ]
         content = data["injection"]["inject_content"]
 
         targets = NucleiContracts.extract_targets(data)
         nuclei_args = self.command_builder.build_args(contract_id, content, targets)
         input_data = "\n".join(targets).encode("utf-8")
 
-        self.helper.injector_logger.info("Executing nuclei with: " + " ".join(nuclei_args))
+        self.helper.injector_logger.info(
+            "Executing nuclei with: " + " ".join(nuclei_args)
+        )
         self.helper.api.inject.execution_callback(
             inject_id=inject_id,
             data={
@@ -63,7 +78,9 @@ class OpenBASNuclei:
 
         # Notify API of reception and expected number of operations
         reception_data = {"tracking_total_count": 1}
-        self.helper.api.inject.execution_reception(inject_id=inject_id, data=reception_data)
+        self.helper.api.inject.execution_reception(
+            inject_id=inject_id, data=reception_data
+        )
 
         # Execute inject
         try:
@@ -75,7 +92,9 @@ class OpenBASNuclei:
                 "execution_duration": int(time.time() - start),
                 "execution_action": "complete",
             }
-            self.helper.api.inject.execution_callback(inject_id=inject_id, data=callback_data)
+            self.helper.api.inject.execution_callback(
+                inject_id=inject_id, data=callback_data
+            )
         except Exception as e:
             callback_data = {
                 "execution_message": str(e),
@@ -83,7 +102,9 @@ class OpenBASNuclei:
                 "execution_duration": int(time.time() - start),
                 "execution_action": "complete",
             }
-            self.helper.api.inject.execution_callback(inject_id=inject_id, data=callback_data)
+            self.helper.api.inject.execution_callback(
+                inject_id=inject_id, data=callback_data
+            )
 
     def _check_nuclei_installed(self):
         try:

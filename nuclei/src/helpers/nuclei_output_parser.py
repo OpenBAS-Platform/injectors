@@ -12,16 +12,26 @@ class NucleiOutputParser:
             try:
                 j = json.loads(line)
                 if j.get("matcher-status"):
-                    cve_ids = j.get("info", {}).get("classification", {}).get("cve-id", ["Unknown CVE"])
+                    cve_ids = (
+                        j.get("info", {})
+                        .get("classification", {})
+                        .get("cve-id", ["Unknown CVE"])
+                    )
                     severity = j.get("info", {}).get("severity", "Unknown Severity")
                     host = j.get("host", j.get("url", ""))
-                    cve_str = ", ".join(c.upper() for c in cve_ids) if isinstance(cve_ids, list) else cve_ids.upper()
+                    cve_str = (
+                        ", ".join(c.upper() for c in cve_ids)
+                        if isinstance(cve_ids, list)
+                        else cve_ids.upper()
+                    )
                     key = (host, cve_str, severity)
                     if key not in seen:
-                        findings.append({"severity": severity, "host": host, "id": cve_str})
+                        findings.append(
+                            {"severity": severity, "host": host, "id": cve_str}
+                        )
                         seen.add(key)
             except json.JSONDecodeError:
-                clean_line = re.sub(r'\x1b\[[0-9;]*m', '', line)
+                clean_line = re.sub(r"\x1b\[[0-9;]*m", "", line)
                 if clean_line.strip():
                     others.append(clean_line)
 
