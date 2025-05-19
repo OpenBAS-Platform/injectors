@@ -3,10 +3,10 @@ import subprocess
 import time
 from typing import Dict
 
-from contracts.nuclei_contracts import NucleiContracts
 from helpers.nuclei_command_builder import NucleiCommandBuilder
 from helpers.nuclei_output_parser import NucleiOutputParser
 from helpers.nuclei_process import NucleiProcess
+from nuclei_contracts.nuclei_contracts import NucleiContracts
 from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
 

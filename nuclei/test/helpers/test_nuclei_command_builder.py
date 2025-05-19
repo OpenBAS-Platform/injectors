@@ -1,12 +1,12 @@
 from unittest import TestCase
 
-from nuclei.contracts.constants import (
+from nuclei.helpers.nuclei_command_builder import NucleiCommandBuilder
+from nuclei.nuclei_contracts.constants import (
     CLOUD_SCAN_CONTRACT,
     CVE_SCAN_CONTRACT,
     HTTP_SCAN_CONTRACT,
     TEMPLATE_SCAN_CONTRACT,
 )
-from nuclei.helpers.nuclei_command_builder import NucleiCommandBuilder
 
 
 class NucleiCommandBuilderTest(TestCase):

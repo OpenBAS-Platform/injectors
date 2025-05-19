@@ -13,9 +13,7 @@ class NucleiProcess:
 
     @staticmethod
     def nuclei_execute(args, input_data):
-        return subprocess.run(
-            args, input=input_data, capture_output=True, check=True
-        )
+        return subprocess.run(args, input=input_data, capture_output=True, check=True)
 
 
 class NucleiArgsBuilder:

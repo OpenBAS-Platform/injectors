@@ -1,6 +1,6 @@
 from typing import Dict, List
 
-from contracts.constants import (
+from nuclei_contracts.nuclei_constants import (
     ASSETS_KEY,
     CONTRACT_LABELS,
     TARGET_PROPERTY_SELECTOR_KEY,
