@@ -1,0 +1,8 @@
+openbas:
+  url: 'http://localhost:3001'
+  token: 'ChangeMe'
+
+injector:
+  id: 'ChangeMe'
+  name: 'Nuclei'
+  log_level: 'info'
