@@ -4,8 +4,6 @@ import subprocess
 import time
 from typing import Dict
 
-from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
-
 from contracts_nuclei import (
     CLOUD_SCAN_CONTRACT,
     CVE_SCAN_CONTRACT,
@@ -18,6 +16,7 @@ from contracts_nuclei import (
     XSS_SCAN_CONTRACT,
     NucleiContracts,
 )
+from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
 
 class OpenBASNuclei:
