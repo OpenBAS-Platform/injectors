@@ -5,10 +5,10 @@ from typing import Dict
 
 from pyobas.helpers import OpenBASConfigHelper, OpenBASInjectorHelper
 
-from nuclei.src.contracts.nuclei_contracts import NucleiContracts
-from nuclei.src.helpers.nuclei_command_builder import NucleiCommandBuilder
-from nuclei.src.helpers.nuclei_output_parser import NucleiOutputParser
-from nuclei.src.helpers.nuclei_process import NucleiProcess
+from contracts.nuclei_contracts import NucleiContracts
+from helpers.nuclei_command_builder import NucleiCommandBuilder
+from helpers.nuclei_output_parser import NucleiOutputParser
+from helpers.nuclei_process import NucleiProcess
 
 
 class OpenBASNuclei:
