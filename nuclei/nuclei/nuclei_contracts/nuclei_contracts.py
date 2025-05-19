@@ -1,28 +1,18 @@
 from typing import Dict, List
 
 from pyobas.contracts import ContractBuilder
-from pyobas.contracts.contract_config import (
-    Contract,
-    ContractAsset,
-    ContractCardinality,
-    ContractConfig,
-    ContractElement,
-    ContractOutputElement,
-    ContractOutputType,
-    ContractSelect,
-    ContractText,
-    SupportedLanguage,
-    prepare_contracts,
-)
+from pyobas.contracts.contract_config import (Contract, ContractAsset,
+                                              ContractCardinality,
+                                              ContractConfig, ContractElement,
+                                              ContractOutputElement,
+                                              ContractOutputType,
+                                              ContractSelect, ContractText,
+                                              SupportedLanguage,
+                                              prepare_contracts)
 
 from nuclei.nuclei_contracts.nuclei_constants import (
-    ASSETS_KEY,
-    CONTRACT_LABELS,
-    TARGET_PROPERTY_SELECTOR_KEY,
-    TARGET_SELECTOR_KEY,
-    TARGETS_KEY,
-    TYPE,
-)
+    ASSETS_KEY, CONTRACT_LABELS, TARGET_PROPERTY_SELECTOR_KEY,
+    TARGET_SELECTOR_KEY, TARGETS_KEY, TYPE)
 
 
 class NucleiContracts:
