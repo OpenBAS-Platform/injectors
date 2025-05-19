@@ -1,1 +1,0 @@
-git+https://github.com/OpenBAS-Platform/client-python.git@release/current
