@@ -15,7 +15,7 @@ from pyobas.contracts.contract_config import (
     prepare_contracts,
 )
 
-from nuclei.src.contracts.constants import (
+from contracts.constants import (
     ASSETS_KEY,
     CONTRACT_LABELS,
     TARGET_PROPERTY_SELECTOR_KEY,
