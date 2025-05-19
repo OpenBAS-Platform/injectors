@@ -28,7 +28,7 @@ RUN curl -sSL "$NUCLEI_VERSION" -o nuclei.zip && \
     rm -rf nuclei.zip
 
 # Installation Python dependencies
-pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose and entrypoint
 COPY entrypoint.sh /
