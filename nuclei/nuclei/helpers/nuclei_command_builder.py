@@ -35,10 +35,10 @@ class NucleiCommandBuilder:
             json_output = True
         elif contract_id in self.TAG_MAP:
             args += ["-tags", self.TAG_MAP[contract_id]]
-        elif contract_id == TEMPLATE_SCAN_CONTRACT and not (
-            content.get("template") or content.get("template_path")
-        ):
-            args += ["-t", "/"]
+        elif contract_id == TEMPLATE_SCAN_CONTRACT:
+            # Add -t "/" only if no template is specified in the content
+            if not (content.get("template") or content.get("template_path")):
+                args += ["-t", "/"]
         else:
             raise ValueError("Unknown contract ID")
 

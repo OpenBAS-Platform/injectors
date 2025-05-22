@@ -35,7 +35,7 @@ class OpenBASNuclei:
             },
         )
         self.helper = OpenBASInjectorHelper(
-            self.config, open("nuclei/img/nuclei.jpg", "rb")
+            self.config, open("img/nuclei.jpg", "rb")
         )
 
         if not self._check_nuclei_installed():
