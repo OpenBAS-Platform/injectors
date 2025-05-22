@@ -38,6 +38,21 @@ jobs:
       - slack/notify:
           event: fail
           template: basic_fail_1
+  test:
+    working_directory: ~/openbas
+    docker:
+      - image: cimg/python:3.13
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          working_directory: ~/openbas/nuclei
+          name: Install dependencies for nuclei injector
+          command: pip install -r requirements.txt
+      - run:
+          working_directory: ~/openbas/nuclei
+          name: Tests for nuclei injector
+          command: python -m unittest
   build_1:
     working_directory: ~/openbas
     docker:
@@ -64,6 +79,13 @@ jobs:
             $IS_LATEST && TAGS="$TAGS -t openbas/injector-nmap:latest"
             docker build --progress=plain $TAGS .
       - run:
+          working_directory: ~/openbas/nuclei
+          name: Build Docker image openbas/injector-nuclei
+          command: |
+            TAGS="-t openbas/injector-nuclei:${CIRCLE_TAG}"
+            $IS_LATEST && TAGS="$TAGS -t openbas/injector-nuclei:latest"
+            docker build --progress=plain $TAGS .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
@@ -71,6 +93,8 @@ jobs:
             docker push openbas/injector-http-query:${CIRCLE_TAG}
             $IS_LATEST && docker push openbas/injector-nmap:latest
             docker push openbas/injector-nmap:${CIRCLE_TAG}
+            $IS_LATEST && docker push openbas/injector-nuclei:latest
+            docker push openbas/injector-nuclei:${CIRCLE_TAG}
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -95,11 +119,16 @@ jobs:
           name: Build Docker image openbas/injector-nmap
           command: docker build --progress=plain -t openbas/injector-nmap:rolling .
       - run:
+          working_directory: ~/openbas/nuclei
+          name: Build Docker image openbas/injector-nuclei
+          command: docker build --progress=plain -t openbas/injector-nuclei:rolling .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push openbas/injector-http-query:rolling
             docker push openbas/injector-nmap:rolling
+            docker push openbas/injector-nuclei:rolling
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -125,11 +154,16 @@ jobs:
           name: Build Docker image openbas/injector-nmap
           command: docker build --progress=plain -t openbas/injector-nmap:prerelease .
       - run:
+          working_directory: ~/openbas/nuclei
+          name: Build Docker image openbas/injector-nuclei
+          command: docker build --progress=plain -t openbas/injector-nuclei:prerelease .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push openbas/injector-http-query:prerelease
             docker push openbas/injector-nmap:prerelease
+            docker push openbas/injector-nuclei:prerelease
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -169,6 +203,7 @@ workflows:
     jobs:
       - ensure_formatting
       - linter
+      - test
       - build_1:
           filters:
             tags:
@@ -179,6 +214,7 @@ workflows:
           requires:
             - ensure_formatting
             - linter
+            - test
           filters:
             branches:
               only:
@@ -187,6 +223,7 @@ workflows:
           requires:
             - ensure_formatting
             - linter
+            - test
           filters:
             branches:
               only:
