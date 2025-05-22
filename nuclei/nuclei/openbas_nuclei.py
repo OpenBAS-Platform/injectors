@@ -34,9 +34,7 @@ class OpenBASNuclei:
                 "injector_contracts": {"data": NucleiContracts.build_contracts()},
             },
         )
-        self.helper = OpenBASInjectorHelper(
-            self.config, open("img/nuclei.jpg", "rb")
-        )
+        self.helper = OpenBASInjectorHelper(self.config, open("img/nuclei.jpg", "rb"))
 
         if not self._check_nuclei_installed():
             raise RuntimeError(
