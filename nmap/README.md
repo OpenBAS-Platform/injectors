@@ -66,7 +66,7 @@ docker compose up -d
 
 #### Prerequisites
 
-Nmap must be installed and available on the system you are running.
+The `nmap` and `jc` commands must be installed and available on the system you are running.
 
 #### Configuration
 
