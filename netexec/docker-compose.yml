@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  injector-netexec:
+    image: openbas/injector-netexec:1.16.4
+    environment:
+      - OPENBAS_URL=http://localhost
+      - OPENBAS_TOKEN=ChangeMe
+      - INJECTOR_ID=ChangeMe
+      - "INJECTOR_NAME=NetExec"
+    restart: always
+    depends_on:
+      openbas:
+        condition: service_healthy
