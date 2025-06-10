@@ -3,7 +3,7 @@ import subprocess
 import time
 from typing import Dict
 
-from contracts_nmap import (
+from nmap.nmap_contracts.nmap_contracts import (
     FIN_SCAN_CONTRACT,
     TCP_CONNECT_SCAN_CONTRACT,
     TCP_SYN_SCAN_CONTRACT,
@@ -38,7 +38,7 @@ class OpenBASNmap:
             },
         )
         self.helper = OpenBASInjectorHelper(
-            self.config, open("img/icon-nmap.png", "rb")
+            self.config, open("nmap/img/nmap.png", "rb")
         )
 
     def nmap_execution(self, start: float, data: Dict) -> Dict:
