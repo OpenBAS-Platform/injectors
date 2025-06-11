@@ -27,7 +27,16 @@ class NucleiOutputParser:
                     key = (host, cve_str, severity)
                     if key not in seen:
                         findings.append(
-                            {"severity": severity, "host": host, "id": cve_str, "asset_id": ip_to_asset_id_map[host] if host in ip_to_asset_id_map.keys() else "" }
+                            {
+                                "severity": severity,
+                                "host": host,
+                                "id": cve_str,
+                                "asset_id": (
+                                    ip_to_asset_id_map[host]
+                                    if host in ip_to_asset_id_map.keys()
+                                    else ""
+                                ),
+                            }
                         )
                         seen.add(key)
             except json.JSONDecodeError:

@@ -27,9 +27,10 @@ from nuclei.nuclei_contracts.nuclei_constants import (
 
 
 @dataclass
-class TargetExtractionResult():
+class TargetExtractionResult:
     targets: List[str]
     ip_to_asset_id_map: Dict[str, str]
+
 
 class NucleiContracts:
 
@@ -146,19 +147,20 @@ class NucleiContracts:
             selector = content[TARGET_PROPERTY_SELECTOR_KEY]
             for asset in data[ASSETS_KEY]:
                 if selector == "seen_ip":
-                    ip_to_asset_id_map[asset["endpoint_seen_ip"]]=asset['asset_id']
+                    ip_to_asset_id_map[asset["endpoint_seen_ip"]] = asset["asset_id"]
                     targets.append(asset["endpoint_seen_ip"])
                 elif selector == "local_ip":
                     if not asset["endpoint_ips"]:
                         raise ValueError("No IP found for this endpoint")
-                    ip_to_asset_id_map[asset["endpoint_ips"][0]]=asset['asset_id']
+                    ip_to_asset_id_map[asset["endpoint_ips"][0]] = asset["asset_id"]
                     targets.append(asset["endpoint_ips"][0])
                 else:
-                    ip_to_asset_id_map[asset["endpoint_hostname"]]=asset['asset_id']
+                    ip_to_asset_id_map[asset["endpoint_hostname"]] = asset["asset_id"]
                     targets.append(asset["endpoint_hostname"])
         elif content[TARGET_SELECTOR_KEY] == "manual":
             targets = [t.strip() for t in content[TARGETS_KEY].split(",") if t.strip()]
         else:
             raise ValueError("No targets provided for this injection")
-        return TargetExtractionResult(targets=targets, ip_to_asset_id_map=ip_to_asset_id_map)
-
+        return TargetExtractionResult(
+            targets=targets, ip_to_asset_id_map=ip_to_asset_id_map
+        )
