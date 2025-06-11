@@ -19,9 +19,9 @@ class NucleiOutputParserTest(TestCase):
                 "host": "https://example.com",
             }
         )
-        result = parser.parse(stdout)
+        result = parser.parse(stdout, {})
         assert result["outputs"]["cve"] == [
-            {"severity": "high", "host": "https://example.com", "id": "CVE-2021-1234"}
+            {"severity": "high", "host": "https://example.com", "id": "CVE-2021-1234", "asset_id":""}
         ]
         assert "1 CVE" in result["message"]
 
@@ -50,12 +50,13 @@ class NucleiOutputParserTest(TestCase):
                 ),
             ]
         )
-        result = parser.parse(stdout)
+        result = parser.parse(stdout, { "host1": "asset1_id"})
         assert len(result["outputs"]["cve"]) == 1
+        assert result["outputs"]["cve"][0]["asset_id"] == "asset1_id"
 
     def test_parse_with_text_output(self):
         stdout = "Some plain text vuln result\nAnother result line"
-        result = parser.parse(stdout)
+        result = parser.parse(stdout, {})
         assert result["outputs"]["cve"] == []
         assert result["outputs"]["others"] == [
             "Some plain text vuln result",

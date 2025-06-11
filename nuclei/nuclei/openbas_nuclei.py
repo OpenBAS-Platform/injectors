@@ -54,9 +54,9 @@ class OpenBASNuclei:
         ]
         content = data["injection"]["inject_content"]
 
-        targets = NucleiContracts.extract_targets(data)
-        nuclei_args = self.command_builder.build_args(contract_id, content, targets)
-        input_data = "\n".join(targets).encode("utf-8")
+        target_results = NucleiContracts.extract_targets(data)
+        nuclei_args = self.command_builder.build_args(contract_id, content, target_results.targets)
+        input_data = "\n".join(target_results.targets).encode("utf-8")
 
         self.helper.injector_logger.info(
             "Executing nuclei with: " + " ".join(nuclei_args)
@@ -72,7 +72,7 @@ class OpenBASNuclei:
         )
 
         result = NucleiProcess.nuclei_execute(nuclei_args, input_data)
-        return self.parser.parse(result.stdout.decode("utf-8"))
+        return self.parser.parse(result.stdout.decode("utf-8"), target_results.ip_to_asset_id_map)
 
     def process_message(self, data: Dict) -> None:
         start = time.time()
