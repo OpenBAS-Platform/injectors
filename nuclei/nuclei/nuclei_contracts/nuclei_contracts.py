@@ -1,6 +1,6 @@
+from dataclasses import dataclass
 from typing import Dict, List
 
-from dataclasses import dataclass
 from pyobas.contracts import ContractBuilder
 from pyobas.contracts.contract_config import (
     Contract,
@@ -24,6 +24,7 @@ from nuclei.nuclei_contracts.nuclei_constants import (
     TARGETS_KEY,
     TYPE,
 )
+
 
 @dataclass
 class TargetExtractionResult():
