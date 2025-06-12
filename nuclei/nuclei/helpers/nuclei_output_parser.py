@@ -4,7 +4,7 @@ from typing import Dict
 
 
 class NucleiOutputParser:
-    def parse(self, stdout: str) -> Dict:
+    def parse(self, stdout: str, ip_to_asset_id_map: dict) -> Dict:
         findings, others = [], []
         seen = set()
 
@@ -27,7 +27,16 @@ class NucleiOutputParser:
                     key = (host, cve_str, severity)
                     if key not in seen:
                         findings.append(
-                            {"severity": severity, "host": host, "id": cve_str}
+                            {
+                                "severity": severity,
+                                "host": host,
+                                "id": cve_str,
+                                "asset_id": (
+                                    ip_to_asset_id_map[host]
+                                    if host in ip_to_asset_id_map.keys()
+                                    else ""
+                                ),
+                            }
                         )
                         seen.add(key)
             except json.JSONDecodeError:

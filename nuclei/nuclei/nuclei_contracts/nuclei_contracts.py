@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from typing import Dict, List
 
 from pyobas.contracts import ContractBuilder
@@ -23,6 +24,12 @@ from nuclei.nuclei_contracts.nuclei_constants import (
     TARGETS_KEY,
     TYPE,
 )
+
+
+@dataclass
+class TargetExtractionResult:
+    targets: List[str]
+    ip_to_asset_id_map: Dict[str, str]
 
 
 class NucleiContracts:
@@ -132,22 +139,28 @@ class NucleiContracts:
         )
 
     @staticmethod
-    def extract_targets(data: Dict) -> List[str]:
+    def extract_targets(data: Dict) -> TargetExtractionResult:
         targets = []
+        ip_to_asset_id_map = {}
         content = data["injection"]["inject_content"]
         if content[TARGET_SELECTOR_KEY] == "assets" and data.get(ASSETS_KEY):
             selector = content[TARGET_PROPERTY_SELECTOR_KEY]
             for asset in data[ASSETS_KEY]:
                 if selector == "seen_ip":
+                    ip_to_asset_id_map[asset["endpoint_seen_ip"]] = asset["asset_id"]
                     targets.append(asset["endpoint_seen_ip"])
                 elif selector == "local_ip":
                     if not asset["endpoint_ips"]:
                         raise ValueError("No IP found for this endpoint")
+                    ip_to_asset_id_map[asset["endpoint_ips"][0]] = asset["asset_id"]
                     targets.append(asset["endpoint_ips"][0])
                 else:
+                    ip_to_asset_id_map[asset["endpoint_hostname"]] = asset["asset_id"]
                     targets.append(asset["endpoint_hostname"])
         elif content[TARGET_SELECTOR_KEY] == "manual":
             targets = [t.strip() for t in content[TARGETS_KEY].split(",") if t.strip()]
         else:
             raise ValueError("No targets provided for this injection")
-        return targets
+        return TargetExtractionResult(
+            targets=targets, ip_to_asset_id_map=ip_to_asset_id_map
+        )
