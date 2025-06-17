@@ -47,7 +47,6 @@ class NucleiContracts:
             label="Type of targets",
             defaultValue=["assets"],
             mandatory=True,
-            mandatoryGroups=["assets", "targets"],
             choices={"assets": "Assets", "manual": "Manual"},
         )
         targets_assets = ContractAsset(
@@ -55,10 +54,14 @@ class NucleiContracts:
             key=ASSETS_KEY,
             label="Targeted assets",
             mandatory=False,
+            mandatoryConditionFields=[target_selector.key],
+            mandatoryConditionValues={target_selector.key: "assets"},
+            visibleConditionFields=[target_selector.key],
+            visibleConditionValues={target_selector.key: "assets"},
         )
         target_property_selector = ContractSelect(
             key=TARGET_PROPERTY_SELECTOR_KEY,
-            label="Targeted property",
+            label="Targeted assets property",
             defaultValue=["hostname"],
             mandatory=False,
             choices={
@@ -66,11 +69,19 @@ class NucleiContracts:
                 "seen_ip": "Seen IP",
                 "local_ip": "Local IP (first)",
             },
+            mandatoryConditionFields=[target_selector.key],
+            mandatoryConditionValues={target_selector.key: "assets"},
+            visibleConditionFields=[target_selector.key],
+            visibleConditionValues={target_selector.key: "assets"},
         )
         targets_manual = ContractText(
             key=TARGETS_KEY,
             label="Manual targets (comma-separated)",
             mandatory=False,
+            mandatoryConditionFields=[target_selector.key],
+            mandatoryConditionValues={target_selector.key: "manual"},
+            visibleConditionFields=[target_selector.key],
+            visibleConditionValues={target_selector.key: "manual"},
         )
         template_manual = ContractText(
             key="template",
