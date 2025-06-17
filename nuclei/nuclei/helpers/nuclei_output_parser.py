@@ -3,6 +3,7 @@ import re
 from collections import defaultdict
 from typing import Dict
 
+
 class NucleiOutputParser:
     def parse(self, stdout: str, ip_to_asset_id_map: dict) -> Dict:
         raw_findings = []
