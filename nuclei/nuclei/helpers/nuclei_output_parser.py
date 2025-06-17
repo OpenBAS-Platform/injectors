@@ -5,7 +5,8 @@ from typing import Dict
 
 class NucleiOutputParser:
     def parse(self, stdout: str, ip_to_asset_id_map: dict) -> Dict:
-        raw_findings, others = []
+        raw_findings = []
+        others = []
         seen = set()
 
         for line in stdout.splitlines():
@@ -40,7 +41,7 @@ class NucleiOutputParser:
                 if clean_line.strip():
                     others.append(clean_line)
 
-        # Group by CVE ID
+        # Group by ID
         grouped = defaultdict(lambda: {"asset_ids": set(), "hosts": set(), "severity": None})
         for finding in raw_findings:
             fid = finding["id"]
@@ -51,7 +52,7 @@ class NucleiOutputParser:
         grouped_findings = [
             {
                 "id": fid,
-                "asset_id": sorted(list(data["asset_ids"])),
+                "asset_ids": sorted(list(data["asset_ids"])),
                 "hosts": sorted(list(data["hosts"])),
                 "severity": data["severity"],
             }
@@ -69,58 +70,4 @@ class NucleiOutputParser:
         return {
             "message": "Nuclei completed: " + " ".join(message_parts),
             "outputs": {"cve": grouped_findings, "others": others},
-        }
-
-class NucleiOutputParser:
-    def parse(self, stdout: str, ip_to_asset_id_map: dict) -> Dict:
-        findings, others = [], []
-        seen = set()
-
-        for line in stdout.splitlines():
-            try:
-                j = json.loads(line)
-                if j.get("matcher-status"):
-                    cve_ids = (
-                        j.get("info", {})
-                        .get("classification", {})
-                        .get("cve-id", ["Unknown CVE"])
-                    )
-                    severity = j.get("info", {}).get("severity", "Unknown Severity")
-                    host = j.get("host", j.get("url", ""))
-                    cve_str = (
-                        ", ".join(c.upper() for c in cve_ids)
-                        if isinstance(cve_ids, list)
-                        else cve_ids.upper()
-                    )
-                    key = (host, cve_str, severity)
-                    if key not in seen:
-                        findings.append(
-                            {
-                                "severity": severity,
-                                "host": host,
-                                "id": cve_str,
-                                "asset_id": (
-                                    ip_to_asset_id_map[host]
-                                    if host in ip_to_asset_id_map.keys()
-                                    else ""
-                                ),
-                            }
-                        )
-                        seen.add(key)
-            except json.JSONDecodeError:
-                clean_line = re.sub(r"\x1b\[[0-9;]*m", "", line)
-                if clean_line.strip():
-                    others.append(clean_line)
-
-        message_parts = []
-        if findings:
-            message_parts.append(f"{len(findings)} CVE(S)")
-        if others:
-            message_parts.append(f"{len(others)} Vulnerabilities(s)")
-        if not findings and not others:
-            message_parts.append("Good News: Nothing Found !")
-
-        return {
-            "message": "Nuclei completed: " + " ".join(message_parts),
-            "outputs": {"cve": findings, "others": others},
         }
