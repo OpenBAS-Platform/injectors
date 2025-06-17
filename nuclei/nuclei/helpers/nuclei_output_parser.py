@@ -43,7 +43,9 @@ class NucleiOutputParser:
                     others.append(clean_line)
 
         # Group by ID
-        grouped = defaultdict(lambda: {"asset_id": set(), "host": set(), "severity": None})
+        grouped = defaultdict(
+            lambda: {"asset_id": set(), "host": set(), "severity": None}
+        )
         for finding in raw_findings:
             fid = finding["id"]
             grouped[fid]["asset_id"].add(finding["asset_id"])
