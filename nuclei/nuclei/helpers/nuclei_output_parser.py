@@ -42,7 +42,7 @@ class NucleiOutputParser:
                 if clean_line.strip():
                     others.append(clean_line)
 
-        # Group by ID
+        # Group by CVE ID
         grouped = defaultdict(
             lambda: {"asset_id": set(), "host": set(), "severity": None}
         )
