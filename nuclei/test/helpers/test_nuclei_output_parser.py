@@ -23,9 +23,9 @@ class NucleiOutputParserTest(TestCase):
         assert result["outputs"]["cve"] == [
             {
                 "severity": "high",
-                "host": "https://example.com",
+                "host": ["https://example.com"],
                 "id": "CVE-2021-1234",
-                "asset_id": "",
+                "asset_id": [""],
             }
         ]
         assert "1 CVE" in result["message"]
@@ -57,7 +57,36 @@ class NucleiOutputParserTest(TestCase):
         )
         result = parser.parse(stdout, {"host1": "asset1_id"})
         assert len(result["outputs"]["cve"]) == 1
-        assert result["outputs"]["cve"][0]["asset_id"] == "asset1_id"
+        assert result["outputs"]["cve"][0]["asset_id"] == ["asset1_id"]
+
+    def test_parse_multiple_lines_with_same_CVES(self):
+        stdout = "\n".join(
+            [
+                json.dumps(
+                    {
+                        "matcher-status": True,
+                        "info": {
+                            "classification": {"cve-id": ["CVE-2022-0001"]},
+                            "severity": "medium",
+                        },
+                        "host": "host1",
+                    }
+                ),
+                json.dumps(
+                    {
+                        "matcher-status": True,
+                        "info": {
+                            "classification": {"cve-id": ["CVE-2022-0001"]},
+                            "severity": "medium",
+                        },
+                        "host": "host2",
+                    }
+                ),
+            ]
+        )
+        result = parser.parse(stdout, {"host1": "asset1_id", "host2": "asset2_id"})
+        assert len(result["outputs"]["cve"]) == 1
+        assert result["outputs"]["cve"][0]["asset_id"] == ["asset1_id", "asset2_id"]
 
     def test_parse_with_text_output(self):
         stdout = "Some plain text vuln result\nAnother result line"

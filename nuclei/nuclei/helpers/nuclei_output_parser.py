@@ -42,18 +42,18 @@ class NucleiOutputParser:
                     others.append(clean_line)
 
         # Group by ID
-        grouped = defaultdict(lambda: {"asset_ids": set(), "hosts": set(), "severity": None})
+        grouped = defaultdict(lambda: {"asset_id": set(), "host": set(), "severity": None})
         for finding in raw_findings:
             fid = finding["id"]
-            grouped[fid]["asset_ids"].add(finding["asset_id"])
-            grouped[fid]["hosts"].add(finding["host"])
+            grouped[fid]["asset_id"].add(finding["asset_id"])
+            grouped[fid]["host"].add(finding["host"])
             grouped[fid]["severity"] = finding["severity"]
 
         grouped_findings = [
             {
                 "id": fid,
-                "asset_ids": sorted(list(data["asset_ids"])),
-                "hosts": sorted(list(data["hosts"])),
+                "asset_id": sorted(list(data["asset_id"])),
+                "host": sorted(list(data["host"])),
                 "severity": data["severity"],
             }
             for fid, data in grouped.items()
