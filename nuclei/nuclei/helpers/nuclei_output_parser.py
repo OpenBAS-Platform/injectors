@@ -6,7 +6,9 @@ from typing import Dict
 
 class NucleiOutputParser:
     def parse(self, stdout: str, ip_to_asset_id_map: dict) -> Dict:
-        raw_findings = []
+        grouped = defaultdict(
+            lambda: {"asset_id": set(), "host": set(), "severity": None}
+        )
         others = []
         seen = set()
 
@@ -28,38 +30,27 @@ class NucleiOutputParser:
                     )
                     key = (host, cve_str, severity)
                     if key not in seen:
-                        raw_findings.append(
-                            {
-                                "severity": severity,
-                                "host": host,
-                                "id": cve_str,
-                                "asset_id": ip_to_asset_id_map.get(host, ""),
-                            }
-                        )
                         seen.add(key)
+                        asset_id = ip_to_asset_id_map.get(host, "")
+                        # Group by each individual CVE inside the joined string
+                        for cve_id in cve_str.split(", "):
+                            group = grouped[cve_id]
+                            group["asset_id"].add(asset_id)
+                            group["host"].add(host)
+                            group["severity"] = severity
             except json.JSONDecodeError:
                 clean_line = re.sub(r"\x1b\[[0-9;]*m", "", line)
                 if clean_line.strip():
                     others.append(clean_line)
 
-        # Group by CVE ID
-        grouped = defaultdict(
-            lambda: {"asset_id": set(), "host": set(), "severity": None}
-        )
-        for finding in raw_findings:
-            fid = finding["id"]
-            grouped[fid]["asset_id"].add(finding["asset_id"])
-            grouped[fid]["host"].add(finding["host"])
-            grouped[fid]["severity"] = finding["severity"]
-
         grouped_findings = [
             {
-                "id": fid,
+                "id": cve_id,
                 "asset_id": sorted(list(data["asset_id"])),
                 "host": sorted(list(data["host"])),
                 "severity": data["severity"],
             }
-            for fid, data in grouped.items()
+            for cve_id, data in grouped.items()
         ]
 
         message_parts = []
