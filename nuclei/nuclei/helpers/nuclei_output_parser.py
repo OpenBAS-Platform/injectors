@@ -1,11 +1,15 @@
 import json
 import re
+from collections import defaultdict
 from typing import Dict
 
 
 class NucleiOutputParser:
     def parse(self, stdout: str, ip_to_asset_id_map: dict) -> Dict:
-        findings, others = [], []
+        grouped = defaultdict(
+            lambda: {"asset_id": set(), "host": set(), "severity": None}
+        )
+        others = []
         seen = set()
 
         for line in stdout.splitlines():
@@ -26,33 +30,38 @@ class NucleiOutputParser:
                     )
                     key = (host, cve_str, severity)
                     if key not in seen:
-                        findings.append(
-                            {
-                                "severity": severity,
-                                "host": host,
-                                "id": cve_str,
-                                "asset_id": (
-                                    ip_to_asset_id_map[host]
-                                    if host in ip_to_asset_id_map.keys()
-                                    else ""
-                                ),
-                            }
-                        )
                         seen.add(key)
+                        asset_id = ip_to_asset_id_map.get(host, "")
+                        # Group by each individual CVE inside the joined string
+                        for cve_id in cve_str.split(", "):
+                            group = grouped[cve_id]
+                            group["asset_id"].add(asset_id)
+                            group["host"].add(host)
+                            group["severity"] = severity
             except json.JSONDecodeError:
                 clean_line = re.sub(r"\x1b\[[0-9;]*m", "", line)
                 if clean_line.strip():
                     others.append(clean_line)
 
+        grouped_findings = [
+            {
+                "id": cve_id,
+                "asset_id": sorted(list(data["asset_id"])),
+                "host": sorted(list(data["host"])),
+                "severity": data["severity"],
+            }
+            for cve_id, data in grouped.items()
+        ]
+
         message_parts = []
-        if findings:
-            message_parts.append(f"{len(findings)} CVE(S)")
+        if grouped_findings:
+            message_parts.append(f"{len(grouped_findings)} CVE(S)")
         if others:
             message_parts.append(f"{len(others)} Vulnerabilities(s)")
-        if not findings and not others:
+        if not grouped_findings and not others:
             message_parts.append("Good News: Nothing Found !")
 
         return {
             "message": "Nuclei completed: " + " ".join(message_parts),
-            "outputs": {"cve": findings, "others": others},
+            "outputs": {"cve": grouped_findings, "others": others},
         }
