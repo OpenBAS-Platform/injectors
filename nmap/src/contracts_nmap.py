@@ -7,10 +7,13 @@ from pyobas.contracts.contract_config import (
     ContractCardinality,
     ContractConfig,
     ContractElement,
+    ContractExpectations,
     ContractOutputElement,
     ContractOutputType,
     ContractSelect,
     ContractText,
+    Expectation,
+    ExpectationType,
     SupportedLanguage,
     prepare_contracts,
 )
@@ -74,6 +77,21 @@ class NmapContracts:
             linkedFields=[target_selector],
             linkedValues=["manual"],
         )
+        expectations = ContractExpectations(
+            key="expectations",
+            label="Expectations",
+            mandatory=False,
+            cardinality=ContractCardinality.Multiple,
+            predefinedExpectations=[
+                Expectation(
+                    expectation_type=ExpectationType.detection,
+                    expectation_name="Detection",
+                    expectation_description="",
+                    expectation_score=100,
+                    expectation_expectation_group=False,
+                )
+            ],
+        )
 
         # Output
         output_ports_scans = ContractOutputElement(
@@ -99,6 +117,7 @@ class NmapContracts:
                     targets_assets,
                     target_property_selector,
                     targets_manual,
+                    expectations,
                 ]
             )
             .build_fields()

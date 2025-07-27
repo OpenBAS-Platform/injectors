@@ -8,10 +8,13 @@ from pyobas.contracts.contract_config import (
     ContractCardinality,
     ContractConfig,
     ContractElement,
+    ContractExpectations,
     ContractOutputElement,
     ContractOutputType,
     ContractSelect,
     ContractText,
+    Expectation,
+    ExpectationType,
     SupportedLanguage,
     prepare_contracts,
 )
@@ -84,6 +87,21 @@ class NucleiContracts:
             label="Manual template path (-t)",
             mandatory=False,
         )
+        expectations = ContractExpectations(
+            key="expectations",
+            label="Expectations",
+            mandatory=False,
+            cardinality=ContractCardinality.Multiple,
+            predefinedExpectations=[
+                Expectation(
+                    expectation_type=ExpectationType.vulnerability,
+                    expectation_name="Not vulnerable",
+                    expectation_description="",
+                    expectation_score=100,
+                    expectation_expectation_group=False,
+                )
+            ],
+        )
 
         # -- OUTPUTS --
         output_vulns = ContractOutputElement(
@@ -110,6 +128,7 @@ class NucleiContracts:
                     target_property_selector,
                     targets_manual,
                     template_manual,
+                    expectations,
                 ]
             )
             .build_fields()
