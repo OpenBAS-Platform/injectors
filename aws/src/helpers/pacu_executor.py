@@ -198,11 +198,9 @@ class PacuExecutor:
         try:
             # On Windows, we need to use echo to provide input
             # Echo "0" to select "New session", then echo the session name
-            import platform
-
             if platform.system() == "Windows":
                 # Use echo to provide input: 0 for new session, then session name
-                cmd = f"echo 0 | pacu"
+                cmd = "echo 0 | pacu"
                 result = subprocess.run(
                     cmd,
                     shell=True,
@@ -213,7 +211,7 @@ class PacuExecutor:
 
                 # Now set the session name
                 cmd = f"echo {session_name} | pacu --session {session_name} --pacu-help"
-                result = subprocess.run(
+                subprocess.run(
                     cmd,
                     shell=True,
                     capture_output=True,
@@ -412,8 +410,6 @@ class PacuExecutor:
             env["CI"] = "true"
 
             # On Windows, we need to use shell=True for .cmd files
-            import platform
-
             use_shell = platform.system() == "Windows"
 
             if use_shell:
@@ -455,7 +451,7 @@ class PacuExecutor:
                 summary = f"User '{username}' created successfully"
             else:
                 module_name = f"aws_cli_{command.replace(' ', '_')}"
-                summary = f"AWS CLI command executed successfully"
+                summary = "AWS CLI command executed successfully"
 
             if result.returncode == 0:
                 return {
@@ -470,7 +466,7 @@ class PacuExecutor:
                 if "Unable to locate credentials" in error_msg:
                     error_msg = "AWS credentials not configured"
                 elif "AccessDenied" in error_msg:
-                    error_msg = f"Access denied - check IAM permissions"
+                    error_msg = "Access denied - check IAM permissions"
 
                 return {
                     "success": False,
@@ -649,9 +645,6 @@ class PacuExecutor:
 
                 # Extract user details
                 username = user.get("UserName", "unknown")
-                user_id = user.get("UserId", "")
-                arn = user.get("Arn", "")
-                created_date = user.get("CreateDate", "")
 
                 message = f"Successfully created IAM user: {username}"
                 if self.logger:

@@ -145,7 +145,7 @@ class OpenBASAWS:
 
         # Parse and return results
         parsed_results = self.pacu_executor.parse_results(results)
-        self.helper.injector_logger.info(f"Results parsed successfully")
+        self.helper.injector_logger.info("Results parsed successfully")
         return parsed_results
 
     def _get_module_name(self, contract_id: str) -> str:
@@ -159,7 +159,7 @@ class OpenBASAWS:
             IAM_CREATE_USER_CONTRACT: "aws_cli_iam_create_user",
             EC2_ENUM_INSTANCES_CONTRACT: "ec2__enum",
             EC2_ENUM_SECURITY_GROUPS_CONTRACT: "ec2__enum",
-            S3_ENUM_BUCKETS_CONTRACT: "aws_cli_s3_ls",  # Uses AWS CLI since s3__enum doesn't exist
+            S3_ENUM_BUCKETS_CONTRACT: "aws_cli_s3_ls",
             S3_DOWNLOAD_BUCKET_CONTRACT: "s3__download_bucket",
             LAMBDA_ENUM_FUNCTIONS_CONTRACT: "lambda__enum",
             CLOUDTRAIL_ENUM_CONTRACT: "cloudtrail__download_event_history",
@@ -282,7 +282,7 @@ class OpenBASAWS:
                 self.helper.api.inject.execution_callback(
                     inject_id=inject_id, data=callback_data
                 )
-                self.helper.injector_logger.info(f"Callback sent successfully")
+                self.helper.injector_logger.info("Callback sent successfully")
             except Exception as e:
                 # Log the actual error message from the exception
                 error_str = str(e)
@@ -320,7 +320,7 @@ class OpenBASAWS:
             self.helper.injector_logger.info(
                 f"Message processing completed in {int(time.time() - start)} seconds"
             )
-            self.helper.injector_logger.info(f"=" * 60)
+            self.helper.injector_logger.info("=" * 60)
 
     # Start the main loop
     def start(self):
