@@ -3,33 +3,33 @@ import time
 from typing import Dict
 
 from contracts_aws import (
-    IAM_ENUM_PERMISSIONS_CONTRACT,
-    IAM_ENUM_USERS_CONTRACT,
-    IAM_ENUM_ROLES_CONTRACT,
-    IAM_PRIVESC_SCAN_CONTRACT,
-    IAM_GET_PASSWORD_POLICY_CONTRACT,
-    IAM_CREATE_USER_CONTRACT,
+    CLOUDTRAIL_ENUM_CONTRACT,
+    COGNITO_ENUM_CONTRACT,
+    DYNAMODB_ENUM_CONTRACT,
+    EBS_ENUM_SNAPSHOTS_CONTRACT,
     EC2_ENUM_INSTANCES_CONTRACT,
     EC2_ENUM_SECURITY_GROUPS_CONTRACT,
-    S3_ENUM_BUCKETS_CONTRACT,
-    S3_DOWNLOAD_BUCKET_CONTRACT,
-    LAMBDA_ENUM_FUNCTIONS_CONTRACT,
-    CLOUDTRAIL_ENUM_CONTRACT,
-    VPC_ENUM_CONTRACT,
-    RDS_ENUM_DATABASES_CONTRACT,
-    SECRETS_MANAGER_ENUM_CONTRACT,
-    SSM_ENUM_PARAMETERS_CONTRACT,
-    ORGANIZATIONS_ENUM_CONTRACT,
-    EBS_ENUM_SNAPSHOTS_CONTRACT,
-    DYNAMODB_ENUM_CONTRACT,
     ECR_ENUM_CONTRACT,
     ECS_ENUM_CONTRACT,
     EKS_ENUM_CONTRACT,
-    GUARDDUTY_ENUM_CONTRACT,
-    COGNITO_ENUM_CONTRACT,
     GLUE_ENUM_CONTRACT,
+    GUARDDUTY_ENUM_CONTRACT,
+    IAM_CREATE_USER_CONTRACT,
+    IAM_ENUM_PERMISSIONS_CONTRACT,
+    IAM_ENUM_ROLES_CONTRACT,
+    IAM_ENUM_USERS_CONTRACT,
+    IAM_GET_PASSWORD_POLICY_CONTRACT,
+    IAM_PRIVESC_SCAN_CONTRACT,
+    LAMBDA_ENUM_FUNCTIONS_CONTRACT,
+    ORGANIZATIONS_ENUM_CONTRACT,
+    RDS_ENUM_DATABASES_CONTRACT,
     ROUTE53_ENUM_CONTRACT,
+    S3_DOWNLOAD_BUCKET_CONTRACT,
+    S3_ENUM_BUCKETS_CONTRACT,
+    SECRETS_MANAGER_ENUM_CONTRACT,
     SNS_ENUM_CONTRACT,
+    SSM_ENUM_PARAMETERS_CONTRACT,
+    VPC_ENUM_CONTRACT,
     AWSContracts,
 )
 from helpers.pacu_executor import PacuExecutor
@@ -67,9 +67,7 @@ class OpenBASAWS:
             },
         )
 
-        self.helper = OpenBASInjectorHelper(
-            self.config, open("img/icon-aws.png", "rb")
-        )
+        self.helper = OpenBASInjectorHelper(self.config, open("img/icon-aws.png", "rb"))
         self.pacu_executor = PacuExecutor(logger=self.helper.injector_logger)
 
     def aws_execution(self, start: float, data: Dict) -> Dict:
@@ -137,10 +135,12 @@ class OpenBASAWS:
                     "success": True,
                     "module": module_name,
                     "data": {"message": "Module executed (cleanup warning ignored)"},
-                    "summary": "Execution completed"
+                    "summary": "Execution completed",
                 }
             else:
-                self.helper.injector_logger.error(f"Module execution failed: {error_msg}")
+                self.helper.injector_logger.error(
+                    f"Module execution failed: {error_msg}"
+                )
                 raise
 
         # Parse and return results
@@ -190,7 +190,9 @@ class OpenBASAWS:
             IAM_ENUM_ROLES_CONTRACT: self.pacu_executor.execute_iam_enum_roles,
             IAM_PRIVESC_SCAN_CONTRACT: self.pacu_executor.execute_iam_privesc_scan,
             IAM_GET_PASSWORD_POLICY_CONTRACT: self.pacu_executor.execute_iam_get_password_policy,
-            IAM_CREATE_USER_CONTRACT: lambda: self.pacu_executor.execute_iam_create_user(content.get("username")),
+            IAM_CREATE_USER_CONTRACT: lambda: self.pacu_executor.execute_iam_create_user(
+                content.get("username")
+            ),
             EC2_ENUM_INSTANCES_CONTRACT: self.pacu_executor.execute_ec2_enum_instances,
             EC2_ENUM_SECURITY_GROUPS_CONTRACT: self.pacu_executor.execute_ec2_enum_security_groups,
             S3_ENUM_BUCKETS_CONTRACT: self.pacu_executor.execute_s3_enum_buckets,
@@ -284,10 +286,14 @@ class OpenBASAWS:
             except Exception as e:
                 # Log the actual error message from the exception
                 error_str = str(e)
-                self.helper.injector_logger.error(f"Failed to send callback: {error_str}")
+                self.helper.injector_logger.error(
+                    f"Failed to send callback: {error_str}"
+                )
                 # If it's a 500 error, log that we need to check server logs
                 if "500" in error_str:
-                    self.helper.injector_logger.error("Server returned 500 - check OpenBAS server logs for details")
+                    self.helper.injector_logger.error(
+                        "Server returned 500 - check OpenBAS server logs for details"
+                    )
         except Exception as e:
             error_msg = f"Error executing AWS module: {e}"
             self.helper.injector_logger.error(error_msg)
@@ -306,7 +312,9 @@ class OpenBASAWS:
             except Exception as e:
                 # Log the actual error message from the exception
                 error_str = str(e)
-                self.helper.injector_logger.error(f"Failed to send error callback: {error_str}")
+                self.helper.injector_logger.error(
+                    f"Failed to send error callback: {error_str}"
+                )
 
         finally:
             self.helper.injector_logger.info(

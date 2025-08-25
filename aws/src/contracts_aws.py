@@ -96,10 +96,8 @@ class AWSContracts:
                 "us-west-2": "US West (Oregon)",
                 "ca-central-1": "Canada (Central)",
                 "ca-west-1": "Canada West (Calgary)",
-                
                 # South America
                 "sa-east-1": "South America (São Paulo)",
-                
                 # Europe
                 "eu-west-1": "EU (Ireland)",
                 "eu-west-2": "EU (London)",
@@ -109,15 +107,12 @@ class AWSContracts:
                 "eu-north-1": "EU (Stockholm)",
                 "eu-south-1": "EU (Milan)",
                 "eu-south-2": "EU (Spain)",
-                
                 # Middle East
                 "me-south-1": "Middle East (Bahrain)",
                 "me-central-1": "Middle East (UAE)",
                 "il-central-1": "Israel (Tel Aviv)",
-                
                 # Africa
                 "af-south-1": "Africa (Cape Town)",
-                
                 # Asia Pacific
                 "ap-east-1": "Asia Pacific (Hong Kong)",
                 "ap-south-1": "Asia Pacific (Mumbai)",
@@ -131,11 +126,9 @@ class AWSContracts:
                 "ap-southeast-4": "Asia Pacific (Melbourne)",
                 "ap-southeast-5": "Asia Pacific (Kuala Lumpur)",
                 "ap-southeast-6": "Asia Pacific (Bangkok)",
-                
                 # China
                 "cn-north-1": "China (Beijing)",
                 "cn-northwest-1": "China (Ningxia)",
-                
                 # AWS GovCloud
                 "us-gov-east-1": "AWS GovCloud (US-East)",
                 "us-gov-west-1": "AWS GovCloud (US-West)",
@@ -160,7 +153,7 @@ class AWSContracts:
         )
 
         # Output types for different modules
-        
+
         # Generic JSON output (fallback)
         output_json = ContractOutputElement(
             type=ContractOutputType.Text,
@@ -187,7 +180,7 @@ class AWSContracts:
             isFindingCompatible=True,
             labels=["aws", "iam", "permission"],
         )
-        
+
         output_iam_users = ContractOutputElement(
             type=ContractOutputType.Text,
             field="users",
@@ -195,7 +188,7 @@ class AWSContracts:
             isFindingCompatible=True,
             labels=["aws", "iam", "user"],
         )
-        
+
         output_iam_roles = ContractOutputElement(
             type=ContractOutputType.Text,
             field="roles",
@@ -203,7 +196,7 @@ class AWSContracts:
             isFindingCompatible=True,
             labels=["aws", "iam", "role"],
         )
-        
+
         output_iam_policies = ContractOutputElement(
             type=ContractOutputType.Text,
             field="policies",
@@ -211,7 +204,7 @@ class AWSContracts:
             isFindingCompatible=True,
             labels=["aws", "iam", "policy"],
         )
-        
+
         output_iam_groups = ContractOutputElement(
             type=ContractOutputType.Text,
             field="groups",
@@ -219,7 +212,7 @@ class AWSContracts:
             isFindingCompatible=True,
             labels=["aws", "iam", "group"],
         )
-        
+
         output_iam_privesc_paths = ContractOutputElement(
             type=ContractOutputType.Text,
             field="privesc_paths",
@@ -227,7 +220,7 @@ class AWSContracts:
             isFindingCompatible=True,
             labels=["aws", "iam", "vulnerability", "privesc"],
         )
-        
+
         # IAM Password Policy Output
         output_iam_password_policy = ContractOutputElement(
             type=ContractOutputType.Text,
@@ -245,7 +238,7 @@ class AWSContracts:
             isFindingCompatible=True,
             labels=["aws", "ec2", "instance"],
         )
-        
+
         output_ec2_security_groups = ContractOutputElement(
             type=ContractOutputType.Text,
             field="security_groups",
@@ -453,7 +446,12 @@ class AWSContracts:
             IAM_ENUM_USERS_CONTRACT,
             "AWS - IAM Enumerate Users, Roles, Policies and Groups",
             "AWS - Énumération des utilisateurs, rôles, politiques et groupes IAM",
-            [output_iam_users, output_iam_roles, output_iam_policies, output_iam_groups],
+            [
+                output_iam_users,
+                output_iam_roles,
+                output_iam_policies,
+                output_iam_groups,
+            ],
         )
 
         iam_enum_roles_contract = make_contract(
@@ -470,7 +468,7 @@ class AWSContracts:
             "AWS - Scan d'escalade de privilèges IAM",
             [output_iam_privesc_paths],
         )
-        
+
         # IAM Get Account Password Policy
         iam_get_password_policy_contract = make_contract(
             IAM_GET_PASSWORD_POLICY_CONTRACT,
@@ -478,14 +476,14 @@ class AWSContracts:
             "AWS - Obtenir la politique de mot de passe IAM",
             [output_iam_password_policy],
         )
-        
+
         # IAM Create User (Attack)
         iam_username = ContractText(
             key="username",
             label="Username to create",
             mandatory=True,
         )
-        
+
         iam_create_user_fields = (
             ContractBuilder()
             .add_fields(
@@ -500,7 +498,7 @@ class AWSContracts:
             )
             .build_fields()
         )
-        
+
         # No output for this attack action - it either succeeds or fails
         iam_create_user_contract = make_contract(
             IAM_CREATE_USER_CONTRACT,
