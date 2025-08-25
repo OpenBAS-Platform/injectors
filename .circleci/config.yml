@@ -86,6 +86,13 @@ jobs:
             $IS_LATEST && TAGS="$TAGS -t openbas/injector-nuclei:latest"
             docker build --progress=plain $TAGS .
       - run:
+          working_directory: ~/openbas/aws
+          name: Build Docker image openbas/injector-aws
+          command: |
+            TAGS="-t openbas/injector-aws:${CIRCLE_TAG}"
+            $IS_LATEST && TAGS="$TAGS -t openbas/injector-aws:latest"
+            docker build --progress=plain $TAGS .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
@@ -95,6 +102,8 @@ jobs:
             docker push openbas/injector-nmap:${CIRCLE_TAG}
             $IS_LATEST && docker push openbas/injector-nuclei:latest
             docker push openbas/injector-nuclei:${CIRCLE_TAG}
+            $IS_LATEST && docker push openbas/injector-aws:latest
+            docker push openbas/injector-aws:${CIRCLE_TAG}
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -123,12 +132,17 @@ jobs:
           name: Build Docker image openbas/injector-nuclei
           command: docker build --progress=plain -t openbas/injector-nuclei:rolling .
       - run:
+          working_directory: ~/openbas/aws
+          name: Build Docker image openbas/injector-aws
+          command: docker build --progress=plain -t openbas/injector-aws:rolling .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push openbas/injector-http-query:rolling
             docker push openbas/injector-nmap:rolling
             docker push openbas/injector-nuclei:rolling
+            docker push openbas/injector-aws:rolling
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -158,12 +172,17 @@ jobs:
           name: Build Docker image openbas/injector-nuclei
           command: docker build --progress=plain -t openbas/injector-nuclei:prerelease .
       - run:
+          working_directory: ~/openbas/aws
+          name: Build Docker image openbas/injector-aws
+          command: docker build --progress=plain -t openbas/injector-aws:prerelease .
+      - run:
           name: Publish Docker Image to Docker Hub
           command: |
             echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker push openbas/injector-http-query:prerelease
             docker push openbas/injector-nmap:prerelease
             docker push openbas/injector-nuclei:prerelease
+            docker push openbas/injector-aws:prerelease
       - slack/notify:
           event: fail
           template: basic_fail_1
