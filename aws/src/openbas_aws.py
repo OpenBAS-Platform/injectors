@@ -230,7 +230,7 @@ class OpenBASAWS:
         start = time.time()
         inject_id = data["injection"]["inject_id"]
 
-        self.helper.injector_logger.info(f"=" * 60)
+        self.helper.injector_logger.info("=" * 60)
         self.helper.injector_logger.info(f"Processing message for inject: {inject_id}")
 
         # Notify API of reception and expected number of operations

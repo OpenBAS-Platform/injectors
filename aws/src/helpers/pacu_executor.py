@@ -201,7 +201,7 @@ class PacuExecutor:
             if platform.system() == "Windows":
                 # Use echo to provide input: 0 for new session, then session name
                 cmd = "echo 0 | pacu"
-                result = subprocess.run(
+                subprocess.run(
                     cmd,
                     shell=True,
                     capture_output=True,
