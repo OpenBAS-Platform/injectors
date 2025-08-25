@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Correct working directory
+# Go to the nmap directory
 cd /opt/openbas-injector-nmap
 
-# Start the injector
+# Start the nmap injector
 python3 openbas_nmap.py

@@ -1,0 +1,8 @@
+openbas:
+  url: 'http://localhost:3001'
+  token: 'ChangeMe'
+
+injector:
+  id: 'changeme'
+  name: 'Amazon Web Services'
+  log_level: 'info'
