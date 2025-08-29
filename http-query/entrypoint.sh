@@ -1,7 +1,7 @@
 #!/bin/sh
 
-# Correct working directory
+# Go to the HTTP directory
 cd /opt/openbas-injector-http
 
-# Start the injector
+# Start the HTTP injector
 python3 openbas_http.py
